@@ -1,49 +1,67 @@
 #include "hls.h"
 
-size_t _strlen(const char *s)
+int _strcmp(char *s1, char *s2)
 {
 	int i;
 
-	for (i = 0; s[i]; ++i)
-		;
-	return (i);
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		++i;
+	return (s1[i] - s2[i]);
 }
 
-char *_strncpy(char *dest, const char *src, size_t n)
+char *str_toupper(char *s)
+{
+	int i;
+
+	for (i = 0; s[i]; i++)
+		if (s[i] >= 'a' && s[i] <= 'z')
+			s[i] -= ' ';
+	return (s);
+}
+
+char *_strcpy(char *dest, const char *src)
 {
 	size_t i;
 
-	for (i = 0; i < n && src[i]; ++i)
+	for (i = 0; src[i]; ++i)
 		dest[i] = src[i];
-	while (i < n)
-		dest[i++] = '\0';
+	dest[i] = '\0';
 	return (dest);
+}
+
+int cmpstringp(const char *p1, const char *p2)
+{
+	char tp1[256];
+	char tp2[256];
+
+	str_toupper(_strcpy(tp1, p1));
+	str_toupper(_strcpy(tp2, p2));
+	return (_strcmp(tp1, tp2));
 }
 
 void swap(struct content **entries, int i, int j)
 {
 	char tmp[256];
 
-	_strncpy(tmp, (*entries)[j].name, _strlen((*entries)[j].name) + 1);
-	_strncpy((*entries)[j].name, (*entries)[i].name, _strlen((*entries)[j].name) + 1);
-	_strncpy((*entries)[i].name, tmp, _strlen((*entries)[i].name) + 1);
+	_strcpy(tmp, (*entries)[j].name);
+	_strcpy((*entries)[j].name, (*entries)[i].name);
+	_strcpy((*entries)[i].name, tmp);
 }
 
 int partition(struct content **entries, int lo, int hi)
 {
-	char pivot;
+	char *pivot;
 	int i, j;
 
-	printf("lo: %u\thi: %u\n", lo, hi);
-	pivot = *(*entries)[hi].name;
-	i = lo - 1;
+	pivot = (*entries)[hi].name;
+	i = lo;
 	for (j = lo; j < hi; ++j)
-		if (*(*entries)[j].name < pivot)
+		if (cmpstringp((*entries)[j].name, pivot) < 0)
 		{
-			++i;
 			swap(*&entries, i, j);
+			++i;
 		}
-	++i;
 	swap(*&entries, i, hi);
 	return (i);
 }
@@ -95,17 +113,14 @@ void hls(int argc, char *argv[])
 				printf("  ");
 			printf("%s", ep->d_name);
 			*/
-			_strncpy(entries[ec++].name, ep->d_name, _strlen(ep->d_name) + 1);
+			_strcpy(entries[ec].name, ep->d_name);
+			++ec;
 			/* start = true; */
 		}
 		closedir(dp);
-		printf("\n");
+		/* printf("\n"); */
 	}
-	printf("Before sort\n");
-	for (i = 0; i < ec; ++i)
-		printf("%s\n", entries[i].name);
 	_qsort(&entries, 0, ec - 1);
-	printf("After sort\n");
 	for (i = 0; i < ec; ++i)
 		printf("%s\n", entries[i].name);
 	free(entries);
