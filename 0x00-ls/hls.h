@@ -24,8 +24,8 @@ void error(char *argv, char o);
 
 /* ls */
 void ls(const int argc, char *argv[]);
-content_t *preprocess(const int argc, unsigned int *numdir, char *argv[],
-		char *option_a);
+content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
+		DIR **dp, char *option_a);
 unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
 		int *file_a, int *dir_a);
 content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
