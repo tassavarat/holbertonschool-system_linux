@@ -30,8 +30,8 @@ void error(char *argv, char o)
 		exit(2);
 	}
 	if (errno == ENOENT)
-		sprintf(buf, "ls: cannot access '%s'", argv);
+		sprintf(buf, "ls: cannot access %s", argv);
 	else if (errno == EACCES)
-		sprintf(buf, "ls: cannot open directory '%s'", argv);
+		sprintf(buf, "ls: cannot open directory %s", argv);
 	perror(buf);
 }
