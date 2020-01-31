@@ -9,8 +9,10 @@
  */
 int main(int argc, char *argv[])
 {
-	ls(argc, argv);
-	exit(0);
+	unsigned int status;
+
+	status = ls(argc, argv);
+	exit(status);
 }
 
 /**
@@ -18,7 +20,7 @@ int main(int argc, char *argv[])
  * @argv: string containing invalid argument
  * @o: character containing invalid ls option
  */
-void error(char *argv, char o)
+unsigned int error(char *argv, char o)
 {
 	char buf[BUFSIZ];
 
@@ -34,4 +36,5 @@ void error(char *argv, char o)
 	else if (errno == EACCES)
 		sprintf(buf, "ls: cannot open directory %s", argv);
 	perror(buf);
+	return (2);
 }
