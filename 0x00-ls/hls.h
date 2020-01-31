@@ -20,10 +20,10 @@ typedef struct content
 } content_t;
 
 /* main */
-void error(char *argv, char o);
+unsigned int error(char *argv, char o);
 
 /* ls */
-void ls(const int argc, char *argv[]);
+unsigned int ls(const int argc, char *argv[]);
 content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 		DIR **dp, char *option_a);
 unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
