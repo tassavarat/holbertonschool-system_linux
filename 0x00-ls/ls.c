@@ -54,6 +54,7 @@ void ls(const int argc, char *argv[])
  * preprocess - processes arguments
  * @argc: number of arguments
  * @argv: pointer to an array of strings to process
+ * @dp: pointer to pointer of struct DP containing lstat information
  * @numdir: number of directories
  * @option_a: pointer to a character array to contain index of options
  *
