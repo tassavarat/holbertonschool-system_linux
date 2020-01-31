@@ -1,17 +1,19 @@
 #include "hls.h"
 
-bool printdir(const int argc, char *argv[], bool start, const unsigned int ec,
-	struct content *entries)
+static bool start;
+
+void printcontent(const int argc, char *argv, const unsigned int c,
+		struct content *entries)
 {
 	unsigned int i;
 
-	_qsort(&entries, 0, ec - 1);
+	_qsort(&entries, 0, c - 1);
 	if (start)
 		printf("\n");
 	start = false;
 	if (argc > 2)
-		printf("%s:\n", *argv);
-	for (i = 0; i < ec; ++i)
+		printf("%s:\n", argv);
+	for (i = 0; i < c; ++i)
 	{
 		if (start)
 			printf("  ");
@@ -19,14 +21,19 @@ bool printdir(const int argc, char *argv[], bool start, const unsigned int ec,
 		start = true;
 	}
 	printf("\n");
-	return (start);
 }
 
-void error(char *argv)
+void error(char *argv, char o)
 {
 	char buf[BUFSIZ];
 
-	printf("errno =  %d\n", errno);
+	/* printf("errno =  %d\n", errno); */
+	if (!argv)
+	{
+		fprintf(stderr, "ls: invalid option -- '%c'\n", o);
+		fprintf(stderr, "Try 'ls --help' for more information.\n");
+		exit(2);
+	}
 	if (errno == ENOENT)
 		sprintf(buf, "ls: cannot access '%s'", argv);
 	else if (errno == EACCES)
@@ -34,33 +41,84 @@ void error(char *argv)
 	perror(buf);
 }
 
-
-
-void hls(const int argc, char *argv[])
+struct content *handlefiles(const bool f, const unsigned int c, char *argv[],
+		int *a)
 {
-	bool start;
-	unsigned int entry_size, ec, i;
-	DIR *dp;
-	struct dirent *ep;
+	unsigned int i;
 	struct content *entries;
 
-	start = false;
-	entry_size = 100;
-	if (argc == 1)
+	entries = malloc(c * sizeof(*entries));
+	for (i = 0; i < c; ++i)
+		_strcpy(entries[i].name, argv[a[i]]);
+	printcontent(0, NULL, c, entries);
+	if (f)
+		free(entries);
+	return (entries);
+}
+
+struct content *preprocess(const int argc, unsigned int *numdir, char *argv[],
+		char *option_a)
+{
+	unsigned int i, j, k, numfiles;
+	int file_a[256], dir_a[256];
+	struct stat sb;
+
+	k = numfiles = 0;
+	for (i = 1; argv[i]; ++i)
 	{
-		dp = opendir(".");
-		if (!dp)
-			error(".");
+		if (*argv[i] == '-')
+			for (j = 1; argv[i][j]; ++j)
+			{
+				if (argv[i][j] == '1' || argv[i][j] == 'a' ||
+						argv[i][j] == 'A' || argv[i][j] == 'l' ||
+						argv[i][j] == 'r' || argv[i][j] == 'S' ||
+						argv[i][j] == 't' || argv[i][j] == 'R')
+					option_a[k] = argv[i][j];
+				else
+					error(NULL, argv[i][j]);
+				++k;
+			}
+		else if (lstat(argv[i], &sb) == -1)
+			error(argv[i], '\0');
+		else if ((sb.st_mode & S_IFMT) == S_IFREG)
+			file_a[numfiles++] = i;
+		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+			dir_a[(*numdir)++] = i;
 	}
-	for (i = 1, ec = 0; argv[i] || argc == 1; ++i, ec = 0)
+	if (numfiles > 0)
 	{
-		entries = malloc(entry_size * sizeof(*entries));
+		handlefiles(true, numfiles, argv, file_a);
+		start = true;
+	}
+	if (argc == 1)
+		if (!opendir("."))
+			error(".", '\0');
+	if (numfiles > 0)
+		return (handlefiles(false, numfiles, argv, dir_a));
+	return (NULL);
+}
+
+void _ls(const int argc, char *argv[])
+{
+	unsigned int entry_size, dc, ec, i;
+	DIR *dp;
+	char option_a[256];
+	struct dirent *ep;
+	struct content *entries, *dirs;
+
+	entry_size = 100;
+	dc = ec = 0;
+
+	dirs = preprocess(argc, &dc, argv, option_a);
+	for (i = 0; i < dc || argc == 1; ++i)
+	{
 		if (argc > 1)
 		{
-			dp = opendir(argv[i]);
+			entries = malloc(entry_size * sizeof(*entries));
+			dp = opendir(dirs[i].name);
 			if (!dp)
 			{
-				error(argv[i]);
+				error(dirs[i].name, '\0');
 				continue;
 			}
 		}
@@ -72,15 +130,17 @@ void hls(const int argc, char *argv[])
 			++ec;
 		}
 		closedir(dp);
-		start = printdir(argc, argv, start, ec, entries);
+		printcontent(argc, dirs[i].name, ec, entries);
 		if (argc == 1)
 			break;
 		free(entries);
+		ec = 0;
 	}
+	free(dirs);
 }
 
 int main(int argc, char *argv[])
 {
-	hls(argc, argv);
-	return (EXIT_SUCCESS);
+	_ls(argc, argv);
+	exit(0);
 }

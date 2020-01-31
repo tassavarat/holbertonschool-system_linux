@@ -6,11 +6,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-struct content
+typedef struct content
 {
 	char name[256];
-};
+} content_t;
 
 /* string */
 int _strcmp(char *s1, char *s2);
