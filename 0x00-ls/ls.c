@@ -22,7 +22,7 @@ unsigned int ls(const int argc, char *argv[])
 	dc = ec = 0;
 
 	dirs = preprocess(argc, argv, &dc, &dp, option_a);
-	for (i = 0; i < dc || argc == 1; ++i)
+	for (i = 0; dirs && (i < dc || argc == 1); ++i)
 	{
 		entries = malloc(entry_size * sizeof(*entries));
 		if (argc > 1)
