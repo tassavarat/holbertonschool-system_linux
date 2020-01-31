@@ -1,14 +1,31 @@
 #include "hls.h"
 
-void swap(struct content **entries, int i, int j)
+/**
+ * _qsort - sorts given data
+ * @entries: data to sort
+ * @lo: lower boundry
+ * @hi: upper boundry
+ */
+void _qsort(struct content **entries, int lo, int hi)
 {
-	char tmp[256];
+	unsigned int p;
 
-	_strcpy(tmp, (*entries)[j].name);
-	_strcpy((*entries)[j].name, (*entries)[i].name);
-	_strcpy((*entries)[i].name, tmp);
+	if (lo < hi)
+	{
+		p = partition(*&entries, lo, hi);
+		_qsort(*&entries, lo, p - 1);
+		_qsort(*&entries, p + 1, hi);
+	}
 }
 
+/**
+ * partition - partitions given data into pieces for sorting
+ * @entries: data to sort
+ * @lo: lower boundry
+ * @hi: upper boundry
+ *
+ * Return: partition position
+ */
 int partition(struct content **entries, int lo, int hi)
 {
 	char *pivot;
@@ -26,14 +43,17 @@ int partition(struct content **entries, int lo, int hi)
 	return (i);
 }
 
-void _qsort(struct content **entries, int lo, int hi)
+/**
+ * swap - swaps given data
+ * @entries: data to swap
+ * @i: first index being swapped to
+ * @j: second index being swapped to
+ */
+void swap(struct content **entries, int i, int j)
 {
-	unsigned int p;
+	char tmp[256];
 
-	if (lo < hi)
-	{
-		p = partition(*&entries, lo, hi);
-		_qsort(*&entries, lo, p - 1);
-		_qsort(*&entries, p + 1, hi);
-	}
+	_strcpy(tmp, (*entries)[j].name);
+	_strcpy((*entries)[j].name, (*entries)[i].name);
+	_strcpy((*entries)[i].name, tmp);
 }
