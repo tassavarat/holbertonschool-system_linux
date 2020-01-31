@@ -7,6 +7,8 @@ static unsigned int status;
  * ls - Lists information about files and directories
  * @argc: number of arguments
  * @argv: pointer to an array of strings containing arguments
+ *
+ * Return: status
  */
 unsigned int ls(const int argc, char *argv[])
 {
@@ -16,7 +18,6 @@ unsigned int ls(const int argc, char *argv[])
 	struct dirent *ep;
 	struct content *entries, *dirs;
 
-	printf("status\t%d\n", status);
 	entry_size = 100;
 	dc = ec = 0;
 

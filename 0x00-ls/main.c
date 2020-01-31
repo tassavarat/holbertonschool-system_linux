@@ -19,6 +19,8 @@ int main(int argc, char *argv[])
  * error - prints error messages
  * @argv: string containing invalid argument
  * @o: character containing invalid ls option
+ *
+ * Return: error status
  */
 unsigned int error(char *argv, char o)
 {
