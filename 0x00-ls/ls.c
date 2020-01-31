@@ -18,7 +18,7 @@ void ls(const int argc, char *argv[])
 	entry_size = 100;
 	dc = ec = 0;
 
-	dirs = preprocess(argc, &dc, argv, option_a);
+	dirs = preprocess(argc, argv, &dc, &dp, option_a);
 	for (i = 0; i < dc || argc == 1; ++i)
 	{
 		if (argc > 1)
@@ -46,39 +46,46 @@ void ls(const int argc, char *argv[])
 		free(entries);
 		ec = 0;
 	}
-	free(dirs);
+	if (argc > 1)
+		free(dirs);
 }
 
 /**
  * preprocess - processes arguments
  * @argc: number of arguments
- * @numdir: number of directories
  * @argv: pointer to an array of strings to process
+ * @numdir: number of directories
  * @option_a: pointer to a character array to contain index of options
  *
  * Return: struct containing directory information
  */
-content_t *preprocess(const int argc, unsigned int *numdir, char *argv[],
-		char *option_a)
+content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
+		DIR **dp, char *option_a)
 {
 	unsigned int numfiles;
 	int file_a[256], dir_a[256];
 	struct content *dirs;
 
-	numfiles = parse_args(numdir, argv, option_a, file_a, dir_a);
-	if (numfiles > 0)
-	{
-		handlecontent(true, numfiles, argv, file_a);
-		start = true;
-	}
 	if (argc == 1)
-		if (!opendir("."))
-			error(".", '\0');
-	if (numfiles > 0)
 	{
-		dirs = handlecontent(false, numfiles, argv, dir_a);
-		_qsort(&dirs, 0, numfiles - 1);
-		return (dirs);
+		*dp = opendir(".");
+		if (!*dp)
+			error(".", '\0');
+	}
+	else
+	{
+		numfiles = parse_args(numdir, argv, option_a, file_a, dir_a);
+		if (numfiles > 0)
+		{
+			handlecontent(true, numfiles, argv, file_a);
+			start = true;
+		}
+		if (numfiles > 0)
+		{
+			dirs = handlecontent(false, numfiles, argv, dir_a);
+			_qsort(&dirs, 0, numfiles - 1);
+			return (dirs);
+		}
 	}
 	return (NULL);
 }
