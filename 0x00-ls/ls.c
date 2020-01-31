@@ -1,13 +1,14 @@
 #include "hls.h"
 
 static bool start;
+static unsigned int status;
 
 /**
  * ls - Lists information about files and directories
  * @argc: number of arguments
  * @argv: pointer to an array of strings containing arguments
  */
-void ls(const int argc, char *argv[])
+unsigned int ls(const int argc, char *argv[])
 {
 	unsigned int entry_size, dc, ec, i;
 	DIR *dp;
@@ -15,19 +16,20 @@ void ls(const int argc, char *argv[])
 	struct dirent *ep;
 	struct content *entries, *dirs;
 
+	printf("status\t%d\n", status);
 	entry_size = 100;
 	dc = ec = 0;
 
 	dirs = preprocess(argc, argv, &dc, &dp, option_a);
 	for (i = 0; i < dc || argc == 1; ++i)
 	{
+		entries = malloc(entry_size * sizeof(*entries));
 		if (argc > 1)
 		{
-			entries = malloc(entry_size * sizeof(*entries));
 			dp = opendir(dirs[i].name);
 			if (!dp)
 			{
-				error(dirs[i].name, '\0');
+				status = error(dirs[i].name, '\0');
 				free(entries);
 				continue;
 			}
@@ -41,13 +43,14 @@ void ls(const int argc, char *argv[])
 		}
 		closedir(dp);
 		printcontent(argc, dirs[i].name, ec, entries);
+		free(entries);
 		if (argc == 1)
 			break;
-		free(entries);
 		ec = 0;
 	}
 	if (argc > 1)
 		free(dirs);
+	return (status);
 }
 
 /**
@@ -71,7 +74,7 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 	{
 		*dp = opendir(".");
 		if (!*dp)
-			error(".", '\0');
+			status = error(".", '\0');
 	}
 	else
 	{
@@ -123,7 +126,7 @@ unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
 				++k;
 			}
 		else if (lstat(argv[i], &sb) == -1)
-			error(argv[i], '\0');
+			status = error(argv[i], '\0');
 		else if ((sb.st_mode & S_IFMT) == S_IFREG)
 			file_a[numfiles++] = i;
 		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
