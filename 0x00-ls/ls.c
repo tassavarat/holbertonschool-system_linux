@@ -80,10 +80,10 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 			handlecontent(true, numfiles, argv, file_a);
 			start = true;
 		}
-		if (numfiles > 0)
+		if (*numdir > 0)
 		{
-			dirs = handlecontent(false, numfiles, argv, dir_a);
-			_qsort(&dirs, 0, numfiles - 1);
+			dirs = handlecontent(false, *numdir, argv, dir_a);
+			_qsort(&dirs, 0, *numdir - 1);
 			return (dirs);
 		}
 	}
