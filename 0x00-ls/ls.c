@@ -20,18 +20,18 @@ unsigned int ls(const int argc, char *argv[])
 
 	entry_size = 100;
 	dc = ec = 0;
-
 	dirs = preprocess(argc, argv, &dc, &dp, option_a);
-	for (i = 0; dirs && (i < dc || argc == 1); ++i)
+	entries = malloc(entry_size * sizeof(*entries));
+	for (i = 0; i < dc || argc == 1; ++i, ec = 0)
 	{
-		entries = malloc(entry_size * sizeof(*entries));
 		if (argc > 1)
 		{
 			dp = opendir(dirs[i].name);
 			if (!dp)
 			{
-				status = error(dirs[i].name, '\0');
-				free(entries);
+				if (start)
+					printspace();
+				status = error(false, dirs[i].name, '\0');
 				continue;
 			}
 		}
@@ -39,18 +39,18 @@ unsigned int ls(const int argc, char *argv[])
 		{
 			if (*ep->d_name == '.')
 				continue;
-			_strcpy(entries[ec].name, ep->d_name);
-			++ec;
+			_strcpy(entries[ec++].name, ep->d_name);
+			if (ec == entry_size)
+				entries = realloc(entries, entry_size * 2);
 		}
 		closedir(dp);
 		printcontent(argc, dirs[i].name, ec, entries);
-		free(entries);
 		if (argc == 1)
 			break;
-		ec = 0;
 	}
 	if (argc > 1)
 		free(dirs);
+	free(entries);
 	return (status);
 }
 
@@ -75,7 +75,7 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 	{
 		*dp = opendir(".");
 		if (!*dp)
-			status = error(".", '\0');
+			status = error(true, ".", '\0');
 	}
 	else
 	{
@@ -108,58 +108,45 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
 		int *file_a, int *dir_a)
 {
-	unsigned int i, j, k, numfiles;
+	char vo[8] = {'1', 'a', 'A', 'l', 'r', 'S', 't', 'R'};
+	unsigned int i, j, k, l, numfiles, argsize;
 	struct stat sb;
 
 	k = numfiles = 0;
+	argsize = 8;
 	for (i = 1; argv[i]; ++i)
 	{
 		if (*argv[i] == '-')
+		{
 			for (j = 1; argv[i][j]; ++j)
 			{
-				if (argv[i][j] == '1' || argv[i][j] == 'a' ||
-						argv[i][j] == 'A' || argv[i][j] == 'l' ||
-						argv[i][j] == 'r' || argv[i][j] == 'S' ||
-						argv[i][j] == 't' || argv[i][j] == 'R')
-					option_a[k] = argv[i][j];
-				else
-					error(NULL, argv[i][j]);
+				for (l = 0; l < argsize; ++l)
+					if (argv[i][j] == vo[l])
+					{
+						option_a[k] = argv[i][j];
+						break;
+					}
+				if (l == argsize)
+					error(true, NULL, argv[i][j]);
 				++k;
 			}
+		}
 		else if (lstat(argv[i], &sb) == -1)
-			status = error(argv[i], '\0');
+		{
+			if (start)
+				printspace();
+			status = error(false, argv[i], '\0');
+		}
 		else if ((sb.st_mode & S_IFMT) == S_IFREG)
+		{
 			file_a[numfiles++] = i;
+		}
 		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+		{
 			dir_a[(*numdir)++] = i;
+		}
 	}
 	return (numfiles);
-}
-
-/**
- * handlecontent - allocates space for struct containing content information
- * @f: if content is a file
- * @c: count of content
- * @argv: pointer to array of strings containing name of content
- * @a: pointer to array of integers containing index of content
- *
- * Return: created struct
- */
-content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
-		int *a)
-{
-	unsigned int i;
-	struct content *entries;
-
-	entries = malloc(c * sizeof(*entries));
-	for (i = 0; i < c; ++i)
-		_strcpy(entries[i].name, argv[a[i]]);
-	if (f)
-	{
-		printcontent(0, NULL, c, entries);
-		free(entries);
-	}
-	return (entries);
 }
 
 /**
@@ -176,8 +163,7 @@ void printcontent(const int argc, char *argv, const unsigned int c,
 
 	_qsort(&entries, 0, c - 1);
 	if (start)
-		printf("\n");
-	start = false;
+		printspace();
 	if (argc > 2)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
@@ -188,4 +174,13 @@ void printcontent(const int argc, char *argv, const unsigned int c,
 		start = true;
 	}
 	printf("\n");
+}
+
+/**
+ * printspace - prints a space and sets start to false
+ */
+void printspace(void)
+{
+	printf("\n");
+	start = false;
 }
