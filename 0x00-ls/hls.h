@@ -30,8 +30,8 @@ unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
 		int *file_a, int *dir_a);
 content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
 		int *a);
-void printcontent(const bool f, const int argc, char *argv, const unsigned int c,
-		struct content *entries);
+void printcontent(const bool f, const int argc, char *argv,
+		const unsigned int c, struct content *entries);
 
 /* string */
 char *_strcpy(char *dest, const char *src);

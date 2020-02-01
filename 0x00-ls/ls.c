@@ -12,13 +12,12 @@ static unsigned int status;
  */
 unsigned int ls(const int argc, char *argv[])
 {
-	unsigned int entry_size, dc, ec, i;
+	unsigned int entry_size = 100, dc, ec, i;
 	DIR *dp;
 	char option_a[256];
 	struct dirent *ep;
 	struct content *entries, *dirs;
 
-	entry_size = 100;
 	dc = ec = 0;
 	dirs = preprocess(argc, argv, &dc, &dp, option_a);
 	entries = malloc(entry_size * sizeof(*entries));
@@ -177,13 +176,14 @@ content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
 
 /**
  * printcontent - prints and formats content
+ * @f: if content is a file
  * @argc: number of arguments
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, const int argc, char *argv, const unsigned int c,
-		content_t *entries)
+void printcontent(const bool f, const int argc, char *argv,
+		const unsigned int c, content_t *entries)
 {
 	unsigned int i;
 
