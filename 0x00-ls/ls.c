@@ -41,7 +41,10 @@ unsigned int ls(const int argc, char *argv[])
 				continue;
 			_strcpy(entries[ec++].name, ep->d_name);
 			if (ec == entry_size)
-				entries = realloc(entries, entry_size * 2);
+			{
+				entry_size *= 2;
+				entries = realloc(entries, entry_size * sizeof(*entries));
+			}
 		}
 		closedir(dp);
 		printcontent(argc, dirs[i].name, ec, entries);
