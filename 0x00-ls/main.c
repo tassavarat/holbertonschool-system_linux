@@ -30,14 +30,15 @@ unsigned int error(bool e, char *argv, char o)
 	/* printf("errno =  %d\n", errno); */
 	if (!argv)
 	{
-		fprintf(stderr, "ls: invalid option -- '%c'\n", o);
-		fprintf(stderr, "Try 'ls --help' for more information.\n");
+		fprintf(stderr, "hls: invalid option -- '%c'\n", o);
+		fprintf(stderr, "Try 'hls --help' for more information.\n");
 	}
 	else if (errno == ENOENT)
-		sprintf(buf, "ls: cannot access %s", argv);
+		sprintf(buf, "hls: cannot access %s", argv);
 	else if (errno == EACCES)
-		sprintf(buf, "ls: cannot open directory %s", argv);
-	perror(buf);
+		sprintf(buf, "hls: cannot open directory %s", argv);
+	if (errno > 0)
+		perror(buf);
 	if (e)
 		exit(2);
 	return (2);
