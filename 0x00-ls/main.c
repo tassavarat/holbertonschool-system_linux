@@ -42,30 +42,3 @@ unsigned int error(bool e, char *argv, char o)
 		exit(2);
 	return (2);
 }
-
-/**
- * handlecontent - allocates space for struct containing content information
- * @f: if content is a file
- * @c: count of content
- * @argv: pointer to array of strings containing name of content
- * @a: pointer to array of integers containing index of content
- *
- * Return: created struct
- */
-content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
-		int *a)
-{
-	unsigned int i;
-	struct content *entries;
-
-	entries = malloc(c * sizeof(*entries));
-	for (i = 0; i < c; ++i)
-		_strcpy(entries[i].name, argv[a[i]]);
-	if (f)
-	{
-		printcontent(0, NULL, c, entries);
-		free(entries);
-		return (NULL);
-	}
-	return (entries);
-}

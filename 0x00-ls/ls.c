@@ -29,8 +29,6 @@ unsigned int ls(const int argc, char *argv[])
 			dp = opendir(dirs[i].name);
 			if (!dp)
 			{
-				if (start)
-					printspace();
 				status = error(false, dirs[i].name, '\0');
 				continue;
 			}
@@ -47,7 +45,7 @@ unsigned int ls(const int argc, char *argv[])
 			}
 		}
 		closedir(dp);
-		printcontent(argc, dirs[i].name, ec, entries);
+		printcontent(false, argc, dirs[i].name, ec, entries);
 		if (argc == 1)
 			break;
 	}
@@ -86,7 +84,6 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 		if (numfiles > 0)
 		{
 			handlecontent(true, numfiles, argv, file_a);
-			start = true;
 		}
 		if (*numdir > 0)
 		{
@@ -136,8 +133,6 @@ unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
 		}
 		else if (lstat(argv[i], &sb) == -1)
 		{
-			if (start)
-				printspace();
 			status = error(false, argv[i], '\0');
 		}
 		else if ((sb.st_mode & S_IFMT) == S_IFREG)
@@ -153,20 +148,49 @@ unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
 }
 
 /**
+ * handlecontent - allocates space for struct containing content information
+ * @f: if content is a file
+ * @c: count of content
+ * @argv: pointer to array of strings containing name of content
+ * @a: pointer to array of integers containing index of content
+ *
+ * Return: created struct
+ */
+content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
+		int *a)
+{
+	unsigned int i;
+	struct content *entries;
+
+	entries = malloc(c * sizeof(*entries));
+	for (i = 0; i < c; ++i)
+		_strcpy(entries[i].name, argv[a[i]]);
+	if (f)
+	{
+		printcontent(f, 0, NULL, c, entries);
+		printf("\n");
+		free(entries);
+		return (NULL);
+	}
+	return (entries);
+}
+
+/**
  * printcontent - prints and formats content
  * @argc: number of arguments
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const int argc, char *argv, const unsigned int c,
+void printcontent(const bool f, const int argc, char *argv, const unsigned int c,
 		content_t *entries)
 {
 	unsigned int i;
 
 	_qsort(&entries, 0, c - 1);
 	if (start)
-		printspace();
+		printf("\n");
+	start = false;
 	if (argc > 2)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
@@ -176,14 +200,7 @@ void printcontent(const int argc, char *argv, const unsigned int c,
 		printf("%s", entries[i].name);
 		start = true;
 	}
+	if (f)
+		start = false;
 	printf("\n");
-}
-
-/**
- * printspace - prints a space and sets start to false
- */
-void printspace(void)
-{
-	printf("\n");
-	start = false;
 }
