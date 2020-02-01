@@ -20,7 +20,9 @@ typedef struct content
 } content_t;
 
 /* main */
-unsigned int error(char *argv, char o);
+unsigned int error(bool e, char *argv, char o);
+content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
+		int *a);
 
 /* ls */
 unsigned int ls(const int argc, char *argv[]);
@@ -28,10 +30,9 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 		DIR **dp, char *option_a);
 unsigned int parse_args(unsigned int *numdir, char *argv[], char *option_a,
 		int *file_a, int *dir_a);
-content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
-		int *a);
 void printcontent(const int argc, char *argv, const unsigned int c,
 		struct content *entries);
+void printspace(void);
 
 /* string */
 char *_strcpy(char *dest, const char *src);
