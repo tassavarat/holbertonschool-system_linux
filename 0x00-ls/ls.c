@@ -117,7 +117,14 @@ void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
 			for (j = 1; argv[i][j]; ++j)
 				checkoptions(&opt, argv, i, j);
 	for (i = 1; argv[i]; ++i)
-	{
+		if (lstat(argv[i], &sb) == 0)
+		{
+			if ((sb.st_mode & S_IFMT) == S_IFREG)
+				file_a[(*fc)++] = i;
+			else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+				dir_a[(*dc)++] = i;
+		}
+	for (i = 1; argv[i]; ++i)
 		if (lstat(argv[i], &sb) == -1)
 		{
 			if (*fc == 0 && *dc == 0)
@@ -127,15 +134,6 @@ void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
 			}
 			status = error(false, argv[i], '\0');
 		}
-		else if ((sb.st_mode & S_IFMT) == S_IFREG)
-		{
-			file_a[(*fc)++] = i;
-		}
-		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
-		{
-			dir_a[(*dc)++] = i;
-		}
-	}
 }
 
 /**
