@@ -127,7 +127,7 @@ void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
 				dir_a[(*dc)++] = i;
 		}
 	for (i = 1; argv[i]; ++i)
-		if (lstat(argv[i], &sb) == -1)
+		if (*argv[i] != '-' && lstat(argv[i], &sb) == -1)
 		{
 			if ((i + 1 == argc) && *fc == 0 && *dc == 0)
 			{
@@ -176,11 +176,13 @@ content_t *handlecontent(const bool f, const unsigned int c,
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, const int argc, char *argv,
+void printcontent(const bool f, int argc, char *argv,
 		const unsigned int c, content_t *entries)
 {
 	unsigned int i;
 
+	if (opt->perline)
+		--argc;
 	_qsort(&entries, 0, c - 1);
 	if (start)
 		printf("\n");
