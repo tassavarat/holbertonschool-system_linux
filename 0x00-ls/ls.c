@@ -6,12 +6,11 @@ static struct option *opt;
 
 /**
  * ls - Lists information about files and directories
- * @argc: number of arguments
  * @argv: pointer to an array of strings containing arguments
  *
  * Return: status
  */
-unsigned int ls(const int argc, char *argv[])
+unsigned int ls(char *argv[])
 {
 	unsigned int entry_size = 100, dc, ec, i;
 	DIR *dp;
@@ -19,11 +18,11 @@ unsigned int ls(const int argc, char *argv[])
 	struct content *entries, *dirs;
 
 	dc = ec = 0;
-	dirs = preprocess(argc, argv, &dc, &dp);
+	dirs = preprocess(argv, &dc, &dp);
 	entries = malloc(entry_size * sizeof(*entries));
-	for (i = 0; i < dc || argc == 1; ++i, ec = 0)
+	for (i = 0; i < dc || dc == 0; ++i, ec = 0)
 	{
-		if (argc > 1)
+		if (dc > 0)
 		{
 			dp = opendir(dirs[i].name);
 			if (!dp)
@@ -44,11 +43,11 @@ unsigned int ls(const int argc, char *argv[])
 			}
 		}
 		closedir(dp);
-		printcontent(false, argc, dirs[i].name, ec, entries);
-		if (argc == 1)
+		printcontent(false, dc, dirs[i].name, ec, entries);
+		if (dc == 0)
 			break;
 	}
-	if (argc > 1)
+	if (dc > 0)
 		free(dirs);
 	free(entries);
 	free(opt);
@@ -57,15 +56,13 @@ unsigned int ls(const int argc, char *argv[])
 
 /**
  * preprocess - processes arguments
- * @argc: number of arguments
  * @argv: pointer to an array of strings to process
  * @dp: pointer to pointer of struct DP containing lstat information
  * @numdir: number of directories
  *
  * Return: struct containing directory information
  */
-content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
-		DIR **dp)
+content_t *preprocess(char *argv[], unsigned int *numdir, DIR **dp)
 {
 	unsigned int numfiles;
 	int file_a[256], dir_a[256];
@@ -73,27 +70,24 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 
 	opt = malloc(sizeof(*opt));
 	initoptions(&opt);
-	if (argc == 1)
+	numfiles = parse_args(numdir, argv, file_a, dir_a);
+	if (numfiles > 0)
+	{
+		handlecontent(true, numfiles, argv, file_a);
+	}
+	if (*numdir > 0)
+	{
+		dirs = handlecontent(false, *numdir, argv, dir_a);
+		_qsort(&dirs, 0, *numdir - 1);
+		return (dirs);
+	}
+	if (numfiles == 0 && *numdir == 0)
 	{
 		*dp = opendir(".");
 		if (!*dp)
 		{
 			free(opt);
 			status = error(true, ".", '\0');
-		}
-	}
-	else
-	{
-		numfiles = parse_args(numdir, argv, file_a, dir_a);
-		if (numfiles > 0)
-		{
-			handlecontent(true, numfiles, argv, file_a);
-		}
-		if (*numdir > 0)
-		{
-			dirs = handlecontent(false, *numdir, argv, dir_a);
-			_qsort(&dirs, 0, *numdir - 1);
-			return (dirs);
 		}
 	}
 	return (NULL);
@@ -161,12 +155,12 @@ content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
 /**
  * printcontent - prints and formats content
  * @f: if content is a file
- * @argc: number of arguments
+ * @dc: number of arguments
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, const int argc, char *argv,
+void printcontent(const bool f, const int dc, char *argv,
 		const unsigned int c, content_t *entries)
 {
 	unsigned int i;
@@ -175,7 +169,7 @@ void printcontent(const bool f, const int argc, char *argv,
 	if (start)
 		printf("\n");
 	start = false;
-	if (argc > 2)
+	if (dc > 2)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
 	{
