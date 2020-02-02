@@ -58,7 +58,7 @@ unsigned int ls(const int argc, char *argv[])
  * @argv: pointer to an array of strings to process
  * @fc: number of files
  * @dc: number of directories
- * @erc: number of directories
+ * @erc: number of errors
  * @dp: pointer to pointer of struct DP containing lstat information
  *
  * Return: struct containing directory information
@@ -102,7 +102,7 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
  * @argc: number of arguments
  * @fc: number of directories
  * @dc: number of directories
- * @erc: number of directories
+ * @erc: number of errors
  * @argv: pointer to an array of strings to parse
  * @file_a: pointer to an array of characters to populate with index of files
  * @dir_a: pointer an array of characters to populate with index of directories
@@ -176,7 +176,7 @@ content_t *handlecontent(const bool f, const unsigned int c,
  * @f: if content is a file
  * @fc: number of arguments
  * @dc: number of arguments
- * @erc: number of arguments
+ * @erc: number of errors
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
@@ -186,14 +186,11 @@ void printcontent(const bool f, const int fc, const int dc, const int erc,
 {
 	int i;
 
-	i = 1;
-	if (opt->perline)
-		++i;
 	_qsort(&entries, 0, c - 1);
 	if (start)
 		printf("\n");
 	start = false;
-	if (fc + dc + erc > i)
+	if (fc + dc + erc > 1)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
 	{
