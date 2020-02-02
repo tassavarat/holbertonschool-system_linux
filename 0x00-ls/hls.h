@@ -51,10 +51,10 @@ void cleanup(unsigned int dc, content_t *dirs, content_t *entries,
 		option_t *opt);
 
 /* ls */
-unsigned int ls(const int argc, char *argv[]);
-content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
+unsigned int ls(char *argv[]);
+content_t *preprocess(char *argv[], unsigned int *fc,
 		unsigned int *dc, unsigned int *erc, DIR **dp);
-void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
+void parse_args(unsigned int *fc, unsigned int *dc,
 		unsigned int *erc, char *argv[], int *file_a, int *dir_a);
 content_t *handlecontent(const bool f, const unsigned int c,
 		const unsigned int dirc, char *argv[], int *a);

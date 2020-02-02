@@ -6,12 +6,11 @@ static struct option *opt;
 
 /**
  * ls - Lists information about files and directories
- * @argc: number of arguments
  * @argv: pointer to an array of strings containing arguments
  *
  * Return: status
  */
-unsigned int ls(const int argc, char *argv[])
+unsigned int ls(char *argv[])
 {
 	unsigned int entry_size = 100, fc, dc, ec, erc, i;
 	DIR *dp;
@@ -19,7 +18,7 @@ unsigned int ls(const int argc, char *argv[])
 	struct content *entries, *dirs;
 
 	fc = dc = ec = erc = 0;
-	dirs = preprocess(argc, argv, &fc, &dc, &erc, &dp);
+	dirs = preprocess(argv, &fc, &dc, &erc, &dp);
 	entries = malloc(entry_size * sizeof(*entries));
 	for (i = 0; i < dc || (fc == 0 && dc == 0); ++i, ec = 0)
 	{
@@ -54,7 +53,6 @@ unsigned int ls(const int argc, char *argv[])
 
 /**
  * preprocess - processes arguments
- * @argc: number of arguments
  * @argv: pointer to an array of strings to process
  * @fc: number of files
  * @dc: number of directories
@@ -63,7 +61,7 @@ unsigned int ls(const int argc, char *argv[])
  *
  * Return: struct containing directory information
  */
-content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
+content_t *preprocess(char *argv[], unsigned int *fc,
 		unsigned int *dc, unsigned int *erc, DIR **dp)
 {
 	int file_a[256], dir_a[256];
@@ -71,7 +69,7 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
 
 	opt = malloc(sizeof(*opt));
 	initoptions(&opt);
-	parse_args(argc, fc, dc, erc, argv, file_a, dir_a);
+	parse_args(fc, dc, erc, argv, file_a, dir_a);
 	if (*dc == 0 && *fc == 0)
 	{
 		*dp = opendir(".");
@@ -99,7 +97,6 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
 
 /**
  * parse_args - indexes position of valid arguments, files, directories
- * @argc: number of arguments
  * @fc: number of directories
  * @dc: number of directories
  * @erc: number of errors
@@ -109,12 +106,11 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
  *
  * Return: number of files
  */
-void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
+void parse_args(unsigned int *fc, unsigned int *dc,
 		unsigned int *erc, char *argv[], int *file_a, int *dir_a)
 {
 	unsigned int i, j;
 	struct stat sb;
-	(void) argc;
 
 	for (i = 1; argv[i]; ++i)
 		if (*argv[i] == '-')
