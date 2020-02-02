@@ -200,5 +200,6 @@ void printcontent(const bool f, const int argc, char *argv,
 	}
 	if (f)
 		start = false;
-	printf("\n");
+	if (c > 0)
+		printf("\n");
 }
