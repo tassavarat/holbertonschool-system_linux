@@ -114,6 +114,7 @@ void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
 {
 	unsigned int i, j;
 	struct stat sb;
+	(void) argc;
 
 	for (i = 1; argv[i]; ++i)
 		if (*argv[i] == '-')
@@ -131,7 +132,7 @@ void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
 		if (lstat(argv[i], &sb) == -1 && ((*argv[i] != '-') ||
 					(*argv[i] == '-' && _strlen(argv[i]) == 1)))
 		{
-			if ((i + 1 == argc) && *fc == 0 && *dc == 0)
+			if (*fc == 0 && *dc == 0)
 			{
 				free(opt);
 				status = error(true, argv[i], '\0');
