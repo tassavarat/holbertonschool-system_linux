@@ -44,14 +44,12 @@ unsigned int ls(const int argc, char *argv[])
 			}
 		}
 		closedir(dp);
-		printcontent(false, argc, dirs[i].name, ec, entries);
+		if (ec > 0)
+			printcontent(false, argc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
 	}
-	if (dc > 0)
-		free(dirs);
-	free(entries);
-	free(opt);
+	cleanup(dc, dirs, entries, opt);
 	return (status);
 }
 

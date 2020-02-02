@@ -101,3 +101,19 @@ void checkoptions(struct option **opt, char *argv[], const unsigned int i,
 			error(true, NULL, argv[i][j]);
 	}
 }
+
+/**
+ * cleanup - performs cleanup
+ * @dc: directory count
+ * @dirs: directory struct
+ * @entries: entry struct
+ * @opt: option struct
+ */
+void cleanup(unsigned int dc, content_t *dirs, content_t *entries,
+		option_t *opt)
+{
+	if (dc > 0)
+		free(dirs);
+	free(entries);
+	free(opt);
+}

@@ -47,6 +47,8 @@ unsigned int error(bool e, char *argv, char o);
 void initoptions(struct option **opt);
 void checkoptions(struct option **opt, char *argv[], const unsigned int i,
 		const unsigned int j);
+void cleanup(unsigned int dc, content_t *dirs, content_t *entries,
+		option_t *opt);
 
 /* ls */
 unsigned int ls(const int argc, char *argv[]);
