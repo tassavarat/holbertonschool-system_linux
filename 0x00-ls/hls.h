@@ -50,11 +50,12 @@ void checkoptions(struct option **opt, char *argv[], const unsigned int i,
 
 /* ls */
 unsigned int ls(const int argc, char *argv[]);
-content_t *preprocess(char *argv[], unsigned int *dc, DIR **dp);
-unsigned int parse_args(unsigned int *numdir, char *argv[], int *file_a,
+content_t *preprocess(char *argv[], unsigned int *fc, unsigned int *dc,
+		DIR **dp);
+void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
 		int *dir_a);
-content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
-		int *a);
+content_t *handlecontent(const bool f, const unsigned int c,
+		const unsigned int dirc, char *argv[], int *a);
 void printcontent(const bool f, const int argc, char *argv,
 		const unsigned int c, struct content *entries);
 

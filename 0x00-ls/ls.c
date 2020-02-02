@@ -13,15 +13,15 @@ static struct option *opt;
  */
 unsigned int ls(const int argc, char *argv[])
 {
-	unsigned int entry_size = 100, dc, ec, i;
+	unsigned int entry_size = 100, fc, dc, ec, i;
 	DIR *dp;
 	struct dirent *ep;
 	struct content *entries, *dirs;
 
-	dc = ec = 0;
-	dirs = preprocess(argv, &dc, &dp);
+	fc = dc = ec = 0;
+	dirs = preprocess(argv, &fc, &dc, &dp);
 	entries = malloc(entry_size * sizeof(*entries));
-	for (i = 0; i < dc || dc == 0; ++i, ec = 0)
+	for (i = 0; i < dc || (fc == 0 && dc == 0); ++i, ec = 0)
 	{
 		if (dc > 0)
 		{
@@ -58,21 +58,22 @@ unsigned int ls(const int argc, char *argv[])
 /**
  * preprocess - processes arguments
  * @argv: pointer to an array of strings to process
+ * @fc: number of files
  * @dc: number of directories
  * @dp: pointer to pointer of struct DP containing lstat information
  *
  * Return: struct containing directory information
  */
-content_t *preprocess(char *argv[], unsigned int *dc, DIR **dp)
+content_t *preprocess(char *argv[], unsigned int *fc, unsigned int *dc,
+		DIR **dp)
 {
-	unsigned int fc;
 	int file_a[256], dir_a[256];
 	struct content *dirs;
 
 	opt = malloc(sizeof(*opt));
 	initoptions(&opt);
-	fc = parse_args(dc, argv, file_a, dir_a);
-	if (*dc == 0 && fc == 0)
+	parse_args(fc, dc, argv, file_a, dir_a);
+	if (*dc == 0 && *fc == 0)
 	{
 		*dp = opendir(".");
 		if (!*dp)
@@ -83,13 +84,13 @@ content_t *preprocess(char *argv[], unsigned int *dc, DIR **dp)
 	}
 	else
 	{
-		if (fc > 0)
+		if (*fc > 0)
 		{
-			handlecontent(true, fc, argv, file_a);
+			handlecontent(true, *fc, *dc, argv, file_a);
 		}
 		if (*dc > 0)
 		{
-			dirs = handlecontent(false, *dc, argv, dir_a);
+			dirs = handlecontent(false, *dc, *dc, argv, dir_a);
 			_qsort(&dirs, 0, *dc - 1);
 			return (dirs);
 		}
@@ -99,6 +100,7 @@ content_t *preprocess(char *argv[], unsigned int *dc, DIR **dp)
 
 /**
  * parse_args - indexes position of valid arguments, files, directories
+ * @fc: number of directories
  * @dc: number of directories
  * @argv: pointer to an array of strings to parse
  * @file_a: pointer to an array of characters to populate with index of files
@@ -106,39 +108,50 @@ content_t *preprocess(char *argv[], unsigned int *dc, DIR **dp)
  *
  * Return: number of files
  */
-unsigned int parse_args(unsigned int *dc, char *argv[], int *file_a,
+void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
 		int *dir_a)
 {
-	unsigned int i, j, fc;
+	unsigned int i, j;
 	struct stat sb;
 
-	fc = 0;
 	for (i = 1; argv[i]; ++i)
-	{
 		if (*argv[i] == '-')
 			for (j = 1; argv[i][j]; ++j)
 				checkoptions(&opt, argv, i, j);
-		else if (lstat(argv[i], &sb) == -1)
+	for (i = 1; argv[i]; ++i)
+	{
+		if (lstat(argv[i], &sb) == -1)
+		{
+			if (*fc == 0 && *dc == 0)
+			{
+				free(opt);
+				status = error(true, argv[i], '\0');
+			}
 			status = error(false, argv[i], '\0');
+		}
 		else if ((sb.st_mode & S_IFMT) == S_IFREG)
-			file_a[fc++] = i;
+		{
+			file_a[(*fc)++] = i;
+		}
 		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+		{
 			dir_a[(*dc)++] = i;
+		}
 	}
-	return (fc);
 }
 
 /**
  * handlecontent - allocates space for struct containing content information
  * @f: if content is a file
  * @c: count of content
+ * @dirc: count of content
  * @argv: pointer to array of strings containing name of content
  * @a: pointer to array of integers containing index of content
  *
  * Return: created struct
  */
-content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
-		int *a)
+content_t *handlecontent(const bool f, const unsigned int c,
+		const unsigned int dirc, char *argv[], int *a)
 {
 	unsigned int i;
 	struct content *entries;
@@ -149,7 +162,8 @@ content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
 	if (f)
 	{
 		printcontent(f, 0, NULL, c, entries);
-		printf("\n");
+		if (dirc > 0)
+			printf("\n");
 		free(entries);
 		return (NULL);
 	}
