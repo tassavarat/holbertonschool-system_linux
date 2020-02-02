@@ -62,6 +62,7 @@ void printcontent(const bool f, int argc, char *argv,
 		const unsigned int c, struct content *entries);
 
 /* string */
+size_t _strlen(const char *s);
 char *_strcpy(char *dest, const char *src);
 int cmpstringp(const char *p1, const char *p2);
 char *str_toupper(char *s);

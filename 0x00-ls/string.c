@@ -1,6 +1,22 @@
 #include "hls.h"
 
 /**
+ * _strlen - calculate the length of a string
+ * @s: string to evaluate
+ *
+ * Return: string length
+ */
+size_t _strlen(const char *s)
+{
+	size_t i;
+
+	i = 0;
+	while (s[i])
+		++i;
+	return (i);
+}
+
+/**
  * _strcpy - copies a string
  * @dest: buffer being copied to
  * @src: pointer to string being copied

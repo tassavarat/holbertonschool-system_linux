@@ -127,7 +127,8 @@ void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
 				dir_a[(*dc)++] = i;
 		}
 	for (i = 1; argv[i]; ++i)
-		if (*argv[i] != '-' && lstat(argv[i], &sb) == -1)
+		if (lstat(argv[i], &sb) == -1 && ((*argv[i] != '-') ||
+					(*argv[i] == '-' && _strlen(argv[i]) == 1)))
 		{
 			if ((i + 1 == argc) && *fc == 0 && *dc == 0)
 			{
