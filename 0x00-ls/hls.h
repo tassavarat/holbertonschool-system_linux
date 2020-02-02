@@ -49,13 +49,13 @@ void checkoptions(struct option **opt, char *argv[], const unsigned int i,
 		const unsigned int j);
 
 /* ls */
-unsigned int ls(char *argv[]);
+unsigned int ls(const int argc, char *argv[]);
 content_t *preprocess(char *argv[], unsigned int *dc, DIR **dp);
 unsigned int parse_args(unsigned int *numdir, char *argv[], int *file_a,
 		int *dir_a);
 content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
 		int *a);
-void printcontent(const bool f, const int dc, char *argv,
+void printcontent(const bool f, const int argc, char *argv,
 		const unsigned int c, struct content *entries);
 
 /* string */
