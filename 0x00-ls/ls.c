@@ -177,18 +177,19 @@ content_t *handlecontent(const bool f, const unsigned int c,
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, int argc, char *argv,
-		const unsigned int c, content_t *entries)
+void printcontent(const bool f, const int argc, char *argv,
+		const int c, content_t *entries)
 {
-	unsigned int i;
+	int i;
 
+	i = 2;
 	if (opt->perline)
-		--argc;
+		++i;
 	_qsort(&entries, 0, c - 1);
 	if (start)
 		printf("\n");
 	start = false;
-	if (argc > 2)
+	if (argc > i)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
 	{
