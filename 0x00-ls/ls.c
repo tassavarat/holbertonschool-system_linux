@@ -21,7 +21,7 @@ unsigned int ls(const int argc, char *argv[])
 	fc = dc = ec = 0;
 	dirs = preprocess(argc, argv, &fc, &dc, &dp);
 	entries = malloc(entry_size * sizeof(*entries));
-	for (i = 0; i < dc || (dc == 0); ++i, ec = 0)
+	for (i = 0; i < dc || (fc == 0 && dc == 0); ++i, ec = 0)
 	{
 		if (dc > 0)
 		{
@@ -44,8 +44,7 @@ unsigned int ls(const int argc, char *argv[])
 			}
 		}
 		closedir(dp);
-		if (i < dc || dc  == 0)
-			printcontent(false, argc, dirs[i].name, ec, entries);
+		printcontent(false, argc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
 	}
