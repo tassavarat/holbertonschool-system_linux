@@ -19,7 +19,7 @@ unsigned int ls(const int argc, char *argv[])
 	struct content *entries, *dirs;
 
 	fc = dc = ec = 0;
-	dirs = preprocess(argv, &fc, &dc, &dp);
+	dirs = preprocess(argc, argv, &fc, &dc, &dp);
 	entries = malloc(entry_size * sizeof(*entries));
 	for (i = 0; i < dc || (fc == 0 && dc == 0); ++i, ec = 0)
 	{
@@ -55,6 +55,7 @@ unsigned int ls(const int argc, char *argv[])
 
 /**
  * preprocess - processes arguments
+ * @argc: number of arguments
  * @argv: pointer to an array of strings to process
  * @fc: number of files
  * @dc: number of directories
@@ -62,15 +63,15 @@ unsigned int ls(const int argc, char *argv[])
  *
  * Return: struct containing directory information
  */
-content_t *preprocess(char *argv[], unsigned int *fc, unsigned int *dc,
-		DIR **dp)
+content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
+		unsigned int *dc, DIR **dp)
 {
 	int file_a[256], dir_a[256];
 	struct content *dirs;
 
 	opt = malloc(sizeof(*opt));
 	initoptions(&opt);
-	parse_args(fc, dc, argv, file_a, dir_a);
+	parse_args(argc, fc, dc, argv, file_a, dir_a);
 	if (*dc == 0 && *fc == 0)
 	{
 		*dp = opendir(".");
@@ -98,6 +99,7 @@ content_t *preprocess(char *argv[], unsigned int *fc, unsigned int *dc,
 
 /**
  * parse_args - indexes position of valid arguments, files, directories
+ * @argc: number of arguments
  * @fc: number of directories
  * @dc: number of directories
  * @argv: pointer to an array of strings to parse
@@ -106,8 +108,8 @@ content_t *preprocess(char *argv[], unsigned int *fc, unsigned int *dc,
  *
  * Return: number of files
  */
-void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
-		int *dir_a)
+void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
+		char *argv[], int *file_a, int *dir_a)
 {
 	unsigned int i, j;
 	struct stat sb;
@@ -127,7 +129,7 @@ void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
 	for (i = 1; argv[i]; ++i)
 		if (lstat(argv[i], &sb) == -1)
 		{
-			if (*fc == 0 && *dc == 0)
+			if ((i + 1 == argc) && *fc == 0 && *dc == 0)
 			{
 				free(opt);
 				status = error(true, argv[i], '\0');
