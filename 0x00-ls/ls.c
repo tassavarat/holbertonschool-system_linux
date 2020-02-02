@@ -93,31 +93,6 @@ content_t *preprocess(char *argv[], unsigned int *dc, DIR **dp)
 			return (dirs);
 		}
 	}
-	/*
-	if (argc == 1)
-	{
-		*dp = opendir(".");
-		if (!*dp)
-		{
-			free(opt);
-			status = error(true, ".", '\0');
-		}
-	}
-	else
-	{
-		numfiles = parse_args(dc, argv, file_a, dir_a);
-		if (numfiles > 0)
-		{
-			handlecontent(true, numfiles, argv, file_a);
-		}
-		if (*dc > 0)
-		{
-			dirs = handlecontent(false, *dc, argv, dir_a);
-			_qsort(&dirs, 0, *dc - 1);
-			return (dirs);
-		}
-	}
-	*/
 	return (NULL);
 }
 
