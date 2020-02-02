@@ -44,7 +44,7 @@ unsigned int ls(const int argc, char *argv[])
 			}
 		}
 		closedir(dp);
-		if (ec > 0)
+		if (i < dc)
 			printcontent(false, argc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
