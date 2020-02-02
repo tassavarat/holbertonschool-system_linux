@@ -1,184 +1,103 @@
 #include "hls.h"
 
-static bool start;
-static unsigned int status;
-static struct option *opt;
-
 /**
- * ls - Lists information about files and directories
- * @argv: pointer to an array of strings containing arguments
+ * main - entry point to ls program
+ * @argc: number of arguments
+ * @argv: pointer to an array of strings
  *
- * Return: status
+ * Return: 0 on success, error will exit with value of 2
  */
-unsigned int ls(char *argv[])
+int main(int argc, char *argv[])
 {
-	unsigned int entry_size = 100, dc, ec, i;
-	DIR *dp;
-	struct dirent *ep;
-	struct content *entries, *dirs;
+	unsigned int status;
 
-	dc = ec = 0;
-	dirs = preprocess(argv, &dc, &dp);
-	entries = malloc(entry_size * sizeof(*entries));
-	for (i = 0; i < dc || dc == 0; ++i, ec = 0)
-	{
-		if (dc > 0)
-		{
-			dp = opendir(dirs[i].name);
-			if (!dp)
-			{
-				status = error(false, dirs[i].name, '\0');
-				continue;
-			}
-		}
-		while ((ep = readdir(dp)))
-		{
-			if (*ep->d_name == '.')
-				continue;
-			_strcpy(entries[ec++].name, ep->d_name);
-			if (ec == entry_size)
-			{
-				entry_size *= 2;
-				entries = realloc(entries, entry_size * sizeof(*entries));
-			}
-		}
-		closedir(dp);
-		printcontent(false, dc, dirs[i].name, ec, entries);
-		if (dc == 0)
-			break;
-	}
-	if (dc > 0)
-		free(dirs);
-	free(entries);
-	free(opt);
+	status = ls(argc, argv);
 	return (status);
 }
 
 /**
- * preprocess - processes arguments
- * @argv: pointer to an array of strings to process
- * @dp: pointer to pointer of struct DP containing lstat information
- * @numdir: number of directories
+ * error - prints error messages
+ * @e: whether function should exit
+ * @argv: string containing invalid argument
+ * @o: character containing invalid ls option
  *
- * Return: struct containing directory information
+ * Return: error status
  */
-content_t *preprocess(char *argv[], unsigned int *numdir, DIR **dp)
+unsigned int error(bool e, char *argv, char o)
 {
-	unsigned int numfiles;
-	int file_a[256], dir_a[256];
-	struct content *dirs;
+	char buf[BUFSIZ];
 
-	opt = malloc(sizeof(*opt));
-	initoptions(&opt);
-	numfiles = parse_args(numdir, argv, file_a, dir_a);
-	if (numfiles > 0)
+	/* printf("errno =  %d\n", errno); */
+	if (!argv)
 	{
-		handlecontent(true, numfiles, argv, file_a);
+		fprintf(stderr, "hls: invalid option -- '%c'\n", o);
+		fprintf(stderr, "Try 'hls --help' for more information.\n");
 	}
-	if (*numdir > 0)
-	{
-		dirs = handlecontent(false, *numdir, argv, dir_a);
-		_qsort(&dirs, 0, *numdir - 1);
-		return (dirs);
-	}
-	if (numfiles == 0 && *numdir == 0)
-	{
-		*dp = opendir(".");
-		if (!*dp)
-		{
-			free(opt);
-			status = error(true, ".", '\0');
-		}
-	}
-	return (NULL);
+	else if (errno == ENOENT)
+		sprintf(buf, "hls: cannot access %s", argv);
+	else if (errno == EACCES)
+		sprintf(buf, "hls: cannot open directory %s", argv);
+	if (errno > 0)
+		perror(buf);
+	if (e)
+		exit(2);
+	return (2);
 }
 
 /**
- * parse_args - indexes position of valid arguments, files, directories
- * @numdir: number of directories
- * @argv: pointer to an array of strings to parse
- * @file_a: pointer to an array of characters to populate with index of files
- * @dir_a: pointer an array of characters to populate with index of directories
- *
- * Return: number of files
+ * initoptions - initialises option struct
+ * @opt: struct to initialise
  */
-unsigned int parse_args(unsigned int *numdir, char *argv[], int *file_a,
-		int *dir_a)
+void initoptions(struct option **opt)
 {
-	unsigned int i, j, numfiles;
-	struct stat sb;
-
-	numfiles = 0;
-	for (i = 1; argv[i]; ++i)
-	{
-		if (*argv[i] == '-')
-			for (j = 1; argv[i][j]; ++j)
-				checkoptions(&opt, argv, i, j);
-		else if (lstat(argv[i], &sb) == -1)
-			status = error(false, argv[i], '\0');
-		else if ((sb.st_mode & S_IFMT) == S_IFREG)
-			file_a[numfiles++] = i;
-		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
-			dir_a[(*numdir)++] = i;
-	}
-	return (numfiles);
+	(*opt)->perline = false;
+	(*opt)->hidden = false;
+	(*opt)->hiddenavigation = false;
+	(*opt)->longfmt = false;
+	(*opt)->rev = false;
+	(*opt)->sortsize = false;
+	(*opt)->sorttime = false;
+	(*opt)->recurs = false;
 }
 
 /**
- * handlecontent - allocates space for struct containing content information
- * @f: if content is a file
- * @c: count of content
- * @argv: pointer to array of strings containing name of content
- * @a: pointer to array of integers containing index of content
- *
- * Return: created struct
+ * checkoptions - checks for valid options and turns them on as necessary
+ * @opt: structure of bools
+ * @argv: string to check for options
+ * @i: first index
+ * @j: second index
  */
-content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
-		int *a)
+void checkoptions(struct option **opt, char *argv[], const unsigned int i,
+		const unsigned int j)
 {
-	unsigned int i;
-	struct content *entries;
-
-	entries = malloc(c * sizeof(*entries));
-	for (i = 0; i < c; ++i)
-		_strcpy(entries[i].name, argv[a[i]]);
-	if (f)
+	switch (argv[i][j])
 	{
-		printcontent(f, 0, NULL, c, entries);
-		printf("\n");
-		free(entries);
-		return (NULL);
+		case '1':
+			(*opt)->perline = true;
+			break;
+		case 'a':
+			(*opt)->hidden = true;
+			break;
+		case 'A':
+			(*opt)->hiddenavigation = true;
+			break;
+		case 'l':
+			(*opt)->longfmt = true;
+			break;
+		case 'r':
+			(*opt)->rev = true;
+			break;
+		case 'S':
+			(*opt)->sortsize = true;
+			break;
+		case 't':
+			(*opt)->sorttime = true;
+			break;
+		case 'R':
+			(*opt)->recurs = true;
+			break;
+		default:
+			free(*opt);
+			error(true, NULL, argv[i][j]);
 	}
-	return (entries);
-}
-
-/**
- * printcontent - prints and formats content
- * @f: if content is a file
- * @dc: number of arguments
- * @argv: string of directory to print
- * @c: count of total struct entries
- * @entries: contents of directory to print
- */
-void printcontent(const bool f, const int dc, char *argv,
-		const unsigned int c, content_t *entries)
-{
-	unsigned int i;
-
-	_qsort(&entries, 0, c - 1);
-	if (start)
-		printf("\n");
-	start = false;
-	if (dc > 2)
-		printf("%s:\n", argv);
-	for (i = 0; i < c; ++i)
-	{
-		if (start)
-			!opt->perline ? printf(" ") : printf("\n");
-		printf("%s", entries[i].name);
-		start = true;
-	}
-	if (f)
-		start = false;
-	printf("\n");
 }
