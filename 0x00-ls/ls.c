@@ -6,11 +6,12 @@ static struct option *opt;
 
 /**
  * ls - Lists information about files and directories
+ * @argc: number of arguments
  * @argv: pointer to an array of strings containing arguments
  *
  * Return: status
  */
-unsigned int ls(char *argv[])
+unsigned int ls(const int argc, char *argv[])
 {
 	unsigned int entry_size = 100, fc, dc, ec, i;
 	DIR *dp;
@@ -44,7 +45,7 @@ unsigned int ls(char *argv[])
 		}
 		closedir(dp);
 		if (ec > 0)
-			printcontent(false, fc, dc, dirs[i].name, ec, entries);
+			printcontent(false, argc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
 	}
@@ -117,13 +118,6 @@ void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
 				checkoptions(&opt, argv, i, j);
 	for (i = 1; argv[i]; ++i)
 	{
-		lstat(argv[i], &sb);
-		if ((sb.st_mode & S_IFMT) == S_IFREG)
-			file_a[(*fc)++] = i;
-		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
-			dir_a[(*dc)++] = i;
-	}
-	for (i = 1; argv[i]; ++i)
 		if (lstat(argv[i], &sb) == -1)
 		{
 			if (*fc == 0 && *dc == 0)
@@ -133,6 +127,15 @@ void parse_args(unsigned int *fc, unsigned int *dc, char *argv[], int *file_a,
 			}
 			status = error(false, argv[i], '\0');
 		}
+		else if ((sb.st_mode & S_IFMT) == S_IFREG)
+		{
+			file_a[(*fc)++] = i;
+		}
+		else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+		{
+			dir_a[(*dc)++] = i;
+		}
+	}
 }
 
 /**
@@ -156,7 +159,7 @@ content_t *handlecontent(const bool f, const unsigned int c,
 		_strcpy(entries[i].name, argv[a[i]]);
 	if (f)
 	{
-		printcontent(f, 0, 0, NULL, c, entries);
+		printcontent(f, 0, NULL, c, entries);
 		if (dirc > 0)
 			printf("\n");
 		free(entries);
@@ -168,13 +171,12 @@ content_t *handlecontent(const bool f, const unsigned int c,
 /**
  * printcontent - prints and formats content
  * @f: if content is a file
- * @fc: number of files
- * @dc: number of directories
+ * @argc: number of arguments
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, const int fc, const int dc, char *argv,
+void printcontent(const bool f, const int argc, char *argv,
 		const unsigned int c, content_t *entries)
 {
 	unsigned int i;
@@ -183,7 +185,7 @@ void printcontent(const bool f, const int fc, const int dc, char *argv,
 	if (start)
 		printf("\n");
 	start = false;
-	if (fc + dc > 1)
+	if (argc > 2)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
 	{
