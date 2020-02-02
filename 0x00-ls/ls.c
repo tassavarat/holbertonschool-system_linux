@@ -45,7 +45,7 @@ unsigned int ls(const int argc, char *argv[])
 		}
 		closedir(dp);
 		if (ec > 0)
-			printcontent(false, fc, dc, dirs[i].name, ec, entries);
+			printcontent(false, argc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
 	}
@@ -159,7 +159,7 @@ content_t *handlecontent(const bool f, const unsigned int c,
 		_strcpy(entries[i].name, argv[a[i]]);
 	if (f)
 	{
-		printcontent(f, 0, 0, NULL, c, entries);
+		printcontent(f, 0, NULL, c, entries);
 		if (dirc > 0)
 			printf("\n");
 		free(entries);
@@ -171,13 +171,12 @@ content_t *handlecontent(const bool f, const unsigned int c,
 /**
  * printcontent - prints and formats content
  * @f: if content is a file
- * @fc: file count
- * @dc: directory count
+ * @argc: number of arguments
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, const int fc, const int dc, char *argv,
+void printcontent(const bool f, const int argc, char *argv,
 		const unsigned int c, content_t *entries)
 {
 	unsigned int i;
@@ -186,7 +185,7 @@ void printcontent(const bool f, const int fc, const int dc, char *argv,
 	if (start)
 		printf("\n");
 	start = false;
-	if (fc + dc > 1)
+	if (argc > 2)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
 	{
