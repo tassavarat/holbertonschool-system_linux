@@ -97,6 +97,7 @@ void checkoptions(struct option **opt, char *argv[], const unsigned int i,
 			(*opt)->recurs = true;
 			break;
 		default:
+			free(*opt);
 			error(true, NULL, argv[i][j]);
 	}
 }

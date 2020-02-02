@@ -51,6 +51,7 @@ unsigned int ls(const int argc, char *argv[])
 	if (argc > 1)
 		free(dirs);
 	free(entries);
+	free(opt);
 	return (status);
 }
 
@@ -71,13 +72,15 @@ content_t *preprocess(const int argc, char *argv[], unsigned int *numdir,
 	struct content *dirs;
 
 	opt = malloc(sizeof(*opt));
-	/* free me */
 	initoptions(&opt);
 	if (argc == 1)
 	{
 		*dp = opendir(".");
 		if (!*dp)
+		{
+			free(opt);
 			status = error(true, ".", '\0');
+		}
 	}
 	else
 	{
@@ -111,6 +114,7 @@ unsigned int parse_args(unsigned int *numdir, char *argv[], int *file_a,
 	unsigned int i, j, numfiles;
 	struct stat sb;
 
+	numfiles = 0;
 	for (i = 1; argv[i]; ++i)
 	{
 		if (*argv[i] == '-')
