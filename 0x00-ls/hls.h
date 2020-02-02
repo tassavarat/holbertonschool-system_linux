@@ -53,13 +53,13 @@ void cleanup(unsigned int dc, content_t *dirs, content_t *entries,
 /* ls */
 unsigned int ls(const int argc, char *argv[]);
 content_t *preprocess(const int argc, char *argv[], unsigned int *fc,
-		unsigned int *dc, DIR **dp);
+		unsigned int *dc, unsigned int *erc, DIR **dp);
 void parse_args(const unsigned int argc, unsigned int *fc, unsigned int *dc,
-		char *argv[], int *file_a, int *dir_a);
+		unsigned int *erc, char *argv[], int *file_a, int *dir_a);
 content_t *handlecontent(const bool f, const unsigned int c,
 		const unsigned int dirc, char *argv[], int *a);
-void printcontent(const bool f, const int argc, char *argv,
-		const int c, struct content *entries);
+void printcontent(const bool f, const int fc, const int dc, const int erc,
+		char *argv, const int c, content_t *entries);
 
 /* string */
 size_t _strlen(const char *s);
