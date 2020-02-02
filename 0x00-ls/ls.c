@@ -6,12 +6,11 @@ static struct option *opt;
 
 /**
  * ls - Lists information about files and directories
- * @argc: number of arguments
  * @argv: pointer to an array of strings containing arguments
  *
  * Return: status
  */
-unsigned int ls(const int argc, char *argv[])
+unsigned int ls(char *argv[])
 {
 	unsigned int entry_size = 100, fc, dc, ec, i;
 	DIR *dp;
@@ -45,7 +44,7 @@ unsigned int ls(const int argc, char *argv[])
 		}
 		closedir(dp);
 		if (ec > 0)
-			printcontent(false, argc, dirs[i].name, ec, entries);
+			printcontent(false, dc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
 	}
@@ -171,12 +170,12 @@ content_t *handlecontent(const bool f, const unsigned int c,
 /**
  * printcontent - prints and formats content
  * @f: if content is a file
- * @argc: number of arguments
+ * @dc: number of arguments
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, const int argc, char *argv,
+void printcontent(const bool f, const int dc, char *argv,
 		const unsigned int c, content_t *entries)
 {
 	unsigned int i;
@@ -185,7 +184,7 @@ void printcontent(const bool f, const int argc, char *argv,
 	if (start)
 		printf("\n");
 	start = false;
-	if (argc > 2)
+	if (dc > 1)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
 	{
