@@ -10,9 +10,8 @@
 int main(int argc, char *argv[])
 {
 	unsigned int status;
-	(void) argc;
 
-	status = ls(argv);
+	status = ls(argc, argv);
 	return (status);
 }
 

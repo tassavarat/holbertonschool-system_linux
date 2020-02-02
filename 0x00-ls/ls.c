@@ -6,11 +6,12 @@ static struct option *opt;
 
 /**
  * ls - Lists information about files and directories
+ * @argc: number of arguments
  * @argv: pointer to an array of strings containing arguments
  *
  * Return: status
  */
-unsigned int ls(char *argv[])
+unsigned int ls(const int argc, char *argv[])
 {
 	unsigned int entry_size = 100, dc, ec, i;
 	DIR *dp;
@@ -43,7 +44,7 @@ unsigned int ls(char *argv[])
 			}
 		}
 		closedir(dp);
-		printcontent(false, dc, dirs[i].name, ec, entries);
+		printcontent(false, argc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
 	}
@@ -158,12 +159,12 @@ content_t *handlecontent(const bool f, const unsigned int c, char *argv[],
 /**
  * printcontent - prints and formats content
  * @f: if content is a file
- * @dc: number of arguments
+ * @argc: number of arguments
  * @argv: string of directory to print
  * @c: count of total struct entries
  * @entries: contents of directory to print
  */
-void printcontent(const bool f, const int dc, char *argv,
+void printcontent(const bool f, const int argc, char *argv,
 		const unsigned int c, content_t *entries)
 {
 	unsigned int i;
@@ -172,12 +173,12 @@ void printcontent(const bool f, const int dc, char *argv,
 	if (start)
 		printf("\n");
 	start = false;
-	if (dc > 1)
+	if (argc > 2)
 		printf("%s:\n", argv);
 	for (i = 0; i < c; ++i)
 	{
 		if (start)
-			!opt->perline ? printf(" ") : printf("\n");
+			!opt->perline ? printf("  ") : printf("\n");
 		printf("%s", entries[i].name);
 		start = true;
 	}
