@@ -12,11 +12,12 @@ static struct option *opt;
  */
 unsigned int ls(char *argv[])
 {
-	unsigned int entry_size = 100, fc, dc, ec, erc, i;
+	unsigned int entry_size, fc, dc, ec, erc, i;
 	DIR *dp;
 	struct dirent *ep;
 	struct content *entries, *dirs;
 
+	entry_size = 100;
 	fc = dc = ec = erc = 0;
 	dirs = preprocess(argv, &fc, &dc, &erc, &dp);
 	entries = malloc(entry_size * sizeof(*entries));
