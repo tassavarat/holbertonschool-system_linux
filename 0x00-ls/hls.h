@@ -61,6 +61,9 @@ content_t *handlecontent(const bool f, const unsigned int c,
 void printcontent(const bool f, const int fc, const int dc, const int erc,
 		char *argv, const int c, content_t *entries);
 
+/* filterhidden */
+bool filterhidden(struct dirent *ep, option_t *opt);
+
 /* string */
 size_t _strlen(const char *s);
 char *_strcpy(char *dest, const char *src);

@@ -33,7 +33,7 @@ unsigned int ls(char *argv[])
 		}
 		while ((ep = readdir(dp)))
 		{
-			if (*ep->d_name == '.' && !opt->hidden)
+			if (filterhidden(ep, opt))
 				continue;
 			_strcpy(entries[ec++].name, ep->d_name);
 			if (ec == entry_size)
