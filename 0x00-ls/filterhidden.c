@@ -9,7 +9,11 @@
  */
 bool filterhidden(struct dirent *ep, option_t *opt)
 {
-	if (*ep->d_name == '.' && !opt->hidden)
+	if (*ep->d_name == '.' && !opt->hidden && !opt->hiddenavigation)
+		return (true);
+	if (opt->hidden)
+		return (false);
+	if (opt->hiddenavigation && (_strcmp(ep->d_name, ".") == 0 || _strcmp(ep->d_name, "..") == 0))
 		return (true);
 	return (false);
 }
