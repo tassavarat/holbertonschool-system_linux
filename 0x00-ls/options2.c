@@ -9,7 +9,7 @@ void plong(content_t *entries, const unsigned int c)
 {
 	unsigned int i;
 
-	_qsort(&entries, 0, c - 1);
+	/* _qsort(&entries, 0, c - 1); */
 	for (i = 0; i < c; ++i)
 	{
 		printf("%s %ld", entries[i].tperm, entries[i].lc);
