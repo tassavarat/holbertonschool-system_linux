@@ -68,8 +68,11 @@ void initinfo(content_t *entries)
 {
 	unsigned short i;
 
+	for (i = 0; i < 256; ++i)
+		entries->tperm[i] = '\0';
 	for (i = 0; i < 10; ++i)
 		entries->tperm[i] = '-';
+	entries->tperm[i] = '\0';
 	entries->lc = 0;
 	entries->uid = 0;
 	entries->gid = 0;

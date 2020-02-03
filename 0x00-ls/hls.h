@@ -28,7 +28,7 @@
 typedef struct content
 {
 	char name[256];
-	char tperm[10];
+	char tperm[11];
 	long lc;
 	long uid;
 	long gid;
