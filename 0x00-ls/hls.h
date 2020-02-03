@@ -89,6 +89,7 @@ void setperm(content_t *entries, struct stat sb);
 
 /* options2 */
 void setug(content_t *entries, struct stat sb);
+void plong(content_t *entries, const unsigned int c);
 
 /* string */
 size_t _strlen(const char *s);

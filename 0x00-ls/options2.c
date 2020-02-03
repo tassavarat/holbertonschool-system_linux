@@ -1,6 +1,33 @@
 #include "hls.h"
 
 /**
+ * plong - prints long format
+ * @entries: pointer to entries struct
+ * @c: count of struct entries
+ */
+void plong(content_t *entries, const unsigned int c)
+{
+	unsigned int i;
+
+	_qsort(&entries, 0, c - 1);
+	for (i = 0; i < c; ++i)
+	{
+		printf("%s %ld", entries[i].tperm, entries[i].lc);
+		if (entries[i].usr)
+			printf(" %s", entries[i].usr);
+		else
+			printf(" %ld", entries[i].uid);
+		if (entries[i].grp)
+			printf(" %s", entries[i].grp);
+		else
+			printf(" %ld", entries[i].gid);
+		printf(" %ld %s %s\n", entries[i].siz, entries->mtim,
+				entries[i].name);
+	}
+
+}
+
+/**
  * setug - initialises content struct with permission info
  * @entries: pointer to entries
  * @sb: stat buffer

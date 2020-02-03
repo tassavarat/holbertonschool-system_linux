@@ -12,14 +12,11 @@ static struct option *opt;
  */
 unsigned int ls(char *argv[])
 {
-	unsigned int entry_size, fc, dc, ec, erc, i;
+	unsigned int entry_size = 100, fc = 0, dc = 0, ec = 0, erc = 0, i;
 	DIR *dp;
 	struct dirent *ep;
-	struct content *entries, *dirs;
+	struct content *entries, *dirs = preprocess(argv, &fc, &dc, &erc, &dp);
 
-	entry_size = 100;
-	fc = dc = ec = erc = 0;
-	dirs = preprocess(argv, &fc, &dc, &erc, &dp);
 	entries = malloc(entry_size * sizeof(*entries));
 	for (i = 0; i < dc || (fc == 0 && dc == 0); ++i, ec = 0)
 	{
@@ -37,6 +34,8 @@ unsigned int ls(char *argv[])
 			if (filterhidden(ep, opt))
 				continue;
 			_strcpy(entries[ec++].name, ep->d_name);
+			if (opt->longfmt)
+				linfo(&entries[i]);
 			if (ec == entry_size)
 			{
 				entry_size *= 2;
@@ -44,7 +43,10 @@ unsigned int ls(char *argv[])
 			}
 		}
 		closedir(dp);
-		printcontent(false, dc, fc, erc, dirs[i].name, ec, entries);
+		if (opt->longfmt)
+			plong(entries,  ec);
+		else
+			printcontent(false, dc, fc, erc, dirs[i].name, ec, entries);
 		if (dc == 0)
 			break;
 	}
@@ -162,23 +164,12 @@ content_t *handlecontent(const bool f, const unsigned int c,
 		if (opt->longfmt && f)
 			linfo(&entries[i]);
 	}
-	if (opt->longfmt && f)
-		for (i = 0; i < c; ++i)
-		{
-			printf("%s %ld", entries[i].tperm, entries[i].lc);
-			if (entries[i].usr)
-				printf(" %s", entries[i].usr);
-			else
-				printf(" %ld", entries[i].uid);
-			if (entries[i].grp)
-				printf(" %s", entries[i].grp);
-			else
-				printf(" %ld", entries[i].gid);
-			printf(" %ld\n", entries[i].siz);
-		}
 	if (f)
 	{
-		printcontent(f, 0, 0, 0, NULL, c, entries);
+		if (opt->longfmt)
+			plong(entries,  c);
+		else
+			printcontent(f, 0, 0, 0, NULL, c, entries);
 		if (dirc > 0)
 			printf("\n");
 		free(entries);

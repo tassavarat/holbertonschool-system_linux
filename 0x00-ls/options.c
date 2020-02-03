@@ -86,6 +86,7 @@ void initinfo(content_t *entries)
 void linfo(content_t *entries)
 {
 	struct stat sb;
+	char *fmtim;
 
 	initinfo(entries);
 	lstat(entries->name, &sb);
@@ -94,8 +95,9 @@ void linfo(content_t *entries)
 	entries->lc = sb.st_nlink;
 	setug(entries, sb);
 	entries->siz = sb.st_size;
-	entries->mtim = ctime(&(sb.st_mtime));
-	printf("entries->mtim	%s\n", entries->mtim);
+	fmtim = ctime(&(sb.st_mtime));
+	entries->mtim = fmtim + 4;
+	entries->mtim[12]  = '\0';
 }
 
 /**
