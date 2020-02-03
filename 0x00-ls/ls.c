@@ -157,7 +157,25 @@ content_t *handlecontent(const bool f, const unsigned int c,
 
 	entries = malloc(c * sizeof(*entries));
 	for (i = 0; i < c; ++i)
+	{
 		_strcpy(entries[i].name, argv[a[i]]);
+		if (opt->longfmt && f)
+			linfo(&entries[i]);
+	}
+	if (opt->longfmt && f)
+		for (i = 0; i < c; ++i)
+		{
+			printf("%s %ld", entries[i].tperm, entries[i].lc);
+			if (entries[i].usr)
+				printf(" %s", entries[i].usr);
+			else
+				printf(" %ld", entries[i].uid);
+			if (entries[i].grp)
+				printf(" %s", entries[i].grp);
+			else
+				printf(" %ld", entries[i].gid);
+			printf(" %ld\n", entries[i].siz);
+		}
 	if (f)
 	{
 		printcontent(f, 0, 0, 0, NULL, c, entries);

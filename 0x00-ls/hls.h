@@ -3,20 +3,39 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <grp.h>
+#include <pwd.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 
 /**
  * struct content - stores entry information
  * @name: string buffer
+ * @tperm: permissions buffer
+ * @lc: link count
+ * @uid: user id
+ * @gid: group id
+ * @usr: user name
+ * @grp: group name
+ * @siz: content size in bytes
+ * @mtim: last modified time
  */
 typedef struct content
 {
 	char name[256];
+	char tperm[10];
+	long lc;
+	long uid;
+	long gid;
+	char *usr;
+	char *grp;
+	long siz;
+	char *mtim;
 } content_t;
 
 /**
@@ -63,6 +82,13 @@ void printcontent(const bool f, const int fc, const int dc, const int erc,
 
 /* options */
 bool filterhidden(struct dirent *ep, option_t *opt);
+void linfo(content_t *entries);
+void initinfo(content_t *entries);
+void settype(content_t *entries, struct stat sb);
+void setperm(content_t *entries, struct stat sb);
+
+/* options2 */
+void setug(content_t *entries, struct stat sb);
 
 /* string */
 size_t _strlen(const char *s);
