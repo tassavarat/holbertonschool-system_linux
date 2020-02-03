@@ -33,10 +33,10 @@ unsigned int ls(char *argv[])
 		{
 			if (filterhidden(ep, opt))
 				continue;
-			_strcpy(entries[ec++].name, ep->d_name);
+			_strcpy(entries[ec].name, ep->d_name);
 			if (opt->longfmt)
-				linfo(&entries[i]);
-			if (ec == entry_size)
+				linfo(&entries[ec]);
+			if (ec++ == entry_size)
 			{
 				entry_size *= 2;
 				entries = realloc(entries, entry_size * sizeof(*entries));
