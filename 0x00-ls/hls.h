@@ -36,7 +36,7 @@ typedef struct content
 	char *grp;
 	long siz;
 	char *mtim;
-} content_t;
+} content;
 
 /**
  * struct option - stores options state
@@ -59,6 +59,22 @@ typedef struct option
 	bool sortsize;
 	bool sorttime;
 	bool recurs;
-} option_t;
+} option;
+
+/* ls */
+size_t ls(char *argv[]);
+
+/* main */
+size_t error(char *arg, bool e);
+void cleanup(struct content *entries, size_t ec);
+
+/* strings */
+char *_strdup(char *str);
+char *_strcpy(char *dest, const char *src);
+char *str_toupper(char *s);
+int _strcmp(char *s1, char *s2);
+
+/* sort */
+void _qsort(struct content *entries, ssize_t lo, ssize_t hi);
 
 #endif /* HLS_H */

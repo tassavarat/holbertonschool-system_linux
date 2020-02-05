@@ -1,21 +1,34 @@
 #include "hls.h"
 
 /**
- * _qsort - sorts given data
- * @entries: data to sort
- * @lo: lower boundry
- * @hi: upper boundry
+ * cmpstringp - copies strings to buffers and compares them regardless of case
+ * @p1: first string
+ * @p2: second string
+ *
+ * Return: positive or negative value whether p1 or p2 are greater
  */
-void _qsort(struct content **entries, int lo, int hi)
+int cmpstringp(char *p1, char *p2)
 {
-	unsigned int p;
+	char tp1[512];
+	char tp2[512];
 
-	if (lo < hi)
-	{
-		p = partition(*&entries, lo, hi);
-		_qsort(*&entries, lo, p - 1);
-		_qsort(*&entries, p + 1, hi);
-	}
+	str_toupper(_strcpy(tp1, p1));
+	str_toupper(_strcpy(tp2, p2));
+	return (_strcmp(tp1, tp2));
+}
+
+/**
+ * swap - swaps given data
+ * @ent1: first data to swap
+ * @ent2: second data to swap
+ */
+void swap(struct content *ent1, struct content *ent2)
+{
+	struct content tmp;
+
+	tmp = *ent2;
+	*ent2 = *ent1;
+	*ent1 = tmp;
 }
 
 /**
@@ -26,34 +39,37 @@ void _qsort(struct content **entries, int lo, int hi)
  *
  * Return: partition position
  */
-int partition(struct content **entries, int lo, int hi)
+size_t partition(struct content *entries, ssize_t lo, ssize_t hi)
 {
-	char *pivot;
+	char *piv;
 	int i, j;
 
-	pivot = (*entries)[hi].name;
+	piv = entries[hi].name;
 	i = lo;
 	for (j = lo; j < hi; ++j)
-		if (cmpstringp((*entries)[j].name, pivot) < 0)
+		if (cmpstringp(entries[j].name, piv) < 0)
 		{
-			swap(*&entries, i, j);
+			swap(&entries[i], &entries[j]);
 			++i;
 		}
-	swap(*&entries, i, hi);
+	swap(&entries[i], &entries[j]);
 	return (i);
 }
 
 /**
- * swap - swaps given data
- * @entries: data to swap
- * @i: first index being swapped to
- * @j: second index being swapped to
+ * _qsort - sorts given data
+ * @entries: data to sort
+ * @lo: lower boundry
+ * @hi: upper boundry
  */
-void swap(struct content **entries, int i, int j)
+void _qsort(struct content *entries, ssize_t lo, ssize_t hi)
 {
-	char tmp[256];
+	size_t p;
 
-	_strcpy(tmp, (*entries)[j].name);
-	_strcpy((*entries)[j].name, (*entries)[i].name);
-	_strcpy((*entries)[i].name, tmp);
+	if (lo < hi)
+	{
+		p = partition(entries, lo, hi);
+		_qsort(entries, lo, p - 1);
+		_qsort(entries, p + 1, hi);
+	}
 }

@@ -1,37 +1,20 @@
 #include "hls.h"
 
 /**
- * _strcpy - copies a string
- * @dest: buffer being copied to
- * @src: pointer to string being copied
- *
- * Return: pointer to destination string dest
- */
-char *_strcpy(char *dest, const char *src)
-{
-	size_t i;
-
-	for (i = 0; src[i]; ++i)
-		dest[i] = src[i];
-	dest[i] = '\0';
-	return (dest);
-}
-
-/**
- * cmpstringp - copies strings to buffers and compares them regardless of case
- * @p1: first string
- * @p2: second string
+ * _strcmp - compares two strings
+ * @s1: first string
+ * @s2: second string
  *
  * Return: positive or negative value whether p1 or p2 are greater
  */
-int cmpstringp(const char *p1, const char *p2)
+int _strcmp(char *s1, char *s2)
 {
-	char tp1[256];
-	char tp2[256];
+	int i;
 
-	str_toupper(_strcpy(tp1, p1));
-	str_toupper(_strcpy(tp2, p2));
-	return (_strcmp(tp1, tp2));
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		++i;
+	return (s1[i] - s2[i]);
 }
 
 /**
@@ -51,18 +34,44 @@ char *str_toupper(char *s)
 }
 
 /**
- * _strcmp - compares two strings
- * @s1: first string
- * @s2: second string
+ * _strcpy - copies a string
+ * @dest: buffer being copied to
+ * @src: pointer to string being copied
  *
- * Return: positive or negative value whether p1 or p2 are greater
+ * Return: pointer to destination string dest
  */
-int _strcmp(char *s1, char *s2)
+char *_strcpy(char *dest, const char *src)
 {
+	size_t i;
+
+	for (i = 0; src[i]; ++i)
+		dest[i] = src[i];
+	dest[i] = '\0';
+	return (dest);
+}
+
+/**
+ * _strdup - Returns pointer to newly allocated space which contains a string
+ * @str: String to be copied
+ *
+ * Return: Pointer to new string identical to str, NULL if str = NULL
+ */
+char *_strdup(char *str)
+{
+	char *s;
 	int i;
+	int len;
 
 	i = 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
+	if (!str)
+		return (NULL);
+	while (*(str + i))
 		++i;
-	return (s1[i] - s2[i]);
+	len = i;
+	s = malloc(sizeof(char) * (len + 1));
+	if (!s)
+		return (NULL);
+	for (i = 0; i <= len; ++i)
+		*(s + i) = *(str + i);
+	return (s);
 }
