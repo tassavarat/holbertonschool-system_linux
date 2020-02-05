@@ -27,7 +27,7 @@
  */
 typedef struct content
 {
-	char name[BUFSIZ];
+	char name[256];
 	char tperm[11];
 	long lc;
 	long uid;

@@ -45,11 +45,12 @@ void printcontent(struct content *entries, size_t c, size_t fc, size_t dc,
  * @ec: pointer to entry count
  * @dc: directory count
  * @i: current index
+ * @entsiz: size of entries
  *
  * Return: true if successful read otherwise false
  */
 bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
-		size_t *ec, size_t dc, size_t i)
+		size_t *ec, size_t dc, size_t i, size_t *entsiz)
 {
 	struct dirent *ep;
 
@@ -68,6 +69,12 @@ bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
 			continue;
 		_strcpy((*entries)[*ec].name, ep->d_name);
 		++*ec;
+		if (*ec == *entsiz)
+		{
+			*entsiz *= 2;
+			*entries = realloc(*entries, *entsiz * sizeof(*entries));
+		}
+
 	}
 	closedir(dp);
 	return (true);
@@ -114,7 +121,7 @@ size_t ls(char *argv[])
 {
 	bool printed;
 	size_t fc, dc, ec, erc, entsiz, i;
-	size_t file_a[BUFSIZ], dir_a[BUFSIZ];
+	size_t file_a[256], dir_a[256];
 	DIR *dp;
 	struct content *entries, *dirs;
 
@@ -128,7 +135,7 @@ size_t ls(char *argv[])
 	entries = malloc(entsiz * sizeof(*entries));
 	for (i = 0; i < dc || (fc == 0 && dc == 0 && erc == 0); ++i)
 	{
-		if (!readcontents(dp, &entries, dirs, &ec, dc, i))
+		if (!readcontents(dp, &entries, dirs, &ec, dc, i, &entsiz))
 			continue;
 		printcontent(entries, ec, fc, dc, erc, dirs[i].name, printed);
 		if (fc == 0 && dc == 0)

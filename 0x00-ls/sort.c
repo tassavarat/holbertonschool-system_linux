@@ -9,8 +9,8 @@
  */
 int cmpstringp(char *p1, char *p2)
 {
-	char tp1[BUFSIZ];
-	char tp2[BUFSIZ];
+	char tp1[256];
+	char tp2[256];
 
 	str_toupper(_strcpy(tp1, p1));
 	str_toupper(_strcpy(tp2, p2));
