@@ -7,7 +7,8 @@
  */
 void cleanup(struct content *entries, struct content *dirs)
 {
-	free(dirs);
+	if (dirs)
+		free(dirs);
 	free(entries);
 }
 

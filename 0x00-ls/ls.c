@@ -72,7 +72,7 @@ bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
 		if (*ec == *entsiz)
 		{
 			*entsiz *= 2;
-			*entries = realloc(*entries, *entsiz * sizeof(*entries));
+			*entries = realloc(*entries, *entsiz * sizeof(**entries));
 		}
 
 	}

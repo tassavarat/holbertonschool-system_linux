@@ -44,7 +44,6 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 		printfile(entries, c);
 		*printed = true;
 		cleanup(entries, NULL);
-		return (NULL);
 	}
 	return (entries);
 }
@@ -68,6 +67,7 @@ size_t processargs(struct content **dirs, char *argv[], size_t *file_a,
 		size_t *dir_a, size_t status, DIR **dp, size_t fc, size_t dc,
 		size_t erc, bool *printed)
 {
+	*dirs = NULL;
 	if (dc == 0 && fc == 0 && erc == 0)
 	{
 		*dp = opendir(".");
@@ -77,7 +77,7 @@ size_t processargs(struct content **dirs, char *argv[], size_t *file_a,
 	else
 	{
 		if (fc > 0)
-			*dirs = handlecontent(true, argv, file_a, fc, printed);
+			handlecontent(true, argv, file_a, fc, printed);
 		if (dc > 0)
 		{
 			*dirs = handlecontent(false, argv, dir_a, dc, printed);
