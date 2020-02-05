@@ -27,7 +27,7 @@
  */
 typedef struct content
 {
-	char name[256];
+	char *name;
 	char tperm[11];
 	long lc;
 	long uid;
@@ -60,47 +60,5 @@ typedef struct option
 	bool sorttime;
 	bool recurs;
 } option_t;
-
-/* main */
-unsigned int error(bool e, char *argv, char o);
-void initoptions(struct option **opt);
-void checkoptions(struct option **opt, char *argv[], const unsigned int i,
-		const unsigned int j);
-void cleanup(unsigned int dc, content_t *dirs, content_t *entries,
-		option_t *opt);
-
-/* ls */
-unsigned int ls(char *argv[]);
-content_t *preprocess(char *argv[], unsigned int *fc,
-		unsigned int *dc, unsigned int *erc, DIR **dp);
-void parse_args(unsigned int *fc, unsigned int *dc,
-		unsigned int *erc, char *argv[], int *file_a, int *dir_a);
-content_t *handlecontent(const bool f, const unsigned int c,
-		const unsigned int dirc, char *argv[], int *a);
-void printcontent(const bool f, const int fc, const int dc, const int erc,
-		char *argv, const int c, content_t *entries);
-
-/* options */
-bool filterhidden(struct dirent *ep, option_t *opt);
-void linfo(content_t *entries);
-void initinfo(content_t *entries);
-void settype(content_t *entries, struct stat sb);
-void setperm(content_t *entries, struct stat sb);
-
-/* options2 */
-void setug(content_t *entries, struct stat sb);
-void plong(content_t *entries, const unsigned int c);
-
-/* string */
-size_t _strlen(const char *s);
-char *_strcpy(char *dest, const char *src);
-int cmpstringp(const char *p1, const char *p2);
-char *str_toupper(char *s);
-int _strcmp(char *s1, char *s2);
-
-/* sort */
-void _qsort(struct content **entries, int lo, int hi);
-int partition(struct content **entries, int lo, int hi);
-void swap(struct content **entries, int i, int j);
 
 #endif /* HLS_H */
