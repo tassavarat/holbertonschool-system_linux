@@ -27,7 +27,7 @@
  */
 typedef struct content
 {
-	char *name;
+	char name[BUFSIZ];
 	char tperm[11];
 	long lc;
 	long uid;
@@ -66,7 +66,7 @@ size_t ls(char *argv[]);
 
 /* main */
 size_t error(char *arg, bool e);
-void cleanup(struct content *entries, size_t ec);
+void cleanup(struct content *entries, struct content *dirs);
 
 /* strings */
 char *_strdup(char *str);
@@ -76,5 +76,10 @@ int _strcmp(char *s1, char *s2);
 
 /* sort */
 void _qsort(struct content *entries, ssize_t lo, ssize_t hi);
+
+/* preprocess */
+size_t processargs(struct content **dirs, char *argv[], size_t *file_a,
+		size_t *dir_a, size_t status, DIR **dp, size_t fc, size_t dc,
+		size_t erc, bool *printed);
 
 #endif /* HLS_H */

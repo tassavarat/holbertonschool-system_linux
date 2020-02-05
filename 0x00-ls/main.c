@@ -3,14 +3,12 @@
 /**
  * cleanup - performs cleanup
  * @entries: entry struct
- * @ec: entry count
+ * @dirs: directories to free
  */
-void cleanup(struct content *entries, size_t ec)
+void cleanup(struct content *entries, struct content *dirs)
 {
-	size_t i;
-
-	for (i = 0; i < ec; ++i)
-		free(entries[i].name);
+	free(dirs);
+	free(entries);
 }
 
 /**
