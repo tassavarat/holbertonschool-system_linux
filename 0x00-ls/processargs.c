@@ -75,7 +75,7 @@ size_t processargs(struct content **dirs, struct option *opt, char *argv[],
 		if (!*dp)
 		{
 			cleanup(NULL, NULL, opt);
-			error(".", '\0', true, printed);
+			error(".", '\0', true, *printed);
 		}
 	}
 	else
