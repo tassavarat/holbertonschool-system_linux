@@ -39,11 +39,13 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 	struct content *entries;
 
 	entries = malloc(c * sizeof(*entries));
+	if (!entries)
+		exit(2);
 	for (i = 0; i < c; ++i)
 	{
 		_strcpy(entries[i].name, argv[a[i]]);
 		if (opt->longfmt && f)
-			linfo(&entries[i]);
+			linfo(NULL, &entries[i]);
 	}
 	if (f)
 	{

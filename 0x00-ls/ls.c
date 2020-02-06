@@ -77,7 +77,7 @@ bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
 			continue;
 		_strcpy((*entries)[*ec].name, ep->d_name);
 		if (opt->longfmt)
-			linfo(&(*entries)[*ec]);
+			linfo(dirs[i].name, &(*entries)[*ec]);
 		++*ec;
 		if (*ec == *entsiz)
 		{
@@ -142,12 +142,16 @@ size_t ls(char *argv[])
 	fc = dc = ec = erc = 0;
 	entsiz = 100;
 	opt = malloc(sizeof(*opt));
+	if (!opt)
+		exit(2);
 	initoptions(&opt);
 
 	parse_args(argv, &fc, &dc, &erc, file_a, dir_a);
 	status = processargs(&dirs, opt, argv, file_a, dir_a, status, &dp, fc, dc,
 			erc, &printed);
 	entries = malloc(entsiz * sizeof(*entries));
+	if (!entries)
+		exit(2);
 	for (i = 0; i < dc || (fc == 0 && dc == 0 && erc == 0); ++i)
 	{
 		if (!readcontents(dp, &entries, dirs, &ec, dc, i, &entsiz))

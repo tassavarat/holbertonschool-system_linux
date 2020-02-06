@@ -1,13 +1,47 @@
 #include "hls.h"
 
 /**
+ * createpath - concatenate relative path
+ * @dirstr: directory string
+ * @entry: entry name string
+ *
+ * Return: concatenated string
+ */
+char *createpath(char *dirstr, char *entry)
+{
+	char *path;
+	size_t len1, len2;
+
+	len1 = _strlen(dirstr);
+	len2 = _strlen(entry);
+	if (dirstr[len1 - 1] == '/')
+	{
+		path = malloc(sizeof(char) * (len1 + len2 + 1));
+		if (!path)
+			exit(2);
+		_memcpy(path, dirstr, len1);
+		_memcpy(path + len1, entry, len2 + 1);
+	}
+	else
+	{
+		path = malloc(sizeof(char) * (len1 + len2 + 2));
+		if (!path)
+			exit(2);
+		_memcpy(path, dirstr, len1);
+		_memcpy(path + len1, "/", len1 + 1);
+		_memcpy(path + len1 + 1, entry, len2 + 1);
+	}
+	return (path);
+}
+
+/**
  * plong - prints long format
  * @entries: pointer to entries struct
  * @c: count of struct entries
  * @f: if printing file
  * @opt: options state
  */
-void plong(content *entries, size_t c, bool f, struct option *opt)
+void plong(struct content *entries, size_t c, bool f, struct option *opt)
 {
 	unsigned int i;
 
@@ -40,7 +74,7 @@ void plong(content *entries, size_t c, bool f, struct option *opt)
  * @entries: pointer to entries
  * @sb: stat buffer
  */
-void setug(content *entries, struct stat sb)
+void setug(struct content *entries, struct stat sb)
 {
 	struct passwd *p;
 	struct group *g;

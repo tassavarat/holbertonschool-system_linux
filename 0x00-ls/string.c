@@ -1,6 +1,39 @@
 #include "hls.h"
 
 /**
+ * _memcpy - Copies memory area
+ * @dest: Area being copied to
+ * @src: Area being copied
+ * @n: Amount of bytes to be copied
+ *
+ * Return: Pointer to dest
+ */
+char *_memcpy(char *dest, char *src, size_t n)
+{
+	size_t i;
+
+	for (i = 0; i < n; ++i)
+		dest[i] = src[i];
+	return (dest);
+}
+
+/**
+ * _strlen - gets length of a string
+ * @s: string to count
+ *
+ * Return: length
+ */
+size_t _strlen(const char *s)
+{
+	size_t i;
+
+	i = 0;
+	while (s[i])
+		++i;
+	return (i);
+}
+
+/**
  * _strcmp - compares two strings
  * @s1: first string
  * @s2: second string

@@ -82,14 +82,21 @@ void initinfo(content *entries)
 /**
  * linfo - populates entries with lstat information
  * @entries: pointer to entries
+ * @dirstr: directory string
  */
-void linfo(content *entries)
+void linfo(char *dirstr, struct content *entries)
 {
+	char *fmtim, *path;
 	struct stat sb;
-	char *fmtim;
 
+	if (dirstr)
+		path = createpath(dirstr, entries->name);
+	else
+		path = entries->name;
 	initinfo(entries);
-	lstat((entries)->name, &sb);
+	lstat(path, &sb);
+	if (dirstr)
+		free(path);
 	settype(entries, sb);
 	setperm(entries, sb);
 	entries->lc = sb.st_nlink;

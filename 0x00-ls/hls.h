@@ -72,10 +72,11 @@ void checkopt(struct option **opt, char *argv[], size_t i, size_t j);
 void initoptions(struct option **opt);
 
 /* strings */
-char *_strdup(char *str);
 char *_strcpy(char *dest, const char *src);
 char *str_toupper(char *s);
 int _strcmp(char *s1, char *s2);
+size_t _strlen(const char *s);
+char *_memcpy(char *dest, char *src, size_t n);
 
 /* sort */
 void _qsort(struct content *entries, ssize_t lo, ssize_t hi,
@@ -90,10 +91,11 @@ size_t processargs(struct content **dirs, struct option *opt, char *argv[],
 
 /* options */
 bool filterhidden(struct dirent *ep, struct option *opt);
-void linfo(content *entries);
+void linfo(char *dirstr, struct content *entries);
 
 /* options2 */
-void setug(content *entries, struct stat sb);
-void plong(content *entries, size_t c, bool f, struct option *opt);
+void setug(struct content *entries, struct stat sb);
+void plong(struct content *entries, size_t c, bool f, struct option *opt);
+char *createpath(char *dirstr, char *entry);
 
 #endif /* HLS_H */
