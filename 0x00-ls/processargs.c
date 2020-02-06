@@ -40,7 +40,11 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 
 	entries = malloc(c * sizeof(*entries));
 	for (i = 0; i < c; ++i)
+	{
 		_strcpy(entries[i].name, argv[a[i]]);
+		if (opt->longfmt && f)
+			linfo(&entries[i]);
+	}
 	if (f)
 	{
 		if (opt->longfmt)
