@@ -4,6 +4,7 @@
  * plong - prints long format
  * @entries: pointer to entries struct
  * @c: count of struct entries
+ * @f: if printing file
  */
 void plong(content *entries, size_t c, bool f)
 {
