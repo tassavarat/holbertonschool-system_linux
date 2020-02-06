@@ -5,12 +5,16 @@
  * @entries: pointer to entries struct
  * @c: count of struct entries
  * @f: if printing file
+ * @opt: options state
  */
-void plong(content *entries, size_t c, bool f)
+void plong(content *entries, size_t c, bool f, struct option *opt)
 {
 	unsigned int i;
 
-	_qsort(entries, 0, c - 1);
+	if (!opt->rev)
+		_qsort(entries, 0, c - 1, cmpstringp);
+	else
+		_qsort(entries, 0, c - 1, revstringp);
 	for (i = 0; i < c; ++i)
 	{
 		printf("%s %ld", entries[i].tperm, entries[i].lc);

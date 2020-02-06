@@ -48,7 +48,7 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 	if (f)
 	{
 		if (opt->longfmt)
-			plong(entries, c, true);
+			plong(entries, c, true, opt);
 		else
 			printfile(entries, opt, c);
 		*printed = true;
@@ -95,7 +95,10 @@ size_t processargs(struct content **dirs, struct option *opt, char *argv[],
 		{
 			*dirs = handlecontent(false, argv, dir_a, dc, printed,
 					opt);
-			_qsort(*dirs, 0, dc - 1);
+			if (!opt->rev)
+				_qsort(*dirs, 0, dc - 1, cmpstringp);
+			else
+				_qsort(*dirs, 0, dc - 1, revstringp);
 		}
 	}
 	return (status);

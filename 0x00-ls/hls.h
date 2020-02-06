@@ -78,7 +78,10 @@ char *str_toupper(char *s);
 int _strcmp(char *s1, char *s2);
 
 /* sort */
-void _qsort(struct content *entries, ssize_t lo, ssize_t hi);
+void _qsort(struct content *entries, ssize_t lo, ssize_t hi,
+		int (*cmp)(const void *p1, const void *p2));
+int cmpstringp(const void *p1, const void *p2);
+int revstringp(const void *p1, const void *p2);
 
 /* preprocess */
 size_t processargs(struct content **dirs, struct option *opt, char *argv[],
@@ -91,6 +94,6 @@ void linfo(content *entries);
 
 /* options2 */
 void setug(content *entries, struct stat sb);
-void plong(content *entries, size_t c, bool f);
+void plong(content *entries, size_t c, bool f, struct option *opt);
 
 #endif /* HLS_H */

@@ -22,7 +22,10 @@ bool printcontent(struct content *entries, size_t c, size_t fc, size_t dc,
 	size_t i;
 	static bool start;
 
-	_qsort(entries, 0, c - 1);
+	if (!opt->rev)
+		_qsort(entries, 0, c - 1, cmpstringp);
+	else
+		_qsort(entries, 0, c - 1, revstringp);
 	if (fc + dc + erc > 1)
 	{
 		if (start || printed)
@@ -150,7 +153,7 @@ size_t ls(char *argv[])
 		if (!readcontents(dp, &entries, dirs, &ec, dc, i, &entsiz))
 			continue;
 		if (opt->longfmt)
-			plong(entries, ec, false);
+			plong(entries, ec, false, opt);
 		else
 			printed = printcontent(entries, ec, fc, dc, erc,
 				dirs[i].name, printed);
