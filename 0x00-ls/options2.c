@@ -10,27 +10,24 @@
 char *createpath(char *dirstr, char *entry)
 {
 	char *path;
-	size_t len1, len2;
+	size_t len1, len2, n;
 
 	len1 = _strlen(dirstr);
 	len2 = _strlen(entry);
-	if (dirstr[len1 - 1] == '/')
+	n = 1;
+	if (dirstr[len1 - 1] != '/')
+		n = 2;
+	path = malloc(sizeof(char) * (len1 + len2 + n));
+	if (!path)
+		exit(2);
+	_memcpy(path, dirstr, len1);
+	if (dirstr[len1 - 1] != '/')
 	{
-		path = malloc(sizeof(char) * (len1 + len2 + 1));
-		if (!path)
-			exit(2);
-		_memcpy(path, dirstr, len1);
-		_memcpy(path + len1, entry, len2 + 1);
-	}
-	else
-	{
-		path = malloc(sizeof(char) * (len1 + len2 + 2));
-		if (!path)
-			exit(2);
-		_memcpy(path, dirstr, len1);
 		_memcpy(path + len1, "/", len1 + 1);
 		_memcpy(path + len1 + 1, entry, len2 + 1);
 	}
+	else
+		_memcpy(path + len1, entry, len2 + 1);
 	return (path);
 }
 
