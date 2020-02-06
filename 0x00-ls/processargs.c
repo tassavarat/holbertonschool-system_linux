@@ -1,5 +1,35 @@
 #include "hls.h"
 
+void parsesym(char *arg, size_t *fc, size_t *dc, size_t *file_a, size_t *dir_a, size_t i, size_t len)
+{
+	char *buf, *path;
+	ssize_t bufsiz, nbytes;
+	struct stat sb;
+
+	bufsiz = len;
+	if (len == 0)
+		bufsiz = PATH_MAX;
+	buf = malloc(bufsiz);
+	if (!buf)
+		exit(2);
+	path = malloc(bufsiz + 2);
+	if (!path)
+		exit(2);
+	nbytes = readlink(arg, buf, bufsiz);
+	if (nbytes == -1)
+		exit(2);
+	_memcpy(path, "/", 1);
+	_memcpy(path + 1, buf, bufsiz);
+	path[1 + bufsiz] = '\0';
+	lstat(path, &sb);
+	free(buf);
+	free(path);
+	if ((sb.st_mode & S_IFMT) == S_IFREG)
+		file_a[(*fc)++] = i;
+	else if ((sb.st_mode & S_IFMT) == S_IFDIR)
+		dir_a[(*dc)++] = i;
+}
+
 /**
  * printfile - prints and formats files
  * @entries: pointer content entries to print

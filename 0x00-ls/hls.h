@@ -84,10 +84,12 @@ void _qsort(struct content *entries, ssize_t lo, ssize_t hi,
 int cmpstringp(const void *p1, const void *p2);
 int revstringp(const void *p1, const void *p2);
 
-/* preprocess */
+/* processargs */
 size_t processargs(struct content **dirs, struct option *opt, char *argv[],
 		size_t *file_a, size_t *dir_a, size_t status, DIR **dp,
 		size_t fc, size_t dc, size_t erc, bool *printed);
+void parsesym(char *arg, size_t *fc, size_t *dc, size_t *file_a, size_t *dir_a,
+		size_t i, size_t len);
 
 /* options */
 bool filterhidden(struct dirent *ep, struct option *opt);

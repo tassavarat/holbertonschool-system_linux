@@ -112,7 +112,10 @@ void parse_args(char *argv[], size_t *fc, size_t *dc, size_t *erc,
 	for (i = 1; argv[i]; ++i)
 		if (lstat(argv[i], &sb) == 0)
 		{
-			if ((sb.st_mode & S_IFMT) == S_IFREG)
+			if ((sb.st_mode & S_IFMT) == S_IFLNK)
+				parsesym(argv[i], fc, dc, file_a, dir_a, i,
+						sb.st_size);
+			else if ((sb.st_mode & S_IFMT) == S_IFREG)
 				file_a[(*fc)++] = i;
 			else if ((sb.st_mode & S_IFMT) == S_IFDIR)
 				dir_a[(*dc)++] = i;
@@ -160,7 +163,7 @@ size_t ls(char *argv[])
 			plong(entries, ec, false, opt);
 		else
 			printed = printcontent(entries, ec, fc, dc, erc,
-				dirs[i].name, printed);
+					dirs[i].name, printed);
 		if (fc == 0 && dc == 0)
 			break;
 		ec = 0;
