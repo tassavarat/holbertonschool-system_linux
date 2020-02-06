@@ -91,6 +91,6 @@ void linfo(content *entries);
 
 /* options2 */
 void setug(content *entries, struct stat sb);
-void plong(content *entries, size_t c);
+void plong(content *entries, size_t c, bool f);
 
 #endif /* HLS_H */

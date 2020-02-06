@@ -150,7 +150,7 @@ size_t ls(char *argv[])
 		if (!readcontents(dp, &entries, dirs, &ec, dc, i, &entsiz))
 			continue;
 		if (opt->longfmt)
-			plong(entries, ec);
+			plong(entries, ec, false);
 		else
 			printed = printcontent(entries, ec, fc, dc, erc,
 				dirs[i].name, printed);

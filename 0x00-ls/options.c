@@ -96,8 +96,8 @@ void linfo(content *entries)
 	setug(entries, sb);
 	entries->siz = sb.st_size;
 	fmtim = ctime(&(sb.st_mtime));
+	fmtim[16] = '\0';
 	_strcpy(entries->mtim, fmtim + 4);
-	entries->mtim[12]  = '\0';
 }
 
 /**

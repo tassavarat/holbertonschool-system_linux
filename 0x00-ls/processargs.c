@@ -48,7 +48,7 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 	if (f)
 	{
 		if (opt->longfmt)
-			plong(entries, c);
+			plong(entries, c, true);
 		else
 			printfile(entries, opt, c);
 		*printed = true;
