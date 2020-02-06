@@ -73,6 +73,8 @@ bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
 		if (filterhidden(ep, opt))
 			continue;
 		_strcpy((*entries)[*ec].name, ep->d_name);
+		if (opt->longfmt)
+			linfo(&(*entries)[*ec]);
 		++*ec;
 		if (*ec == *entsiz)
 		{
@@ -147,7 +149,10 @@ size_t ls(char *argv[])
 	{
 		if (!readcontents(dp, &entries, dirs, &ec, dc, i, &entsiz))
 			continue;
-		printed = printcontent(entries, ec, fc, dc, erc,
+		if (opt->longfmt)
+			plong(entries, ec);
+		else
+			printed = printcontent(entries, ec, fc, dc, erc,
 				dirs[i].name, printed);
 		if (fc == 0 && dc == 0)
 			break;

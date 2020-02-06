@@ -68,8 +68,7 @@ size_t ls(char *argv[]);
 size_t error(char *arg, char op, bool e, bool printed);
 void cleanup(struct content *entries, struct content *dirs,
 		struct option *opt);
-void checkopt(struct option **opt, char *argv[], const unsigned int i,
-		const unsigned int j);
+void checkopt(struct option **opt, char *argv[], size_t i, size_t j);
 void initoptions(struct option **opt);
 
 /* strings */
@@ -88,5 +87,10 @@ size_t processargs(struct content **dirs, struct option *opt, char *argv[],
 
 /* options */
 bool filterhidden(struct dirent *ep, struct option *opt);
+void linfo(content *entries);
+
+/* options2 */
+void setug(content *entries, struct stat sb);
+void plong(content *entries, size_t c);
 
 #endif /* HLS_H */

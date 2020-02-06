@@ -43,7 +43,10 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 		_strcpy(entries[i].name, argv[a[i]]);
 	if (f)
 	{
-		printfile(entries, opt, c);
+		if (opt->longfmt)
+			plong(entries, c);
+		else
+			printfile(entries, opt, c);
 		*printed = true;
 		cleanup(entries, NULL, NULL);
 	}

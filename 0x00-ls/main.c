@@ -7,8 +7,7 @@
  * @i: first index
  * @j: second index
  */
-void checkopt(struct option **opt, char *argv[], const unsigned int i,
-		const unsigned int j)
+void checkopt(struct option **opt, char *argv[], size_t i, size_t j)
 {
 	switch (argv[i][j])
 	{
