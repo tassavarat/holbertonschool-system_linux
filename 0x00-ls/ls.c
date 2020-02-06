@@ -1,5 +1,6 @@
 #include "hls.h"
 
+static bool printed;
 static size_t status;
 static struct option *opt;
 
@@ -12,21 +13,23 @@ static struct option *opt;
  * @erc: error count
  * @dir: directory to print
  * @printed: if printfile was called
+ *
+ * Return: true after print
  */
-void printcontent(struct content *entries, size_t c, size_t fc, size_t dc,
+bool printcontent(struct content *entries, size_t c, size_t fc, size_t dc,
 		size_t erc, char *dir, bool printed)
 {
 	size_t i;
 	static bool start;
 
 	_qsort(entries, 0, c - 1);
-	if (start || printed)
-	{
-		printf("\n");
-		start = false;
-	}
 	if (fc + dc + erc > 1)
+	{
+		if (start || printed)
+			printf("\n");
 		printf("%s:\n", dir);
+	}
+	start = false;
 	for (i = 0; i < c; ++i)
 	{
 		if (start)
@@ -34,8 +37,8 @@ void printcontent(struct content *entries, size_t c, size_t fc, size_t dc,
 		printf("%s", entries[i].name);
 		start = true;
 	}
-	if (printed)
-		printf("\n");
+	printf("\n");
+	return (true);
 }
 
 /**
@@ -60,7 +63,8 @@ bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
 		dp = opendir(dirs[i].name);
 		if (!dp)
 		{
-			status = error(dirs[i].name, '\0', false);
+			status = error(dirs[i].name, '\0', false, printed);
+			printed = false;
 			return (false);
 		}
 	}
@@ -112,7 +116,7 @@ void parse_args(char *argv[], size_t *fc, size_t *dc, size_t *erc,
 		if (lstat(argv[i], &sb) == -1 && (*argv[i] != '-' ||
 					_strcmp(argv[i], "-") == 0))
 		{
-			status = error(argv[i], '\0', false);
+			status = error(argv[i], '\0', false, printed);
 			++*erc;
 		}
 }
@@ -125,13 +129,11 @@ void parse_args(char *argv[], size_t *fc, size_t *dc, size_t *erc,
  */
 size_t ls(char *argv[])
 {
-	bool printed;
 	size_t fc, dc, ec, erc, entsiz, i;
 	size_t file_a[256], dir_a[256];
 	DIR *dp;
 	struct content *entries, *dirs;
 
-	printed = false;
 	fc = dc = ec = erc = 0;
 	entsiz = 100;
 	opt = malloc(sizeof(*opt));
@@ -145,13 +147,12 @@ size_t ls(char *argv[])
 	{
 		if (!readcontents(dp, &entries, dirs, &ec, dc, i, &entsiz))
 			continue;
-		printcontent(entries, ec, fc, dc, erc, dirs[i].name, printed);
+		printed = printcontent(entries, ec, fc, dc, erc,
+				dirs[i].name, printed);
 		if (fc == 0 && dc == 0)
 			break;
 		ec = 0;
 	}
 	cleanup(entries, dirs, opt);
-	if (!printed)
-		printf("\n");
 	return (status);
 }

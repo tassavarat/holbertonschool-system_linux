@@ -38,7 +38,7 @@ void checkopt(struct option **opt, char *argv[], const unsigned int i,
 			break;
 		default:
 			cleanup(NULL, NULL, *opt);
-			error(NULL, argv[i][j], true);
+			error(NULL, argv[i][j], true, false);
 	}
 }
 
@@ -79,13 +79,16 @@ void cleanup(struct content *entries, struct content *dirs, struct option *opt)
  * @arg: string containing invalid argument
  * @op: invalid char option
  * @e: whether function should exit
+ * @printed: whether print has occured
  *
  * Return: error status
  */
-size_t error(char *arg, char op, bool e)
+size_t error(char *arg, char op, bool e, bool printed)
 {
 	char buf[256];
 
+	if (printed)
+		printf("\n");
 	if (!arg)
 	{
 		fprintf(stderr, "hls: invalid option -- '%c'\n", op);

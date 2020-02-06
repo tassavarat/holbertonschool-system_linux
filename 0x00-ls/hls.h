@@ -65,7 +65,7 @@ typedef struct option
 size_t ls(char *argv[]);
 
 /* main */
-size_t error(char *arg, char op, bool e);
+size_t error(char *arg, char op, bool e, bool printed);
 void cleanup(struct content *entries, struct content *dirs,
 		struct option *opt);
 void checkopt(struct option **opt, char *argv[], const unsigned int i,
