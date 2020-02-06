@@ -33,7 +33,7 @@ bool printcontent(struct content *entries, size_t c, size_t fc, size_t dc,
 	for (i = 0; i < c; ++i)
 	{
 		if (start)
-			printf("  ");
+			!opt->perline ? printf("  ") : printf("\n");
 		printf("%s", entries[i].name);
 		start = true;
 	}
