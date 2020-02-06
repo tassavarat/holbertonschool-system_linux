@@ -77,6 +77,7 @@ void cleanup(struct content *entries, struct content *dirs, struct option *opt)
 /**
  * error - prints error messages
  * @arg: string containing invalid argument
+ * @op: invalid char option
  * @e: whether function should exit
  *
  * Return: error status
