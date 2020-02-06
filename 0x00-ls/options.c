@@ -77,7 +77,6 @@ void initinfo(content *entries)
 	entries->usr = '\0';
 	entries->grp = '\0';
 	entries->siz = 0;
-	entries->mtim = '\0';
 }
 
 /**
@@ -97,7 +96,7 @@ void linfo(content *entries)
 	setug(entries, sb);
 	entries->siz = sb.st_size;
 	fmtim = ctime(&(sb.st_mtime));
-	entries->mtim = fmtim + 4;
+	_strcpy(entries->mtim, fmtim + 4);
 	entries->mtim[12]  = '\0';
 }
 

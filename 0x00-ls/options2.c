@@ -21,7 +21,7 @@ void plong(content *entries, size_t c)
 			printf(" %s", entries[i].grp);
 		else
 			printf(" %ld", entries[i].gid);
-		printf(" %5ld %s %s\n", entries[i].siz, entries->mtim,
+		printf(" %5ld %s %s\n", entries[i].siz, entries[i].mtim,
 				entries[i].name);
 	}
 }

@@ -35,7 +35,7 @@ typedef struct content
 	char *usr;
 	char *grp;
 	long siz;
-	char *mtim;
+	char mtim[12];
 } content;
 
 /**
