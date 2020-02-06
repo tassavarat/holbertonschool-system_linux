@@ -51,6 +51,7 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 /**
  * processargs - process arguments
  * @dirs: pointer to pointer of directories
+ * @opt: pointer to options struct
  * @argv: pointer to array of arguments
  * @file_a: pointer to array containing file indexes
  * @dir_a: pointer to array containing directory indexes
@@ -63,16 +64,19 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
  *
  * Return: error status
  */
-size_t processargs(struct content **dirs, char *argv[], size_t *file_a,
-		size_t *dir_a, size_t status, DIR **dp, size_t fc, size_t dc,
-		size_t erc, bool *printed)
+size_t processargs(struct content **dirs, struct option *opt, char *argv[],
+		size_t *file_a, size_t *dir_a, size_t status, DIR **dp,
+		size_t fc, size_t dc, size_t erc, bool *printed)
 {
 	*dirs = NULL;
 	if (dc == 0 && fc == 0 && erc == 0)
 	{
 		*dp = opendir(".");
 		if (!*dp)
+		{
+			cleanup(NULL, NULL, opt);
 			error(".", '\0', true);
+		}
 	}
 	else
 	{

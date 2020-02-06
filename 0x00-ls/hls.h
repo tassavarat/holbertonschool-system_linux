@@ -82,9 +82,9 @@ int _strcmp(char *s1, char *s2);
 void _qsort(struct content *entries, ssize_t lo, ssize_t hi);
 
 /* preprocess */
-size_t processargs(struct content **dirs, char *argv[], size_t *file_a,
-		size_t *dir_a, size_t status, DIR **dp, size_t fc, size_t dc,
-		size_t erc, bool *printed);
+size_t processargs(struct content **dirs, struct option *opt, char *argv[],
+		size_t *file_a, size_t *dir_a, size_t status, DIR **dp,
+		size_t fc, size_t dc, size_t erc, bool *printed);
 
 /* options */
 bool filterhidden(struct dirent *ep, struct option *opt);

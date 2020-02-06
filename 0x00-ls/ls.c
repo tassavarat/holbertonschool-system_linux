@@ -138,7 +138,7 @@ size_t ls(char *argv[])
 	initoptions(&opt);
 
 	parse_args(argv, &fc, &dc, &erc, file_a, dir_a);
-	status = processargs(&dirs, argv, file_a, dir_a, status, &dp, fc, dc,
+	status = processargs(&dirs, opt, argv, file_a, dir_a, status, &dp, fc, dc,
 			erc, &printed);
 	entries = malloc(entsiz * sizeof(*entries));
 	for (i = 0; i < dc || (fc == 0 && dc == 0 && erc == 0); ++i)
