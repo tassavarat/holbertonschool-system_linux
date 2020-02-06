@@ -3,9 +3,10 @@
 /**
  * printfile - prints and formats files
  * @entries: pointer content entries to print
+ * @opt: options state
  * @c: count of entries
  */
-void printfile(struct content *entries, size_t c)
+void printfile(struct content *entries, struct option *opt, size_t c)
 {
 	size_t i;
 	static bool start;
@@ -13,7 +14,7 @@ void printfile(struct content *entries, size_t c)
 	for (i = 0; i < c; ++i)
 	{
 		if (start)
-			printf("  ");
+			!opt->perline ? printf("  ") : printf("\n");
 		printf("%s", entries[i].name);
 		start = true;
 	}
@@ -27,11 +28,12 @@ void printfile(struct content *entries, size_t c)
  * @a: pointer to array of file or directory indexes
  * @c: content count
  * @printed: if files have been printed
+ * @opt: options state
  *
  * Return: created entries or NULL if file
  */
 content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
-		bool *printed)
+		bool *printed, struct option *opt)
 {
 	size_t i;
 	struct content *entries;
@@ -41,7 +43,7 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 		_strcpy(entries[i].name, argv[a[i]]);
 	if (f)
 	{
-		printfile(entries, c);
+		printfile(entries, opt, c);
 		*printed = true;
 		cleanup(entries, NULL, NULL);
 	}
@@ -81,10 +83,11 @@ size_t processargs(struct content **dirs, struct option *opt, char *argv[],
 	else
 	{
 		if (fc > 0)
-			handlecontent(true, argv, file_a, fc, printed);
+			handlecontent(true, argv, file_a, fc, printed, opt);
 		if (dc > 0)
 		{
-			*dirs = handlecontent(false, argv, dir_a, dc, printed);
+			*dirs = handlecontent(false, argv, dir_a, dc, printed,
+					opt);
 			_qsort(*dirs, 0, dc - 1);
 		}
 	}
