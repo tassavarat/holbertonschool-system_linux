@@ -1,15 +1,77 @@
 #include "hls.h"
 
 /**
- * cleanup - performs cleanup
- * @entries: entry struct
- * @dirs: directories to free
+ * checkopt - checks for valid options and turns them on as necessary
+ * @opt: structure of bools
+ * @argv: string to check for options
+ * @i: first index
+ * @j: second index
  */
-void cleanup(struct content *entries, struct content *dirs)
+void checkopt(struct option **opt, char *argv[], const unsigned int i,
+		const unsigned int j)
+{
+	switch (argv[i][j])
+	{
+		case '1':
+			(*opt)->perline = true;
+			break;
+		case 'a':
+			(*opt)->hidden = true;
+			break;
+		case 'A':
+			(*opt)->hiddenavigation = true;
+			break;
+		case 'l':
+			(*opt)->longfmt = true;
+			break;
+		case 'r':
+			(*opt)->rev = true;
+			break;
+		case 'S':
+			(*opt)->sortsize = true;
+			break;
+		case 't':
+			(*opt)->sorttime = true;
+			break;
+		case 'R':
+			(*opt)->recurs = true;
+			break;
+		default:
+			cleanup(NULL, NULL, *opt);
+			error(NULL, argv[i][j], true);
+	}
+}
+
+/**
+ * initoptions - initialises option struct
+ * @opt: struct to initialise
+ */
+void initoptions(struct option **opt)
+{
+	(*opt)->perline = false;
+	(*opt)->hidden = false;
+	(*opt)->hiddenavigation = false;
+	(*opt)->longfmt = false;
+	(*opt)->rev = false;
+	(*opt)->sortsize = false;
+	(*opt)->sorttime = false;
+	(*opt)->recurs = false;
+}
+
+/**
+ * cleanup - performs cleanup
+ * @entries: entry struct to free
+ * @dirs: directories to free
+ * @opt: option struct to free
+ */
+void cleanup(struct content *entries, struct content *dirs, struct option *opt)
 {
 	if (dirs)
 		free(dirs);
-	free(entries);
+	if (entries)
+		free(entries);
+	if (opt)
+		free(opt);
 }
 
 /**
@@ -19,15 +81,21 @@ void cleanup(struct content *entries, struct content *dirs)
  *
  * Return: error status
  */
-size_t error(char *arg, bool e)
+size_t error(char *arg, char op, bool e)
 {
 	char buf[256];
 
-	if (errno == ENOENT)
+	if (!arg)
+	{
+		fprintf(stderr, "hls: invalid option -- '%c'\n", op);
+		fprintf(stderr, "Try 'hls --help' for more information.\n");
+	}
+	else if (errno == ENOENT)
 		sprintf(buf, "hls: cannot access %s", arg);
 	else if (errno == EACCES)
 		sprintf(buf, "hls: cannot open directory %s", arg);
-	perror(buf);
+	if (errno > 0)
+		perror(buf);
 	if (e)
 		exit(2);
 	return (2);

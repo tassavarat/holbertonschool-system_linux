@@ -1,6 +1,7 @@
 #include "hls.h"
 
 static size_t status;
+static struct option *opt;
 
 /**
  * printcontent - prints and formats content
@@ -59,13 +60,13 @@ bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
 		dp = opendir(dirs[i].name);
 		if (!dp)
 		{
-			status = error(dirs[i].name, false);
+			status = error(dirs[i].name, '\0', false);
 			return (false);
 		}
 	}
 	while ((ep = readdir(dp)))
 	{
-		if (*ep->d_name == '.')
+		if (filterhidden(ep, opt))
 			continue;
 		_strcpy((*entries)[*ec].name, ep->d_name);
 		++*ec;
@@ -92,9 +93,13 @@ bool readcontents(DIR *dp, struct content **entries, struct content *dirs,
 void parse_args(char *argv[], size_t *fc, size_t *dc, size_t *erc,
 		size_t *file_a, size_t *dir_a)
 {
-	size_t i;
+	size_t i, j;
 	struct stat sb;
 
+	for (i = 1; argv[i]; ++i)
+		if (*argv[i] == '-')
+			for (j = 1; argv[i][j]; ++j)
+				checkopt(&opt, argv, i, j);
 	for (i = 1; argv[i]; ++i)
 		if (lstat(argv[i], &sb) == 0)
 		{
@@ -104,9 +109,10 @@ void parse_args(char *argv[], size_t *fc, size_t *dc, size_t *erc,
 				dir_a[(*dc)++] = i;
 		}
 	for (i = 1; argv[i]; ++i)
-		if (lstat(argv[i], &sb) == -1)
+		if (lstat(argv[i], &sb) == -1 && (*argv[i] != '-' ||
+					_strcmp(argv[i], "-") == 0))
 		{
-			status = error(argv[i], false);
+			status = error(argv[i], '\0', false);
 			++*erc;
 		}
 }
@@ -128,8 +134,10 @@ size_t ls(char *argv[])
 	printed = false;
 	fc = dc = ec = erc = 0;
 	entsiz = 100;
-	parse_args(argv, &fc, &dc, &erc, file_a, dir_a);
+	opt = malloc(sizeof(*opt));
+	initoptions(&opt);
 
+	parse_args(argv, &fc, &dc, &erc, file_a, dir_a);
 	status = processargs(&dirs, argv, file_a, dir_a, status, &dp, fc, dc,
 			erc, &printed);
 	entries = malloc(entsiz * sizeof(*entries));
@@ -142,7 +150,7 @@ size_t ls(char *argv[])
 			break;
 		ec = 0;
 	}
-	cleanup(entries, dirs);
+	cleanup(entries, dirs, opt);
 	if (!printed)
 		printf("\n");
 	return (status);
