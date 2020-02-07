@@ -1,6 +1,31 @@
 #include "hls.h"
 
 /**
+ * getlink - gets symlink info
+ * @arg: symlink string
+ * @len: len of symlink string
+ *
+ * Return: string of symlink target
+ */
+char *getlink(char *arg, size_t len)
+{
+	char *buf;
+	ssize_t bufsiz, nbytes;
+
+	bufsiz = len + 1;
+	if (len == 0)
+		bufsiz = PATH_MAX;
+	buf = malloc(bufsiz);
+	if (!buf)
+		exit(2);
+	nbytes = readlink(arg, buf, bufsiz);
+	if (nbytes == -1)
+		exit(2);
+	buf[bufsiz - 1] = '\0';
+	return (buf);
+}
+
+/**
  * createpath - concatenate relative path
  * @dirstr: directory string
  * @entry: entry name string
@@ -32,15 +57,63 @@ char *createpath(char *dirstr, char *entry)
 }
 
 /**
+ * plong2 - prints remaining long format info
+ * @entries: pointer to entries struct
+ * @f: if printing file
+ * @dirstr: directory string
+ */
+void plong2(struct content entries, bool f, char *dirstr)
+{
+	char *buf, *path;
+	struct stat sb;
+
+	if (f)
+	{
+		if ((lstat(entries.name, &sb) == 0) && (sb.st_mode & S_IFMT) == S_IFLNK)
+		{
+			buf = getlink(entries.name, sb.st_size);
+			printf(" %ld %s %s -> %s\n", entries.siz,
+					entries.mtim, entries.name, buf);
+			free(buf);
+		}
+		else
+		{
+			printf(" %ld %s %s\n", entries.siz,
+					entries.mtim, entries.name);
+		}
+	}
+	else
+	{
+		path = createpath(dirstr, entries.name);
+		lstat(path, &sb);
+		if ((sb.st_mode & S_IFMT) == S_IFLNK)
+		{
+			buf = getlink(path, sb.st_size);
+			printf(" %5ld %s %s -> %s\n", entries.siz,
+					entries.mtim, entries.name, buf);
+			free(buf);
+		}
+		else
+		{
+			printf(" %5ld %s %s\n", entries.siz, entries.mtim,
+					entries.name);
+		}
+		free(path);
+	}
+}
+
+/**
  * plong - prints long format
  * @entries: pointer to entries struct
  * @c: count of struct entries
  * @f: if printing file
  * @opt: options state
+ * @dirstr: directory string
  */
-void plong(struct content *entries, size_t c, bool f, struct option *opt)
+void plong(struct content *entries, size_t c, bool f, struct option *opt,
+		char *dirstr)
 {
-	unsigned int i;
+	size_t i;
 
 	if (!opt->rev)
 		_qsort(entries, 0, c - 1, cmpstringp);
@@ -57,12 +130,7 @@ void plong(struct content *entries, size_t c, bool f, struct option *opt)
 			printf(" %s", entries[i].grp);
 		else
 			printf(" %ld", entries[i].gid);
-		if (f)
-			printf(" %ld %s %s\n", entries[i].siz, entries[i].mtim,
-					entries[i].name);
-		else
-			printf(" %5ld %s %s\n", entries[i].siz, entries[i].mtim,
-					entries[i].name);
+		plong2(entries[i], f, dirstr);
 	}
 }
 

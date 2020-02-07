@@ -1,6 +1,7 @@
 #include "hls.h"
 
-void parsesym(char *arg, size_t *fc, size_t *dc, size_t *file_a, size_t *dir_a, size_t i, size_t len)
+void parsesym(char *arg, size_t *fc, size_t *dc, size_t *file_a, size_t *dir_a,
+		size_t i, size_t len)
 {
 	char *buf, *path;
 	ssize_t bufsiz, nbytes;
@@ -80,7 +81,7 @@ content *handlecontent(bool f, char *argv[], size_t *a, size_t c,
 	if (f)
 	{
 		if (opt->longfmt)
-			plong(entries, c, true, opt);
+			plong(entries, c, true, opt, NULL);
 		else
 			printfile(entries, opt, c);
 		*printed = true;

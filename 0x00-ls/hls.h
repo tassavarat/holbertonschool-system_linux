@@ -97,7 +97,8 @@ void linfo(char *dirstr, struct content *entries);
 
 /* options2 */
 void setug(struct content *entries, struct stat sb);
-void plong(struct content *entries, size_t c, bool f, struct option *opt);
+void plong(struct content *entries, size_t c, bool f, struct option *opt,
+		char *dirstr);
 char *createpath(char *dirstr, char *entry);
 
 #endif /* HLS_H */
