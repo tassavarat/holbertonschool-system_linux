@@ -48,7 +48,7 @@ char *createpath(char *dirstr, char *entry)
 	_memcpy(path, dirstr, len1);
 	if (dirstr[len1 - 1] != '/')
 	{
-		_memcpy(path + len1, "/", len1 + 1);
+		_memcpy(path + len1, "/", 1);
 		_memcpy(path + len1 + 1, entry, len2 + 1);
 	}
 	else
