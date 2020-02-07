@@ -66,7 +66,7 @@ size_t partition(struct content *entries, ssize_t lo, ssize_t hi,
 	piv = entries[hi].name;
 	i = lo;
 	for (j = lo; j < hi; ++j)
-		if (cmp(entries[j].name, piv) < 0)
+		if (cmp(entries[j].name, piv) <= 0)
 		{
 			swap(&entries[i], &entries[j]);
 			++i;
