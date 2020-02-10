@@ -1,5 +1,13 @@
 #include "_getline.h"
 
+/**
+ * _strncat - concatenates two strings to at most n bytes
+ * @dest: destination string
+ * @src: string to copy
+ * @n: amount of bytes to copy
+ *
+ * Return: pointer to resulting string dest
+ */
 char *_strncat(char *dest, const char *src, size_t n)
 {
 	size_t dest_len;
@@ -12,22 +20,14 @@ char *_strncat(char *dest, const char *src, size_t n)
 		dest[dest_len + i] = src[i];
 	dest[dest_len + i] = '\0';
 
-	return dest;
+	return (dest);
 }
 
-void freelist(listchar *head)
-{
-	listchar *tmp;
-
-	tmp = head;
-	while (head)
-	{
-		head = head->next;
-		free(tmp);
-		tmp = head;
-	}
-}
-
+/**
+ * linknode - links nodes together
+ * @head: pointer to pointer to head node of linked list
+ * @new: new node to link
+ */
 void linknode(listchar **head, listchar *new)
 {
 	listchar **cur;
@@ -41,7 +41,8 @@ void linknode(listchar **head, listchar *new)
 
 /**
  * createnode - creates new linked list node
- * @s: string
+ * @src: string
+ * @end: bytes to copy
  *
  * Return: created linked list node
  */
@@ -61,15 +62,20 @@ listchar *createnode(char *src, size_t end)
 	return (new);
 }
 
-void parseline(char *line, listchar **head)
+/**
+ * parseline - stores each line as a linked list
+ * @file: string of entire file
+ * @head: pointer to pointer to head node of linked list
+ */
+void parseline(char *file, listchar **head)
 {
 	size_t i, start;
 
 	start = 0;
-	for (i = 0; line[i]; ++i)
-		if (line[i] == '\n')
+	for (i = 0; file[i]; ++i)
+		if (file[i] == '\n')
 		{
-			linknode(head, createnode(&line[start], i - start));
+			linknode(head, createnode(&file[start], i - start));
 			start = i + 1;
 		}
 }
@@ -87,7 +93,7 @@ char *_getline(const int fd)
 	char *line;
 	size_t linsiz;
 	ssize_t byte;
-	static size_t eof;
+	listchar *tmp;
 	static listchar *head;
 
 	linsiz = READ_SIZE + 1;
@@ -103,13 +109,14 @@ char *_getline(const int fd)
 		memset(buf, 0, READ_SIZE * sizeof(*buf));
 	}
 	parseline(line, &head);
-	if (byte < 0 || eof)
+	if (!head)
 	{
-		freelist(head);
 		free(line);
 		return (NULL);
 	}
-	if (byte == 0)
-		eof = 1;
+	tmp = head;
+	head = head->next;
+	memcpy(line, tmp->s, BUFSIZ);
+	free(tmp);
 	return (line);
 }

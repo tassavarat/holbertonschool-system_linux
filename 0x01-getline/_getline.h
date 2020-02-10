@@ -9,6 +9,7 @@
 
 /**
  * struct listchar - singly linked list of strings
+ * @line: line number
  * @s: string
  * @next: pointer to next node
  */
