@@ -1,6 +1,6 @@
 #ifndef LAPS_H
 #define LAPS_H
-#define READ_SIZE BUFSIZ
+#define READ_SIZE 4
 
 #include <unistd.h>
 #include <stdlib.h>
