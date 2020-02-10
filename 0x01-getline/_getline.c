@@ -1,29 +1,6 @@
 #include "_getline.h"
 
 /**
- * _strncat - concatenates two strings to at most n bytes
- * @dest: destination string
- * @src: string to copy
- * @n: amount of bytes to copy
- *
- * Return: pointer to resulting string dest
- */
-char *_strncat(char *dest, const char *src, size_t n)
-{
-	size_t dest_len;
-	size_t i;
-
-	for (i = 0; dest[i]; ++i)
-		;
-	dest_len = i;
-	for (i = 0; i < n && src[i]; ++i)
-		dest[dest_len + i] = src[i];
-	dest[dest_len + i] = '\0';
-
-	return (dest);
-}
-
-/**
  * linknode - links nodes together
  * @head: pointer to pointer to head node of linked list
  * @new: new node to link
@@ -81,6 +58,59 @@ void parseline(char *file, listchar **head)
 }
 
 /**
+ * _realloc - changes the size of the memory to new_size bytes
+ * @ptr: pointer to memory block
+ * @old_size: old size of memory block
+ * @new_size: new size of memory block
+ *
+ * Return: pointer to newly allocated memory
+ */
+void *_realloc(void *ptr, size_t old_size, size_t new_size)
+{
+	void *newptr;
+
+	if (new_size == 0)
+	{
+		free(ptr);
+		return (NULL);
+	}
+	if (!ptr)
+		return (malloc(new_size));
+	if (new_size <= old_size)
+		return (ptr);
+	newptr = malloc(new_size);
+	if (newptr)
+	{
+		memcpy(newptr, ptr, old_size);
+		free(ptr);
+	}
+	return (newptr);
+}
+
+/**
+ * _strncat - concatenates two strings to at most n bytes
+ * @dest: destination string
+ * @src: string to copy
+ * @n: amount of bytes to copy
+ *
+ * Return: pointer to resulting string dest
+ */
+char *_strncat(char *dest, const char *src, size_t n)
+{
+	size_t dest_len;
+	size_t i;
+
+	for (i = 0; dest[i]; ++i)
+		;
+	dest_len = i;
+	for (i = 0; i < n && src[i]; ++i)
+		dest[dest_len + i] = src[i];
+	dest[dest_len + i] = '\0';
+
+	return (dest);
+}
+
+/**
  * _getline - reads an entire line from a file descriptor
  * @fd: file descriptor to read from
  *
@@ -105,7 +135,7 @@ char *_getline(const int fd)
 	{
 		_strncat(line, buf, READ_SIZE);
 		linsiz += READ_SIZE;
-		line = realloc(line, linsiz * sizeof(*line));
+		line = _realloc(line, linsiz - READ_SIZE, linsiz * sizeof(*line));
 		memset(buf, 0, READ_SIZE * sizeof(*buf));
 	}
 	parseline(line, &head);
