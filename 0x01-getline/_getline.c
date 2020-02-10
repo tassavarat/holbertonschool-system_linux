@@ -35,6 +35,7 @@ listchar *createnode(char *src, size_t end)
 	++line;
 	memset(new->s, 0, BUFSIZ * sizeof(*new->s));
 	strncpy(new->s, src, end);
+	new->size = end;
 	new->next = NULL;
 	return (new);
 }
@@ -153,7 +154,7 @@ char *_getline(const int fd)
 	}
 	tmp = head;
 	head = head->next;
-	memcpy(line, tmp->s, BUFSIZ);
+	memcpy(line, tmp->s, tmp->size);
 	free(tmp);
 	return (line);
 }

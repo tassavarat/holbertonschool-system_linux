@@ -17,6 +17,7 @@ typedef struct listchar
 {
 	size_t line;
 	char s[BUFSIZ];
+	size_t size;
 	struct listchar *next;
 } listchar;
 
