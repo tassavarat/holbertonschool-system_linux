@@ -154,6 +154,7 @@ char *_getline(const int fd)
 	}
 	tmp = head;
 	head = head->next;
+	memset(line, 0, linsiz * sizeof(*line));
 	memcpy(line, tmp->s, tmp->size);
 	free(tmp);
 	return (line);

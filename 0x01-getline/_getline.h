@@ -11,6 +11,7 @@
  * struct listchar - singly linked list of strings
  * @line: line number
  * @s: string
+ * @size: size of string
  * @next: pointer to next node
  */
 typedef struct listchar
