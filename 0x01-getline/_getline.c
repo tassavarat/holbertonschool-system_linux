@@ -35,7 +35,7 @@ listchar *createnode(char *src, size_t end)
 	++line;
 	memset(new->s, 0, BUFSIZ * sizeof(*new->s));
 	strncpy(new->s, src, end);
-	new->size = end;
+	new->size = end + 1;
 	new->next = NULL;
 	return (new);
 }
@@ -49,20 +49,15 @@ void parseline(char *file, listchar **head)
 {
 	size_t i, start;
 
+	start = 0;
 	for (i = 0; file[i]; ++i)
-		;
-	if (i)
-	{
-		start = 0;
-		for (i = 0; file[i]; ++i)
-			if (file[i] == '\n')
-			{
-				linknode(head, createnode(&file[start], i - start));
-				start = i + 1;
-			}
-		if (file[start])
+		if (file[i] == '\n')
+		{
 			linknode(head, createnode(&file[start], i - start));
-	}
+			start = i + 1;
+		}
+	if (file[start])
+		linknode(head, createnode(&file[start], i - start));
 }
 
 /**
@@ -128,33 +123,34 @@ char *_strncat(char *dest, const char *src, size_t n)
 char *_getline(const int fd)
 {
 	char buf[READ_SIZE] = {0};
-	char *line;
-	size_t linsiz;
+	char *file, *line;
+	size_t linsiz, len;
 	ssize_t byte;
 	listchar *tmp;
 	static listchar *head;
 
 	linsiz = READ_SIZE + 1;
-	line = malloc(linsiz * sizeof(*line));
-	memset(line, 0, linsiz * sizeof(*line));
-	if (!line)
+	file = malloc(linsiz * sizeof(*file));
+	memset(file, 0, linsiz * sizeof(*file));
+	if (!file)
 		return (NULL);
 	while ((byte = read(fd, buf, READ_SIZE)) > 0)
 	{
-		_strncat(line, buf, READ_SIZE);
+		_strncat(file, buf, READ_SIZE);
 		linsiz += READ_SIZE;
-		line = _realloc(line, linsiz - READ_SIZE, linsiz * sizeof(*line));
+		file = _realloc(file, linsiz - READ_SIZE, linsiz * sizeof(*file));
 		memset(buf, 0, READ_SIZE * sizeof(*buf));
 	}
-	parseline(line, &head);
+	for (len = 0; file[len]; ++len)
+		;
+	if (len)
+		parseline(file, &head);
+	free(file);
 	if (!head)
-	{
-		free(line);
 		return (NULL);
-	}
 	tmp = head;
 	head = head->next;
-	memset(line, 0, linsiz * sizeof(*line));
+	line = malloc(tmp->size * sizeof(*line));
 	memcpy(line, tmp->s, tmp->size);
 	free(tmp);
 	return (line);
