@@ -48,13 +48,20 @@ void parseline(char *file, listchar **head)
 {
 	size_t i, start;
 
-	start = 0;
 	for (i = 0; file[i]; ++i)
-		if (file[i] == '\n')
-		{
+		;
+	if (i)
+	{
+		start = 0;
+		for (i = 0; file[i]; ++i)
+			if (file[i] == '\n')
+			{
+				linknode(head, createnode(&file[start], i - start));
+				start = i + 1;
+			}
+		if (file[start])
 			linknode(head, createnode(&file[start], i - start));
-			start = i + 1;
-		}
+	}
 }
 
 /**
