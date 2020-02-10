@@ -1,5 +1,78 @@
 #include "_getline.h"
-#include <stdio.h> /* remove me */
+
+char *_strncat(char *dest, const char *src, size_t n)
+{
+	size_t dest_len;
+	size_t i;
+
+	for (i = 0; dest[i]; ++i)
+		;
+	dest_len = i;
+	for (i = 0; i < n && src[i]; ++i)
+		dest[dest_len + i] = src[i];
+	dest[dest_len + i] = '\0';
+
+	return dest;
+}
+
+void freelist(listchar *head)
+{
+	listchar *tmp;
+
+	tmp = head;
+	while (head)
+	{
+		head = head->next;
+		free(tmp);
+		tmp = head;
+	}
+}
+
+void linknode(listchar **head, listchar *new)
+{
+	listchar **cur;
+
+	cur = head;
+	while (*cur)
+		cur = &(*cur)->next;
+	new->next = *cur;
+	*cur = new;
+}
+
+/**
+ * createnode - creates new linked list node
+ * @s: string
+ *
+ * Return: created linked list node
+ */
+listchar *createnode(char *src, size_t end)
+{
+	listchar *new;
+	static size_t line = 1;
+
+	new = malloc(sizeof(*new));
+	if (!new)
+		return (NULL);
+	new->line = line;
+	++line;
+	memset(new->s, 0, BUFSIZ * sizeof(*new->s));
+	strncpy(new->s, src, end);
+	new->next = NULL;
+	return (new);
+}
+
+void parseline(char *line, listchar **head)
+{
+	size_t i, start;
+
+	start = 0;
+	for (i = 0; line[i]; ++i)
+		if (line[i] == '\n')
+		{
+			linknode(head, createnode(&line[start], i - start));
+			start = i + 1;
+		}
+}
 
 /**
  * _getline - reads an entire line from a file descriptor
@@ -12,40 +85,31 @@ char *_getline(const int fd)
 {
 	char buf[READ_SIZE] = {0};
 	char *line;
-	size_t i, nl, linsiz;
-	ssize_t bytrd;
-	static char readover[READ_SIZE];
-	static size_t start;
+	size_t linsiz;
+	ssize_t byte;
+	static size_t eof;
+	static listchar *head;
 
-	nl = 0;
-	linsiz = READ_SIZE * 2;
-	line = calloc(linsiz, sizeof(*line));
+	linsiz = READ_SIZE + 1;
+	line = malloc(linsiz * sizeof(*line));
+	memset(line, 0, linsiz * sizeof(*line));
 	if (!line)
 		return (NULL);
-	if (start)
-		strcpy(line, readover);
-	start = 1;
-	while ((bytrd = read(fd, buf, READ_SIZE)) > 0)
+	while ((byte = read(fd, buf, READ_SIZE)) > 0)
 	{
-		for (i = 0; buf[i] && buf[i] != '\n'; ++i)
-			;
-		if (buf[i] == '\n')
-		{
-			strcpy(readover, buf + i + 1);
-			buf[i] = '\0';
-			nl = 1;
-		}
-		strcat(line, buf);
+		_strncat(line, buf, READ_SIZE);
 		linsiz += READ_SIZE;
-		if (nl)
-			break;
-		line = realloc(line, linsiz + sizeof(*line));
+		line = realloc(line, linsiz * sizeof(*line));
+		memset(buf, 0, READ_SIZE * sizeof(*buf));
 	}
-	if (bytrd <= 0)
+	parseline(line, &head);
+	if (byte < 0 || eof)
 	{
-		printf("Error\n");
+		freelist(head);
 		free(line);
 		return (NULL);
 	}
+	if (byte == 0)
+		eof = 1;
 	return (line);
 }
