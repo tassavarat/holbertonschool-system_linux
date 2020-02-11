@@ -140,6 +140,14 @@ char *_strncat(char *dest, const char *src, size_t n)
 	return (dest);
 }
 
+/**
+ * parsefd - parses given fd and creates appropriate listfd
+ * @fdhead: pointer to pointer to fdhead node
+ * @fd: file descriptor
+ * @file: string to free if necessary
+ *
+ * Return: newly created or matching listfd
+ */
 listfd *parsefd(listfd **fdhead, const int fd, char *file)
 {
 	listfd *fdcur;
