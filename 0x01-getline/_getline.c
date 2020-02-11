@@ -4,6 +4,7 @@
  * linknode - links nodes together
  * @head: pointer to pointer to head node of linked list
  * @new: new node to link
+ * @sort: whether to sort
  */
 void linknode(void *head, void *new, size_t sort)
 {
@@ -66,51 +67,52 @@ void *createnode(char *src, size_t end, size_t lstfd, int fd)
 }
 
 /**
- * parseline - stores each line as a linked list
- * @file: string of entire file
- * @head: pointer to pointer to head node of linked list
- */
-void parseline(char *file, listchar **head)
-{
-	size_t i, start;
-
-	start = 0;
-	for (i = 0; file[i]; ++i)
-		if (file[i] == '\n')
-		{
-			linknode(head, createnode(&file[start], i - start, 0, 0), 0);
-			start = i + 1;
-		}
-	if (file[start])
-		linknode(head, createnode(&file[start], i - start, 0, 0), 0);
-}
-
-/**
- * _realloc - changes the size of the memory to new_size bytes
+ * realloc_parse - changes the size of the memory to new_size or parse lines
  * @ptr: pointer to memory block
  * @old_size: old size of memory block
  * @new_size: new size of memory block
+ * @parseline: whether to parseline
+ * @file: string of entire file
+ * @head: pointer to pointer to head node of linked list
  *
  * Return: pointer to newly allocated memory
  */
-void *_realloc(void *ptr, size_t old_size, size_t new_size)
+void *realloc_parse(void *ptr, size_t old_size, size_t new_size,
+		size_t parseline, char *file, listchar **head)
 {
 	void *newptr;
 
-	if (new_size == 0)
+	if (parseline)
 	{
-		free(ptr);
-		return (NULL);
+		size_t i, start;
+
+		start = 0;
+		for (i = 0; file[i]; ++i)
+			if (file[i] == '\n')
+			{
+				linknode(head, createnode(&file[start], i - start, 0, 0), 0);
+				start = i + 1;
+			}
+		if (file[start])
+			linknode(head, createnode(&file[start], i - start, 0, 0), 0);
 	}
-	if (!ptr)
-		return (malloc(new_size));
-	if (new_size <= old_size)
-		return (ptr);
-	newptr = malloc(new_size);
-	if (newptr)
+	else
 	{
-		memcpy(newptr, ptr, old_size);
-		free(ptr);
+		if (new_size == 0)
+		{
+			free(ptr);
+			return (NULL);
+		}
+		if (!ptr)
+			return (malloc(new_size));
+		if (new_size <= old_size)
+			return (ptr);
+		newptr = malloc(new_size);
+		if (newptr)
+		{
+			memcpy(newptr, ptr, old_size);
+			free(ptr);
+		}
 	}
 	return (newptr);
 }
@@ -138,6 +140,45 @@ char *_strncat(char *dest, const char *src, size_t n)
 	return (dest);
 }
 
+listfd *parsefd(listfd **fdhead, const int fd, char *file)
+{
+	listfd *fdcur;
+	listchar *cur, *tmp;
+
+	if (fd == -1)
+	{
+		while (*fdhead)
+		{
+			cur = (*fdhead)->head;
+			while (cur)
+			{
+				tmp = cur;
+				cur = cur->next;
+				free(tmp->s);
+				free(tmp);
+			}
+			fdcur = *fdhead;
+			*fdhead = (*fdhead)->next;
+			free(fdcur);
+		}
+		free(file);
+		return (NULL);
+	}
+	fdcur = *fdhead;
+	while (fdcur)
+	{
+		if (fd == fdcur->fd)
+			break;
+		fdcur = fdcur->next;
+	}
+	if (!fdcur)
+	{
+		fdcur = createnode('\0', 0, 1, fd);
+		linknode(fdhead, fdcur, 1);
+	}
+	return (fdcur);
+}
+
 /**
  * _getline - reads an entire line from a file descriptor
  * @fd: file descriptor to read from
@@ -149,12 +190,11 @@ char *_getline(const int fd)
 {
 	char buf[READ_SIZE] = {0};
 	char *file, *line;
-	size_t linsiz,  rd;
+	size_t linsiz, rd;
 	ssize_t byte;
-	listfd *fdtmp;
+	listfd *fdcur;
 	listchar *tmp;
 	static listfd *fdhead;
-	static listchar *head;
 
 	rd = 0;
 	linsiz = READ_SIZE + 1;
@@ -162,33 +202,25 @@ char *_getline(const int fd)
 	if (!file)
 		return (NULL);
 	memset(file, 0, linsiz * sizeof(*file));
-	fdtmp = fdhead;
-	while (fdtmp)
-	{
-		if (fd == fdtmp->fd)
-			break;
-		fdtmp = fdtmp->next;
-	}
-	if (!fdtmp)
-	{
-		printf("New fd %i\n", fd);
-		linknode(&fdhead, createnode('\0', 0, 1, fd), 1);
-	}
+	fdcur = parsefd(&fdhead, fd, file);
+	if (!fdcur)
+		return (NULL);
 	while ((byte = read(fd, buf, READ_SIZE)) > 0)
 	{
 		_strncat(file, buf, READ_SIZE);
 		linsiz += READ_SIZE;
-		file = _realloc(file, linsiz - READ_SIZE, linsiz * sizeof(*file));
+		file = realloc_parse(file, linsiz - READ_SIZE,
+				linsiz * sizeof(*file), 0, NULL, NULL);
 		memset(buf, 0, READ_SIZE * sizeof(*buf));
 		rd = 1;
 	}
 	if (rd)
-		parseline(file, &head);
+		realloc_parse(NULL, 0, 0, 1, file, &fdcur->head);
 	free(file);
-	if (!head)
+	if (!fdcur->head)
 		return (NULL);
-	tmp = head;
-	head = head->next;
+	tmp = fdcur->head;
+	fdcur->head = fdcur->head->next;
 	line = malloc(tmp->size * sizeof(*line));
 	memcpy(line, tmp->s, tmp->size);
 	free(tmp->s);
