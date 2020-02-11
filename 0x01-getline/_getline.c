@@ -1,5 +1,7 @@
 #include "_getline.h"
 
+static size_t numfd;
+
 /**
  * linknode - links nodes together
  * @head: pointer to pointer to head node of linked list
@@ -62,6 +64,7 @@ void *createnode(char *src, size_t end, size_t lstfd, int fd)
 		new = (listfd *) malloc(sizeof(listfd));
 		((listfd *) new)->fd = fd;
 		((listfd *) new)->head = NULL;
+		((listfd *) new)->next = NULL;
 	}
 	return (new);
 }
@@ -183,6 +186,7 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
 	{
 		fdcur = createnode('\0', 0, 1, fd);
 		linknode(fdhead, fdcur, 1);
+		++numfd;
 	}
 	return (fdcur);
 }
@@ -196,16 +200,13 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
  */
 char *_getline(const int fd)
 {
-	char buf[READ_SIZE] = {0};
-	char *file, *line;
-	size_t linsiz, rd;
+	char *file, *line, buf[READ_SIZE] = {0};
+	size_t linsiz = READ_SIZE + 1, rd = 0;
 	ssize_t byte;
 	listfd *fdcur;
 	listchar *tmp;
 	static listfd *fdhead;
 
-	rd = 0;
-	linsiz = READ_SIZE + 1;
 	file = malloc(linsiz * sizeof(*file));
 	if (!file)
 		return (NULL);
@@ -226,7 +227,11 @@ char *_getline(const int fd)
 		realloc_parse(NULL, 0, 0, 1, file, &fdcur->head);
 	free(file);
 	if (!fdcur->head)
+	{
+		if (numfd == 1)
+			free(fdcur);
 		return (NULL);
+	}
 	tmp = fdcur->head;
 	fdcur->head = fdcur->head->next;
 	line = malloc(tmp->size * sizeof(*line));
