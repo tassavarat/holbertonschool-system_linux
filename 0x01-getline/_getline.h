@@ -11,11 +11,13 @@
  * struct listfd - singly linked list of file descriptors
  * @fd: file descriptor
  * @head: pointer to head of listchar linked list
+ * @next: pointer to next node
  */
 typedef struct listfd
 {
 	int fd;
 	struct listchar *head;
+	struct listfd *next;
 } listfd;
 
 /**

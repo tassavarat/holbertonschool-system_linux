@@ -5,15 +5,27 @@
  * @head: pointer to pointer to head node of linked list
  * @new: new node to link
  */
-void linknode(listchar **head, listchar *new)
+void linknode(void *head, void *new, size_t sort)
 {
 	listchar **cur;
+	listfd **fdcur;
 
-	cur = head;
-	while (*cur)
-		cur = &(*cur)->next;
-	new->next = *cur;
-	*cur = new;
+	if (!sort)
+	{
+		cur = (listchar **) head;
+		while (*cur)
+			cur = &(*cur)->next;
+		((listchar *) new)->next = *cur;
+		*cur = new;
+	}
+	else
+	{
+		fdcur = (listfd **) head;
+		while (*fdcur && ((listfd *) new)->fd > (*fdcur)->fd)
+			fdcur = &(*fdcur)->next;
+		((listfd *) new)->next = *fdcur;
+		*fdcur = new;
+	}
 }
 
 /**
@@ -66,11 +78,11 @@ void parseline(char *file, listchar **head)
 	for (i = 0; file[i]; ++i)
 		if (file[i] == '\n')
 		{
-			linknode(head, createnode(&file[start], i - start, 0, 0));
+			linknode(head, createnode(&file[start], i - start, 0, 0), 0);
 			start = i + 1;
 		}
 	if (file[start])
-		linknode(head, createnode(&file[start], i - start, 0, 0));
+		linknode(head, createnode(&file[start], i - start, 0, 0), 0);
 }
 
 /**
@@ -139,7 +151,9 @@ char *_getline(const int fd)
 	char *file, *line;
 	size_t linsiz,  rd;
 	ssize_t byte;
+	listfd *fdtmp;
 	listchar *tmp;
+	static listfd *fdhead;
 	static listchar *head;
 
 	rd = 0;
@@ -148,6 +162,18 @@ char *_getline(const int fd)
 	if (!file)
 		return (NULL);
 	memset(file, 0, linsiz * sizeof(*file));
+	fdtmp = fdhead;
+	while (fdtmp)
+	{
+		if (fd == fdtmp->fd)
+			break;
+		fdtmp = fdtmp->next;
+	}
+	if (!fdtmp)
+	{
+		printf("New fd %i\n", fd);
+		linknode(&fdhead, createnode('\0', 0, 1, fd), 1);
+	}
 	while ((byte = read(fd, buf, READ_SIZE)) > 0)
 	{
 		_strncat(file, buf, READ_SIZE);
