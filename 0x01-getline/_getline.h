@@ -8,6 +8,17 @@
 #include <stdio.h>
 
 /**
+ * struct listfd - singly linked list of file descriptors
+ * @fd: file descriptor
+ * @head: pointer to head of listchar linked list
+ */
+typedef struct listfd
+{
+	int fd;
+	struct listchar *head;
+} listfd;
+
+/**
  * struct listchar - singly linked list of strings
  * @line: line number
  * @s: string

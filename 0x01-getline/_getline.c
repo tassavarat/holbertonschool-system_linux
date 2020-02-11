@@ -20,24 +20,36 @@ void linknode(listchar **head, listchar *new)
  * createnode - creates new linked list node
  * @src: string
  * @end: bytes to copy
+ * @lstfd: if creating listfd node
+ * @fd: file descriptor
  *
  * Return: created linked list node
  */
-listchar *createnode(char *src, size_t end)
+void *createnode(char *src, size_t end, size_t lstfd, int fd)
 {
-	listchar *new;
-	static size_t line = 1;
+	void *new;
 
-	new = malloc(sizeof(*new));
-	if (!new)
-		return (NULL);
-	new->line = line;
-	++line;
-	new->s = malloc((end + 1) * sizeof(*new->s));
-	memcpy(new->s, src, end);
-	new->s[end] = '\0';
-	new->size = end + 1;
-	new->next = NULL;
+	if (!lstfd)
+	{
+		static size_t line = 1;
+
+		new = (listchar *) malloc(sizeof(listchar));
+		if (!new)
+			return (NULL);
+		((listchar *) new)->line = line;
+		++line;
+		((listchar *) new)->s = malloc((end + 1) * sizeof(char));
+		memcpy(((listchar *) new)->s, src, end);
+		((listchar *) new)->s[end] = '\0';
+		((listchar *) new)->size = end + 1;
+		((listchar *) new)->next = NULL;
+	}
+	else
+	{
+		new = (listfd *) malloc(sizeof(listfd));
+		((listfd *) new)->fd = fd;
+		((listfd *) new)->head = NULL;
+	}
 	return (new);
 }
 
@@ -54,11 +66,11 @@ void parseline(char *file, listchar **head)
 	for (i = 0; file[i]; ++i)
 		if (file[i] == '\n')
 		{
-			linknode(head, createnode(&file[start], i - start));
+			linknode(head, createnode(&file[start], i - start, 0, 0));
 			start = i + 1;
 		}
 	if (file[start])
-		linknode(head, createnode(&file[start], i - start));
+		linknode(head, createnode(&file[start], i - start, 0, 0));
 }
 
 /**
@@ -125,26 +137,26 @@ char *_getline(const int fd)
 {
 	char buf[READ_SIZE] = {0};
 	char *file, *line;
-	size_t linsiz, len;
+	size_t linsiz,  rd;
 	ssize_t byte;
 	listchar *tmp;
 	static listchar *head;
 
+	rd = 0;
 	linsiz = READ_SIZE + 1;
 	file = malloc(linsiz * sizeof(*file));
-	memset(file, 0, linsiz * sizeof(*file));
 	if (!file)
 		return (NULL);
+	memset(file, 0, linsiz * sizeof(*file));
 	while ((byte = read(fd, buf, READ_SIZE)) > 0)
 	{
 		_strncat(file, buf, READ_SIZE);
 		linsiz += READ_SIZE;
 		file = _realloc(file, linsiz - READ_SIZE, linsiz * sizeof(*file));
 		memset(buf, 0, READ_SIZE * sizeof(*buf));
+		rd = 1;
 	}
-	for (len = 0; file[len]; ++len)
-		;
-	if (len)
+	if (rd)
 		parseline(file, &head);
 	free(file);
 	if (!head)
