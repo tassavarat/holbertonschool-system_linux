@@ -191,6 +191,25 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
 	return (fdcur);
 }
 
+void readline(const int fd, char **file, listfd **fdcur)
+{
+	char buf[READ_SIZE] = {0};
+	size_t linsiz = READ_SIZE + 1, rd = 0;
+	ssize_t byte;
+
+	while ((byte = read(fd, buf, READ_SIZE)) > 0)
+	{
+		_strncat(*file, buf, READ_SIZE);
+		linsiz += READ_SIZE;
+		*file = realloc_parse(*file, linsiz - READ_SIZE,
+				linsiz * sizeof(*file), 0, NULL, NULL);
+		memset(buf, 0, READ_SIZE * sizeof(*buf));
+		rd = 1;
+	}
+	if (rd)
+		realloc_parse(NULL, 0, 0, 1, *file, &(*fdcur)->head);
+}
+
 /**
  * _getline - reads an entire line from a file descriptor
  * @fd: file descriptor to read from
@@ -200,9 +219,8 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
  */
 char *_getline(const int fd)
 {
-	char *file, *line, buf[READ_SIZE] = {0};
-	size_t linsiz = READ_SIZE + 1, rd = 0;
-	ssize_t byte;
+	char *file, *line;
+	size_t linsiz = READ_SIZE + 1;
 	listfd *fdcur;
 	listchar *tmp;
 	static listfd *fdhead;
@@ -214,17 +232,7 @@ char *_getline(const int fd)
 	fdcur = parsefd(&fdhead, fd, file);
 	if (!fdcur)
 		return (NULL);
-	while ((byte = read(fd, buf, READ_SIZE)) > 0)
-	{
-		_strncat(file, buf, READ_SIZE);
-		linsiz += READ_SIZE;
-		file = realloc_parse(file, linsiz - READ_SIZE,
-				linsiz * sizeof(*file), 0, NULL, NULL);
-		memset(buf, 0, READ_SIZE * sizeof(*buf));
-		rd = 1;
-	}
-	if (rd)
-		realloc_parse(NULL, 0, 0, 1, file, &fdcur->head);
+	readline(fd, &file, &fdcur);
 	free(file);
 	if (!fdcur->head)
 	{
