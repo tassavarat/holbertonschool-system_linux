@@ -1,6 +1,7 @@
 #ifndef LAPS_H
 #define LAPS_H
-#define READ_SIZE BUFSIZ
+#define READ_SIZE 8
+#define NOMEM 12
 
 #include <unistd.h>
 #include <stdlib.h>
