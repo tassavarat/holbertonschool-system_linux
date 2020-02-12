@@ -1,6 +1,7 @@
 #include "_getline.h"
 
 static size_t numfd;
+static listfd *fdhead;
 
 /**
  * linknode - links nodes together
@@ -35,12 +36,13 @@ void linknode(void *head, void *new, size_t sort)
  * createnode - creates new linked list node
  * @src: string
  * @end: bytes to copy
+ * @nl: whether to increment line number
  * @lstfd: if creating listfd node
  * @fd: file descriptor
  *
  * Return: created linked list node
  */
-void *createnode(char *src, size_t end, size_t lstfd, int fd)
+void *createnode(char *src, size_t end, int nl, size_t lstfd, int fd)
 {
 	void *new;
 
@@ -52,16 +54,22 @@ void *createnode(char *src, size_t end, size_t lstfd, int fd)
 		if (!new)
 			return (NULL);
 		((listchar *) new)->line = line;
-		++line;
-		((listchar *) new)->s = malloc((end + 1) * sizeof(char));
+		if (nl)
+			++line;
+		((listchar *) new)->s = malloc((end + 1));
+		if (!new)
+			return (NULL);
 		memcpy(((listchar *) new)->s, src, end);
 		((listchar *) new)->s[end] = '\0';
 		((listchar *) new)->size = end + 1;
 		((listchar *) new)->next = NULL;
+		printf("%lu: %s\n", ((listchar *) new)->line, ((listchar *) new)->s);
 	}
 	else
 	{
 		new = (listfd *) malloc(sizeof(listfd));
+		if (!new)
+			return (NULL);
 		((listfd *) new)->fd = fd;
 		((listfd *) new)->head = NULL;
 		((listfd *) new)->next = NULL;
@@ -93,11 +101,11 @@ void *realloc_parse(void *ptr, size_t old_size, size_t new_size,
 		for (i = 0; file[i]; ++i)
 			if (file[i] == '\n')
 			{
-				linknode(head, createnode(&file[start], i - start, 0, 0), 0);
+				linknode(head, createnode(&file[start], i - start, 1, 0, 0), 0);
 				start = i + 1;
 			}
 		if (file[start])
-			linknode(head, createnode(&file[start], i - start, 0, 0), 0);
+			linknode(head, createnode(&file[start], i - start, 0, 0, 0), 0);
 	}
 	else
 	{
@@ -184,7 +192,9 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
 	}
 	if (!fdcur)
 	{
-		fdcur = createnode('\0', 0, 1, fd);
+		fdcur = createnode('\0', 0, 0, 1, fd);
+		if (!fdcur)
+			return (NULL);
 		linknode(fdhead, fdcur, 1);
 		++numfd;
 	}
@@ -200,17 +210,15 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
  */
 char *_getline(const int fd)
 {
-	char *file, *line, buf[READ_SIZE] = {0};
 	size_t linsiz = READ_SIZE + 1, rd = 0;
+	char *line, buf[READ_SIZE] = {0}, *file = malloc(linsiz);
 	ssize_t byte;
 	listfd *fdcur;
 	listchar *tmp;
-	static listfd *fdhead;
 
-	file = malloc(linsiz * sizeof(*file));
 	if (!file)
 		return (NULL);
-	memset(file, 0, linsiz * sizeof(*file));
+	memset(file, 0, linsiz);
 	fdcur = parsefd(&fdhead, fd, file);
 	if (!fdcur)
 		return (NULL);
@@ -218,9 +226,10 @@ char *_getline(const int fd)
 	{
 		_strncat(file, buf, READ_SIZE);
 		linsiz += READ_SIZE;
-		file = realloc_parse(file, linsiz - READ_SIZE,
-				linsiz * sizeof(*file), 0, NULL, NULL);
-		memset(buf, 0, READ_SIZE * sizeof(*buf));
+		file = realloc_parse(file, linsiz - READ_SIZE, linsiz, 0, NULL, NULL);
+		if (!file)
+			return (NULL);
+		memset(buf, 0, READ_SIZE);
 		rd = 1;
 	}
 	if (rd)
@@ -234,7 +243,9 @@ char *_getline(const int fd)
 	}
 	tmp = fdcur->head;
 	fdcur->head = fdcur->head->next;
-	line = malloc(tmp->size * sizeof(*line));
+	line = malloc(tmp->size);
+	if (!line)
+		return (NULL);
 	memcpy(line, tmp->s, tmp->size);
 	free(tmp->s);
 	free(tmp);
