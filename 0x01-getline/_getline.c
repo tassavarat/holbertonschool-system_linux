@@ -92,20 +92,25 @@ void *realloc_parse(void *ptr, size_t old_size, size_t new_size,
 		size_t parseline, char *file, listchar **head)
 {
 	void *newptr;
+	size_t i, start;
+	listchar *new;
 
 	if (parseline)
 	{
-		size_t i, start;
-
-		start = 0;
-		for (i = 0; file[i]; ++i)
+		for (start = i = 0; file[i]; ++i)
 			if (file[i] == '\n')
 			{
-				linknode(head, createnode(&file[start], i - start, 1, 0, 0), 0);
+				new = createnode(&file[start], i - start, 1, 0, 0);
+				linknode(head, new, 0);
 				start = i + 1;
 			}
 		if (file[start])
-			linknode(head, createnode(&file[start], i - start, 0, 0, 0), 0);
+		{
+			new = createnode(&file[start], i - start, 0, 0, 0);
+			linknode(head, new, 0);
+		}
+		if (!new)
+			return ((char *) NULL);
 	}
 	else
 	{
@@ -233,7 +238,7 @@ char *_getline(const int fd)
 		rd = 1;
 	}
 	if (rd)
-		realloc_parse(NULL, 0, 0, 1, file, &fdcur->head);
+		line = realloc_parse(NULL, 0, 0, 1, file, &fdcur->head);
 	free(file);
 	if (!fdcur->head)
 	{
