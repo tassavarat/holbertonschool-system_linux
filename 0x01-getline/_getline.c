@@ -203,8 +203,8 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
 			return (NULL);
 		linknode(fdhead, fdcur, 1);
 		++numfd;
+		rd = 0;
 	}
-	rd = 0;
 	return (fdcur);
 }
 
