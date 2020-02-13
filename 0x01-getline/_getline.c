@@ -204,6 +204,7 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
 		linknode(fdhead, fdcur, 1);
 		++numfd;
 	}
+	rd = 0;
 	return (fdcur);
 }
 
