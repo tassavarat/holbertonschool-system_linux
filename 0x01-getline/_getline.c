@@ -98,7 +98,7 @@ void *realloc_parse(void *ptr, size_t old_size, size_t new_size,
 
 	if (parseline)
 	{
-		for (start = i = 0; i < READ_SIZE; ++i)
+		for (start = i = 0; file[i]; ++i)
 			if (file[i] == '\n')
 			{
 				new = createnode(&file[start], i - start, 1, 0, 0);
@@ -231,11 +231,7 @@ char *_getline(const int fd)
 	if (!fdcur->rd)
 		for (; (byte = read(fd, buf, READ_SIZE)) > 0; fdcur->rd = 1)
 		{
-			/* _strncat(file, buf, READ_SIZE); */
-			if (linsiz == READ_SIZE + 1)
-				memcpy(file, buf, READ_SIZE);
-			else
-				memcpy(file + linsiz - 1, buf, READ_SIZE);
+			_strncat(file, buf, READ_SIZE);
 			linsiz += READ_SIZE;
 			file = realloc_parse(file, linsiz - READ_SIZE, linsiz, 0, NULL, NULL);
 			if (!file)
