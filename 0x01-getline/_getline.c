@@ -1,6 +1,5 @@
 #include "_getline.h"
 
-static int rd;
 static size_t numfd;
 static listfd *fdhead;
 
@@ -203,7 +202,6 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
 			return (NULL);
 		linknode(fdhead, fdcur, 1);
 		++numfd;
-		rd = 0;
 	}
 	return (fdcur);
 }
@@ -217,7 +215,7 @@ listfd *parsefd(listfd **fdhead, const int fd, char *file)
  */
 char *_getline(const int fd)
 {
-	size_t linsiz = READ_SIZE + 1;
+	size_t linsiz = READ_SIZE + 1, rd = 0;
 	char *line, buf[READ_SIZE] = {0}, *file = malloc(linsiz);
 	ssize_t byte;
 	listfd *fdcur;
@@ -229,16 +227,16 @@ char *_getline(const int fd)
 	fdcur = parsefd(&fdhead, fd, file);
 	if (!fdcur)
 		return (NULL);
-	if (!rd)
-		for (; (byte = read(fd, buf, READ_SIZE)) > 0; rd = 1)
-		{
-			_strncat(file, buf, READ_SIZE);
-			linsiz += READ_SIZE;
-			file = realloc_parse(file, linsiz - READ_SIZE, linsiz, 0, NULL, NULL);
-			if (!file)
-				return (NULL);
-			memset(buf, 0, READ_SIZE);
-		}
+	while ((byte = read(fd, buf, READ_SIZE)) > 0)
+	{
+		_strncat(file, buf, READ_SIZE);
+		linsiz += READ_SIZE;
+		file = realloc_parse(file, linsiz - READ_SIZE, linsiz, 0, NULL, NULL);
+		if (!file)
+			return (NULL);
+		memset(buf, 0, READ_SIZE);
+		rd = 1;
+	}
 	if (rd)
 		line = realloc_parse(NULL, 0, 0, 1, file, &fdcur->head);
 	free(file);
