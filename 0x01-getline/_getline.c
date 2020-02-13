@@ -94,7 +94,7 @@ void *realloc_parse(void *ptr, size_t old_size, size_t new_size,
 {
 	void *newptr;
 	size_t i, start;
-	listchar *new;
+	listchar *new = NULL;
 
 	if (parseline)
 	{
