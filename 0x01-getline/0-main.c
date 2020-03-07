@@ -8,8 +8,7 @@
 int main(void)
 {
 
-	/* int ids1[3] = {1, 42, 101}; */
-	int ids1[4] = {2, 42, 101, 1};
+	int ids1[3] = {1, 42, 101};
 	int ids2[1] = {11};
 
 	race_state(ids1, 4);
