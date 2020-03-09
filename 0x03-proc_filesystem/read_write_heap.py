@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 import sys
 
-ERR_MSG = "Usage: {} pid search write".format(sys.argv[0])
-
 
 def mem(mem_filename, addr_start, addr_end):
     """Opens specified mem file
@@ -101,6 +99,7 @@ def parse_argv():
     Returns:
         pid, search_str, write_str if successful
     """
+    ERR_MSG = "Usage: {} pid search write".format(sys.argv[0])
     if len(sys.argv) != 4:
         print(ERR_MSG)
         sys.exit(1)
