@@ -78,15 +78,8 @@ def maps():
                           read/write permission".format(pathname))
                     sys.exit(1)
                 addr = addr.split("-")
-                if len(addr) != 2:
-                    print("Wrong addr format")
-                    sys.exit(1)
-                try:
-                    addr_start = int(addr[0], 16)
-                    addr_end = int(addr[1], 16)
-                except Exception as e:
-                    print(e)
-                    sys.exit(1)
+                addr_start = int(addr[0], 16)
+                addr_end = int(addr[1], 16)
                 break
     except Exception as e:
         print(e)
@@ -104,15 +97,14 @@ def parse_argv():
     if len(sys.argv) != 4:
         print(ERR_MSG)
         sys.exit(1)
-    try:
-        pid = int(sys.argv[1])
-    except Exception as e:
-        print(e)
-        sys.exit(1)
+    pid = int(sys.argv[1])
     search_str = sys.argv[2]
     write_str = sys.argv[3]
     if pid <= 0 or search_str == '' or write_str == '':
         print(ERR_MSG)
+        sys.exit(1)
+    if len(sys.argv[2]) < len(sys.argv[3]):
+        print("write_str longer than search_str")
         sys.exit(1)
     return pid, search_str, write_str
 
