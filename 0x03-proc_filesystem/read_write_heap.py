@@ -22,7 +22,7 @@ def mem(mem_filename, addr_start, addr_end):
             print("Found '{}' at {:x}".format(search_str, i))
             print("Writing '{}' at {:x}".format(write_str, addr_start + i))
             mem_file.seek(addr_start + i)
-            mem_file.write(bytes(write_str, "ASCII"))
+            mem_file.write(bytes(write_str + '\0', "ASCII"))
     except Exception as e:
         print(e)
         sys.exit(1)
