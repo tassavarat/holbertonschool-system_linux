@@ -86,6 +86,7 @@ def maps():
                     addr_end = int(addr[1], 16)
                 except ValueError as e:
                     print(e, "unable to convert addr to integer")
+                    sys.exit(2)
                 break
     except IOError as e:
         print(e)
