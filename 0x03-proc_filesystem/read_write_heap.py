@@ -51,13 +51,13 @@ if __name__ == "__main__":
         if perm[0] != 'r' or perm[1] != 'w':
             print("{} does not have read/write permission".format(pathname))
             maps_file.close()
-            sys.exit(1)
+            sys.exit(2)
 
         addr = addr.split("-")
         if len(addr) != 2:
             print("Wrong addr format")
             maps_file.close()
-            sys.exit(1)
+            sys.exit(2)
         try:
             addr_start = int(addr[0], 16)
             addr_end = int(addr[1], 16)
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         except IOError as e:
             print(e)
             maps_file.close()
-            sys.exit(1)
+            sys.exit(2)
 
         mem_file.seek(addr_start)
         heap = mem_file.read(addr_end - addr_start)
@@ -79,7 +79,7 @@ if __name__ == "__main__":
             print("Can't find '{}'".format(search_str))
             maps_file.close()
             mem_file.close()
-            sys.exit(1)
+            sys.exit(2)
 
         print("Found '{}' at {:x}".format(search_str, i))
         print("Writing '{}' at {:x}".format(write_str, addr_start + i))
