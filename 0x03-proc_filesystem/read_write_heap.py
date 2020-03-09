@@ -23,7 +23,7 @@ def mem(mem_filename, addr_start, addr_end):
             print("Writing '{}' at {:x}".format(write_str, addr_start + i))
             mem_file.seek(addr_start + i)
             mem_file.write(bytes(write_str, "ASCII"))
-    except IOError as e:
+    except Exception as e:
         print(e)
         sys.exit(2)
 
@@ -84,11 +84,11 @@ def maps():
                 try:
                     addr_start = int(addr[0], 16)
                     addr_end = int(addr[1], 16)
-                except ValueError as e:
-                    print(e, "unable to convert addr to integer")
+                except Exception as e:
+                    print(e)
                     sys.exit(2)
                 break
-    except IOError as e:
+    except Exception as e:
         print(e)
         sys.exit(1)
     return mem_filename, addr_start, addr_end
@@ -106,7 +106,7 @@ def parse_argv():
         sys.exit(1)
     try:
         pid = int(sys.argv[1])
-    except ValueError as e:
+    except Exception as e:
         print(e, "\npid should be an integer greater than 0")
         sys.exit(1)
     search_str = sys.argv[2]
