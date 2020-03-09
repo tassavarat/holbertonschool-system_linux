@@ -18,14 +18,14 @@ def mem(mem_filename, addr_start, addr_end):
                 i = heap.index(bytes(search_str + '\0', "ASCII"))
             except Exception:
                 print("Can't find '{}'".format(search_str))
-                sys.exit(1)
+                exit(1)
             print("Found '{}' at {:x}".format(search_str, i))
             print("Writing '{}' at {:x}".format(write_str, addr_start + i))
             mem_file.seek(addr_start + i)
             mem_file.write(bytes(write_str + '\0', "ASCII"))
     except Exception as e:
         print(e)
-        sys.exit(1)
+        exit(1)
 
 
 def print_sline(addr, perm, offset, device, inode, pathname):
@@ -76,18 +76,18 @@ def maps():
                 if perm[0] != 'r' or perm[1] != 'w':
                     print("{} does not have "
                           "read/write permission".format(pathname))
-                    sys.exit(1)
+                    exit(1)
                 addr = addr.split("-")
                 if len(addr) != 2:
                     print("Wrong addr format")
                     maps_file.close()
-                    sys.exit(1)
+                    exit(1)
                 addr_start = int(addr[0], 16)
                 addr_end = int(addr[1], 16)
                 break
     except Exception as e:
         print(e)
-        sys.exit(1)
+        exit(1)
     return mem_filename, addr_start, addr_end
 
 
@@ -100,16 +100,16 @@ def parse_argv():
     ERR_MSG = "Usage: {} pid search write".format(sys.argv[0])
     if len(sys.argv) != 4:
         print(ERR_MSG)
-        sys.exit(1)
+        exit(1)
     pid = int(sys.argv[1])
     search_str = sys.argv[2]
     write_str = sys.argv[3]
-    if pid <= 0 or search_str == '' or write_str == '':
+    if pid < 1 or search_str == '' or write_str == '':
         print(ERR_MSG)
-        sys.exit(1)
+        exit(1)
     if len(sys.argv[2]) < len(sys.argv[3]):
         print("write_str longer than search_str")
-        sys.exit(1)
+        exit(1)
     return pid, search_str, write_str
 
 
