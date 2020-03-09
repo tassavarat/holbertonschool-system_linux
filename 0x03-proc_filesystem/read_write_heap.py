@@ -74,8 +74,8 @@ def maps():
                     parse_sline(sline)
                 print_sline(addr, perm, offset, device, inode, pathname)
                 if perm[0] != 'r' or perm[1] != 'w':
-                    print("{} does not have \
-                          read/write permission".format(pathname))
+                    print("{} does not have "
+                          "read/write permission".format(pathname))
                     sys.exit(1)
                 addr = addr.split("-")
                 addr_start = int(addr[0], 16)
