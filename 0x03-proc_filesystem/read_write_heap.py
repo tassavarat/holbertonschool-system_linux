@@ -4,7 +4,33 @@ import sys
 ERR_MSG = "Usage: {} pid search write".format(sys.argv[0])
 
 
-def p_sline(addr, perm, offset, device, inode, pathname):
+def mem(mem_filename, addr_start, addr_end):
+    """Opens specified mem file
+
+    Args:
+        mem_filename: name of mem file
+        addr_start: address to start searching from
+        addr_end: address to stop searching at
+    """
+    try:
+        with open(mem_filename, 'rb+') as mem_file:
+            mem_file.seek(addr_start)
+            heap = mem_file.read(addr_end - addr_start)
+            try:
+                i = heap.index(bytes(search_str + '\0', "ASCII"))
+            except Exception:
+                print("Can't find '{}'".format(search_str))
+                sys.exit(2)
+            print("Found '{}' at {:x}".format(search_str, i))
+            print("Writing '{}' at {:x}".format(write_str, addr_start + i))
+            mem_file.seek(addr_start + i)
+            mem_file.write(bytes(write_str, "ASCII"))
+    except IOError as e:
+        print(e)
+        sys.exit(2)
+
+
+def print_sline(addr, perm, offset, device, inode, pathname):
     """Prints contents of sline"""
     print("\taddresses = {}".format(addr))
     print("\tpermisions = {}".format(perm))
@@ -14,7 +40,67 @@ def p_sline(addr, perm, offset, device, inode, pathname):
     print("\tpathname = {}".format(pathname))
 
 
-if __name__ == "__main__":
+def parse_sline(sline):
+    """Parses through sline
+
+    Args:
+        sline: line from maps to parse
+
+    Returns:
+        addr, perm, offset, device, inode, pathname
+    """
+    addr = sline[0]
+    perm = sline[1]
+    offset = sline[2]
+    device = sline[3]
+    inode = sline[4]
+    pathname = sline[-1][:-1]
+    return addr, perm, offset, device, inode, pathname
+
+
+def maps():
+    """Opens specified maps file
+
+    Returns:
+        mem_filename, addr_start, addr_end if successful
+    """
+    mem_filename = "/proc/{}/mem".format(pid)
+    try:
+        with open("/proc/{}/maps".format(pid), 'r') as maps_file:
+            for line in maps_file:
+                sline = line.split(' ')
+                if sline[-1][:-1] != "[heap]":
+                    continue
+                print("Found [heap]:")
+                addr, perm, offset, device, inode, pathname = \
+                    parse_sline(sline)
+                print_sline(addr, perm, offset, device, inode, pathname)
+                if perm[0] != 'r' or perm[1] != 'w':
+                    print("{} does not have \
+                          read/write permission".format(pathname))
+                    sys.exit(2)
+                addr = addr.split("-")
+                if len(addr) != 2:
+                    print("Wrong addr format")
+                    sys.exit(2)
+                try:
+                    addr_start = int(addr[0], 16)
+                    addr_end = int(addr[1], 16)
+                except ValueError as e:
+                    print(e, "unable to convert addr to integer")
+                break
+    except IOError as e:
+        print(e)
+        sys.exit(1)
+    return mem_filename, addr_start, addr_end
+
+
+def parse_argv():
+    """Parses through argv
+
+    Returns:
+        pid, search_str, write_str if successful
+    """
     if len(sys.argv) != 4:
         print(ERR_MSG)
         sys.exit(1)
@@ -28,63 +114,10 @@ if __name__ == "__main__":
     if pid <= 0 or search_str == '' or write_str == '':
         print(ERR_MSG)
         sys.exit(1)
+    return pid, search_str, write_str
 
-    mem_filename = "/proc/{}/mem".format(pid)
-    try:
-        maps_file = open("/proc/{}/maps".format(pid), 'r')
-    except IOError as e:
-        print(e)
-        sys.exit(1)
 
-    for line in maps_file:
-        sline = line.split(' ')
-        if sline[-1][:-1] != "[heap]":
-            continue
-        print("Found [heap]:")
-        addr = sline[0]
-        perm = sline[1]
-        offset = sline[2]
-        device = sline[3]
-        inode = sline[4]
-        pathname = sline[-1][:-1]
-        p_sline(addr, perm, offset, device, inode, pathname)
-        if perm[0] != 'r' or perm[1] != 'w':
-            print("{} does not have read/write permission".format(pathname))
-            maps_file.close()
-            sys.exit(2)
-
-        addr = addr.split("-")
-        if len(addr) != 2:
-            print("Wrong addr format")
-            maps_file.close()
-            sys.exit(2)
-        try:
-            addr_start = int(addr[0], 16)
-            addr_end = int(addr[1], 16)
-        except ValueError as e:
-            print(e, "unable to convert addr to integer")
-
-        try:
-            mem_file = open(mem_filename, 'rb+')
-        except IOError as e:
-            print(e)
-            maps_file.close()
-            sys.exit(2)
-
-        mem_file.seek(addr_start)
-        heap = mem_file.read(addr_end - addr_start)
-        try:
-            i = heap.index(bytes(search_str, "ASCII"))
-        except Exception:
-            print("Can't find '{}'".format(search_str))
-            maps_file.close()
-            mem_file.close()
-            sys.exit(2)
-
-        print("Found '{}' at {:x}".format(search_str, i))
-        print("Writing '{}' at {:x}".format(write_str, addr_start + i))
-        mem_file.seek(addr_start + i)
-        mem_file.write(bytes(write_str + '\0', "ASCII"))
-        maps_file.close()
-        mem_file.close()
-        break
+if __name__ == "__main__":
+    pid, search_str, write_str = parse_argv()
+    mem_filename, addr_start, addr_end = maps()
+    mem(mem_filename, addr_start, addr_end)
