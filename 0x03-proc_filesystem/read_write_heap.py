@@ -78,6 +78,10 @@ def maps():
                           "read/write permission".format(pathname))
                     sys.exit(1)
                 addr = addr.split("-")
+                if len(addr) != 2:
+                    print("Wrong addr format")
+                    maps_file.close()
+                    sys.exit(1)
                 addr_start = int(addr[0], 16)
                 addr_end = int(addr[1], 16)
                 break
