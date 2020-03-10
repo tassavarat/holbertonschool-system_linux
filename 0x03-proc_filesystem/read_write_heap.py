@@ -34,19 +34,19 @@ def parse_line(line):
     print("\toffset = {}".format(offset))
     print("\tdevice = {}".format(device))
     print("\tinode = {}".format(inode))
-    # if perm[0] != 'r' or perm[1] != 'w':
-    #     print("{} does not have read/write permission".format(pathname))
-    #     sys.exit(1)
+    if perm[0] != 'r' or perm[1] != 'w':
+        print("{} does not have read/write permission".format(pathname))
+        sys.exit(1)
     addr = addr.split('-')
     if len(addr) != 2:
         print("Wrong addr format")
         sys.exit(1)
-    # try:
-    addr_start = int(addr[0], 16)
-    addr_end = int(addr[1], 16)
-    # except Exception as e:
-    #     print(e)
-    #     sys.exit(1)
+    try:
+        addr_start = int(addr[0], 16)
+        addr_end = int(addr[1], 16)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
     print("\tAddr start [{:x}] | end [{:x}]".format(addr_start, addr_end))
     return addr_start, addr_end
 
@@ -68,14 +68,14 @@ def parse_argv():
     if len(sys.argv) != 4:
         print(err_msg)
         sys.exit(1)
-    # try:
-    pid = int(sys.argv[1])
-    # except Exception as e:
-    #     print(e)
-    #     sys.exit(1)
+    try:
+        pid = int(sys.argv[1])
+    except Exception as e:
+        print(e)
+        sys.exit(1)
     search_str = sys.argv[2]
     write_str = sys.argv[3]
-    if pid < 1 or search_str == '' or write_str == '':
+    if pid < 1:  # or search_str == '' or write_str == '':
         print(err_msg)
         sys.exit(1)
     if len(sys.argv[2]) < len(sys.argv[3]):
