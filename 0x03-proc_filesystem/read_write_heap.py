@@ -8,7 +8,8 @@ def mem():
             mem_file.seek(addr_start)
             heap = mem_file.read(addr_end - addr_start)
             try:
-                i = heap.index(bytes(search_str + '\0', "ASCII"))
+                # i = heap.index(bytes(search_str + '\0', "ASCII"))
+                i = heap.index(bytes(search_str, "ASCII"))
             except Exception as e:
                 print(e)
                 sys.exit(1)
