@@ -75,7 +75,7 @@ def parse_argv():
     #     sys.exit(1)
     search_str = sys.argv[2]
     write_str = sys.argv[3]
-    if pid < 1:  # or search_str == '' or write_str == '':
+    if pid < 1 or search_str == '' or write_str == '':
         print(err_msg)
         sys.exit(1)
     if len(sys.argv[2]) < len(sys.argv[3]):
