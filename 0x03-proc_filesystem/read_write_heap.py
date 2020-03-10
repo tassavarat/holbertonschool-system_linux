@@ -3,6 +3,7 @@ import sys
 
 
 def mem():
+    """Overwrites search_str with contents of write_str"""
     try:
         with open("/proc/{}/mem".format(pid), 'rb+') as mem_file:
             mem_file.seek(addr_start)
@@ -23,6 +24,14 @@ def mem():
 
 
 def parse_line(line):
+    """Parses through heap information
+
+    Args:
+        line: contains heap information
+
+    Returns:
+        addr_start and addr_end for heap
+    """
     sline = line.split(' ')
     addr = sline[0]
     perm = sline[1]
@@ -53,6 +62,11 @@ def parse_line(line):
 
 
 def maps():
+    """Opens specified maps file
+
+    Returns:
+        start and end addresses of heap
+    """
     try:
         with open("/proc/{}/maps".format(pid), 'r') as maps_file:
             for line in maps_file:
@@ -65,6 +79,11 @@ def maps():
 
 
 def parse_argv():
+    """Parses through argv while checking for usage error
+
+    Returns:
+        pid, search_str, write_str
+    """
     err_msg = "Usage: {} pid search write".format(sys.argv[0])
     if len(sys.argv) != 4:
         print(err_msg)
