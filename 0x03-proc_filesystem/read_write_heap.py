@@ -9,7 +9,6 @@ def mem():
             mem_file.seek(addr_start)
             heap = mem_file.read(addr_end - addr_start)
             try:
-                # i = heap.index(bytes(search_str + '\0', "ASCII"))
                 i = heap.index(bytes(search_str, "ASCII"))
             except Exception as e:
                 print(e)
@@ -95,7 +94,7 @@ def parse_argv():
         sys.exit(1)
     search_str = sys.argv[2]
     write_str = sys.argv[3]
-    if pid < 1:  # or search_str == '' or write_str == '':
+    if pid < 1:
         print(err_msg)
         sys.exit(1)
     if len(sys.argv[2]) < len(sys.argv[3]):
