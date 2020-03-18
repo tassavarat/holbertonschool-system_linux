@@ -8,5 +8,8 @@
 /* printelfh */
 int printelfh(FILE *fp, char *arg_str);
 void printosabi(Elf64_Ehdr hdr);
+void printtype(Elf64_Ehdr hdr);
+void printmachine(Elf64_Ehdr hdr);
+void printfileversion(Elf64_Ehdr hdr);
 
 #endif /* HELF_H */

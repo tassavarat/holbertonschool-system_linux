@@ -108,6 +108,9 @@ int printelfh(FILE *fp, char *arg_str)
 	if (exit_stat)
 		goto out;
 	printosabi(hdr);
+	printtype(hdr);
+	printmachine(hdr);
+	printfileversion(hdr);
 	exit_stat = 0;
 out:
 	fclose(fp);
