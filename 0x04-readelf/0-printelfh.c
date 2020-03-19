@@ -14,7 +14,7 @@ int printversion(Elf64_Ehdr hdr, char *arg_str)
 		fprintf(stderr, "%s: Error: Invalid ELF version\n", arg_str);
 		return (1);
 	}
-	printf("%10s%28i (current)\n", "Version:", EV_CURRENT);
+	printf("%9s%-28c%i (current)\n", "Version", ':', EV_CURRENT);
 	return (0);
 }
 
@@ -32,7 +32,7 @@ int printdata(Elf64_Ehdr hdr, char *arg_str)
 		fprintf(stderr, "%s: Error: Invalid data encoding\n", arg_str);
 		return (1);
 	}
-	printf("%7s%46s%s\n", "Data:", "2's complement, ",
+	printf("%6s%-31c%s%s\n", "Data", ':', "2's complement, ",
 			hdr.e_ident[EI_DATA] == ELFDATA2LSB ?
 			"little endian" : "big endian");
 	return (0);
@@ -52,7 +52,7 @@ int printclass(Elf64_Ehdr hdr, char *arg_str)
 		fprintf(stderr, "%s: Error: Invalid class\n", arg_str);
 		return (1);
 	}
-	printf("%8s%32s%i\n", "Class:", "ELF",
+	printf("%7s%-30c%s%i\n", "Class", ':', "ELF",
 			hdr.e_ident[EI_CLASS] == ELFCLASS32 ? 32 : 64);
 	return (0);
 }
@@ -111,6 +111,11 @@ int printelfh(FILE *fp, char *arg_str)
 	printtype(hdr);
 	printmachine(hdr);
 	printfileversion(hdr);
+	printentry(hdr);
+	printpshoff(hdr);
+	printflags(hdr);
+	printhdrsize(hdr);
+	printphnum(hdr);
 	exit_stat = 0;
 out:
 	fclose(fp);
