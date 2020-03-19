@@ -23,4 +23,4 @@ OBJS = $(patsubst %.c, %.o, $(SRC))
 	$(CC) $(CFLAGS) $(100) -o 100-hreadelf
 
 clean:
-	rm -f $(OBJS) 0-hreadelf
+	rm -f $(OBJS) *-hreadelf
