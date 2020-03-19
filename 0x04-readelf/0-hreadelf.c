@@ -37,12 +37,13 @@ out:
  */
 int main(int argc, char **argv)
 {
-	FILE *fp;
+	FILE *fp, *fp2;
 	int exit_stat;
 
 	fp = parse_args(argc, argv);
 	if (!fp)
 		return (1);
-	exit_stat = printelfh(fp, *argv);
+	fp2 = fopen(argv[1], "rb");
+	exit_stat = printelfh(fp, fp2, *argv);
 	return (exit_stat);
 }

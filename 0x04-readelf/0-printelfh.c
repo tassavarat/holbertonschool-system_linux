@@ -1,5 +1,7 @@
 #include "helf.h"
 
+static int is_32;
+
 /**
  * printdata - prints data encoding of processor-specific data in the file
  * @hdr: struct containing elf header information
@@ -7,15 +9,15 @@
  *
  * Return: 0 on success, otherwise 1
  */
-int printdata(Elf64_Ehdr hdr, char *arg_str)
+int printdata(hdrs hdr, char *arg_str)
 {
-	if (hdr.e_ident[EI_DATA] == ELFDATANONE)
+	if (hdr.hdr64.e_ident[EI_DATA] == ELFDATANONE)
 	{
 		fprintf(stderr, "%s: Error: Invalid data encoding\n", arg_str);
 		return (1);
 	}
 	printf("%6s%-31c%s%s\n", "Data", ':', "2's complement, ",
-			hdr.e_ident[EI_DATA] == ELFDATA2LSB ?
+			hdr.hdr64.e_ident[EI_DATA] == ELFDATA2LSB ?
 			"little endian" : "big endian");
 	return (0);
 }
@@ -27,15 +29,23 @@ int printdata(Elf64_Ehdr hdr, char *arg_str)
  *
  * Return: 0 on success, otherwise 1
  */
-int printclass(Elf64_Ehdr hdr, char *arg_str)
+int printclass(hdrs hdr, char *arg_str)
 {
-	if (hdr.e_ident[EI_CLASS] == ELFCLASSNONE)
+	if (hdr.hdr64.e_ident[EI_CLASS] == ELFCLASSNONE)
 	{
 		fprintf(stderr, "%s: Error: Invalid class\n", arg_str);
 		return (1);
 	}
-	printf("%7s%-30c%s%i\n", "Class", ':', "ELF",
-			hdr.e_ident[EI_CLASS] == ELFCLASS32 ? 32 : 64);
+	if (hdr.hdr64.e_ident[EI_CLASS] == ELFCLASS32)
+	{
+		printf("%7s%-30c%s\n", "Class", ':', "ELF32");
+		is_32 = 1;
+	}
+	else
+	{
+		printf("%7s%-30c%s\n", "Class", ':', "ELF64");
+
+	}
 	return (0);
 }
 
@@ -43,13 +53,13 @@ int printclass(Elf64_Ehdr hdr, char *arg_str)
  * printmag - prints the magic numbers
  * @hdr: struct containing elf header information
  */
-void printmag(Elf64_Ehdr hdr)
+void printmag(hdrs hdr)
 {
 	size_t i;
 
 	printf("%11s", "Magic:   ");
 	for (i = 0; i < EI_NIDENT; ++i)
-		printf("%02x ", hdr.e_ident[i]);
+		printf("%02x ", hdr.hdr64.e_ident[i]);
 	putchar('\n');
 }
 
@@ -57,11 +67,11 @@ void printmag(Elf64_Ehdr hdr)
  * printelfh2 - wrapper function to handle printing of elf header
  * @hdr: struct containing elf header information
  */
-void printelfh2(Elf64_Ehdr hdr)
+void printelfh2(hdrs hdr)
 {
 	printosabi(hdr);
 	printtype(hdr);
-	printmachine(hdr);
+	printmachine(hdr, is_32);
 	printfileversion(hdr);
 	printentry(hdr);
 	printpshoff(hdr);
@@ -80,13 +90,14 @@ void printelfh2(Elf64_Ehdr hdr)
  *
  * Return: 0 on success, otherwise 1
  */
-int printelfh(FILE *fp, char *arg_str)
+int printelfh(FILE *fp, FILE *fp2, char *arg_str)
 {
-	Elf64_Ehdr hdr;
+	hdrs hdr;
 	int exit_stat;
 
-	fread(&hdr, 1, sizeof(hdr), fp);
-	if (memcmp(hdr.e_ident, ELFMAG, SELFMAG))
+	fread(&hdr.hdr32, 1, sizeof(hdr.hdr32), fp2);
+	fread(&hdr.hdr64, 1, sizeof(hdr.hdr64), fp);
+	if (memcmp(hdr.hdr64.e_ident, ELFMAG, SELFMAG))
 	{
 		fprintf(stderr, "%s: %s%s\n", arg_str,
 				"Error: Not an ELF file - ",
@@ -109,6 +120,7 @@ int printelfh(FILE *fp, char *arg_str)
 	exit_stat = 0;
 out:
 	fclose(fp);
+	fclose(fp2);
 	if (exit_stat)
 		return (1);
 	return (0);

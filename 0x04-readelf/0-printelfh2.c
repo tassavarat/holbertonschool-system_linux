@@ -27,7 +27,7 @@ void printmachine2(Elf64_Half machine)
 			printf("%s\n", "Intel Merced");
 			break;
 		case EM_X86_64:
-			printf("%s\n", "Advanced Micro Devices X86-64");
+			printf("%s\n", "AMD x86-64 architecture");
 			break;
 		case EM_VAX:
 			printf("%s\n", "Digital VAX");
@@ -38,13 +38,13 @@ void printmachine2(Elf64_Half machine)
  * printmachine - prints architecture
  * @hdr: struct containing elf header information
  */
-void printmachine(Elf64_Ehdr hdr)
+void printmachine(hdrs hdr)
 {
 	printf("%9s%-28c", "Machine", ':');
-	switch (hdr.e_machine)
+	switch (hdr.hdr64.e_machine)
 	{
 		case EM_NONE:
-			printf("%s\n", "EM_NONE");
+			printf("%s\n", "No machine");
 			break;
 		case EM_M32:
 			printf("%s\n", "AT&T WE 32100");
@@ -53,10 +53,10 @@ void printmachine(Elf64_Ehdr hdr)
 			printf("%s\n", "SUN SPARC");
 			break;
 		case EM_386:
-			printf("%s\n", "EM_386");
+			printf("%s\n", "Intel 80386");
 			break;
 		case EM_68K:
-			printf("%s\n", "EM_68K");
+			printf("%s\n", "Motorola m68k family");
 			break;
 		case EM_88K:
 			printf("%s\n", "Motorola m88k family");
@@ -77,7 +77,7 @@ void printmachine(Elf64_Ehdr hdr)
 			printf("%s\n", "PowerPC");
 			break;
 		default:
-			printmachine2(hdr.e_machine);
+			printmachine2(hdr.hdr64.e_machine);
 	}
 }
 
@@ -85,10 +85,10 @@ void printmachine(Elf64_Ehdr hdr)
  * printtype - prints the object file type
  * @hdr: struct containing elf header information
  */
-void printtype(Elf64_Ehdr hdr)
+void printtype(hdrs hdr)
 {
 	printf("%6s%-31c", "Type", ':');
-	switch (hdr.e_type)
+	switch (hdr.hdr64.e_type)
 	{
 		case ET_NONE:
 			printf("%s\n", "NONE (No file type)");
@@ -97,7 +97,7 @@ void printtype(Elf64_Ehdr hdr)
 			printf("%s\n", "REL (Relocatable file)");
 			break;
 		case ET_EXEC:
-			printf("%s\n", "EXEC (ET_EXEC)");
+			printf("%s\n", "EXEC (Executable file)");
 			break;
 		case ET_DYN:
 			printf("%s\n", "DYN (Shared object file)");
@@ -111,10 +111,10 @@ void printtype(Elf64_Ehdr hdr)
  * printosabi - prints OS, ABI to which the object is targeted, and ABI version
  * @hdr: struct containing elf header information
  */
-void printosabi(Elf64_Ehdr hdr)
+void printosabi(hdrs hdr)
 {
 	printf("%8s%-29c%s", "OS/ABI", ':', "UNIX - ");
-	switch (hdr.e_ident[EI_OSABI])
+	switch (hdr.hdr64.e_ident[EI_OSABI])
 	{
 		case ELFOSABI_NONE:
 			printf("System V");
@@ -146,7 +146,8 @@ void printosabi(Elf64_Ehdr hdr)
 		case ELFOSABI_STANDALONE:
 			printf("Standalone (embedded) application");
 	}
-	printf("\n%14s%24i\n", "ABI Version:", hdr.e_ident[EI_ABIVERSION]);
+	printf("\n%14s%24i\n", "ABI Version:",
+			hdr.hdr64.e_ident[EI_ABIVERSION]);
 }
 
 /**
@@ -156,9 +157,9 @@ void printosabi(Elf64_Ehdr hdr)
  *
  * Return: 0 on success, otherwise 1
  */
-int printversion(Elf64_Ehdr hdr, char *arg_str)
+int printversion(hdrs hdr, char *arg_str)
 {
-	if (hdr.e_ident[EI_VERSION] == EV_NONE)
+	if (hdr.hdr64.e_ident[EI_VERSION] == EV_NONE)
 	{
 		fprintf(stderr, "%s: Error: Invalid ELF version\n", arg_str);
 		return (1);
