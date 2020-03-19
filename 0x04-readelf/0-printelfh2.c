@@ -1,16 +1,6 @@
 #include "helf.h"
 
 /**
- * printfileversion - prints file version
- * @hdr: struct containing elf header information
- */
-void printfileversion(Elf64_Ehdr hdr)
-{
-	printf("%9s%-28c%#x\n", "Version", ':',
-			hdr.e_version == EV_NONE ? EV_NONE : EV_CURRENT);
-}
-
-/**
  * printmachine2 - prints architecture
  * @machine: int value specifying architecture
  */
@@ -157,4 +147,22 @@ void printosabi(Elf64_Ehdr hdr)
 			printf("Standalone (embedded) application");
 	}
 	printf("\n%14s%24i\n", "ABI Version:", hdr.e_ident[EI_ABIVERSION]);
+}
+
+/**
+ * printversion - prints version number of ELF specification
+ * @hdr: struct containing elf header information
+ * @arg_str: string containing name of program
+ *
+ * Return: 0 on success, otherwise 1
+ */
+int printversion(Elf64_Ehdr hdr, char *arg_str)
+{
+	if (hdr.e_ident[EI_VERSION] == EV_NONE)
+	{
+		fprintf(stderr, "%s: Error: Invalid ELF version\n", arg_str);
+		return (1);
+	}
+	printf("%9s%-28c%i (current)\n", "Version", ':', EV_CURRENT);
+	return (0);
 }

@@ -1,24 +1,6 @@
 #include "helf.h"
 
 /**
- * printversion - prints version number of ELF specification
- * @hdr: struct containing elf header information
- * @arg_str: string containing name of program
- *
- * Return: 0 on success, otherwise 1
- */
-int printversion(Elf64_Ehdr hdr, char *arg_str)
-{
-	if (hdr.e_ident[EI_VERSION] == EV_NONE)
-	{
-		fprintf(stderr, "%s: Error: Invalid ELF version\n", arg_str);
-		return (1);
-	}
-	printf("%9s%-28c%i (current)\n", "Version", ':', EV_CURRENT);
-	return (0);
-}
-
-/**
  * printdata - prints data encoding of processor-specific data in the file
  * @hdr: struct containing elf header information
  * @arg_str: string containing name of program
@@ -76,6 +58,26 @@ void printmag(Elf64_Ehdr hdr)
 }
 
 /**
+ * printelfh2 - wrapper function to handle printing of elf header
+ * @hdr: struct containing elf header information
+ */
+void printelfh2(Elf64_Ehdr hdr)
+{
+	printosabi(hdr);
+	printtype(hdr);
+	printmachine(hdr);
+	printfileversion(hdr);
+	printentry(hdr);
+	printpshoff(hdr);
+	printflags(hdr);
+	printhdrsize(hdr);
+	printphnum(hdr);
+	printshentsize(hdr);
+	printshnum(hdr);
+	printshstrndx(hdr);
+}
+
+/**
  * printelfh - prints elf header
  * @fp: pointer to file stream
  * @arg_str: string containing name of program
@@ -107,15 +109,7 @@ int printelfh(FILE *fp, char *arg_str)
 	exit_stat = printversion(hdr, arg_str);
 	if (exit_stat)
 		goto out;
-	printosabi(hdr);
-	printtype(hdr);
-	printmachine(hdr);
-	printfileversion(hdr);
-	printentry(hdr);
-	printpshoff(hdr);
-	printflags(hdr);
-	printhdrsize(hdr);
-	printphnum(hdr);
+	printelfh2(hdr);
 	exit_stat = 0;
 out:
 	fclose(fp);

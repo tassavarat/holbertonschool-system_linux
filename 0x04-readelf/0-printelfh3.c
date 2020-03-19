@@ -1,15 +1,6 @@
 #include "helf.h"
 
 /**
- * printphnum - prints number of entries in program header table
- * @hdr: struct containing elf header information
- */
-void printphnum(Elf64_Ehdr hdr)
-{
-	printf("%27s%-10c%i\n", "Number of program headers", ':', hdr.e_phnum);
-}
-
-/**
  * printhdrsize - prints file header sizes of ELF and an entry in program
  * @hdr: struct containing elf header information
  */
@@ -49,4 +40,14 @@ void printpshoff(Elf64_Ehdr hdr)
 void printentry(Elf64_Ehdr hdr)
 {
 	printf("%21s%-16c%#lx\n", "Entry point address", ':', hdr.e_entry);
+}
+
+/**
+ * printfileversion - prints file version
+ * @hdr: struct containing elf header information
+ */
+void printfileversion(Elf64_Ehdr hdr)
+{
+	printf("%9s%-28c%#x\n", "Version", ':',
+			hdr.e_version == EV_NONE ? EV_NONE : EV_CURRENT);
 }
