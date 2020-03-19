@@ -8,7 +8,7 @@ OBJS = $(patsubst %.c, %.o, $(SRC))
 2 = $(patsubst %.c, %.o, $(wildcard 2-*.c))
 100 = $(patsubst %.c, %.o, $(wildcard 100-*.c))
 
-.PHONY: all clean
+.PHONY: 0-hreadelf 1-hreadelf 2-hreadelf 100-hreadelf clean
 
 0-hreadelf: $(0)
 	$(CC) $(CFLAGS) $(0) -o 0-hreadelf
