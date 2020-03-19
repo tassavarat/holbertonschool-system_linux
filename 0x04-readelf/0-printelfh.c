@@ -71,21 +71,22 @@ void printelfh2(hdrs hdr)
 {
 	printosabi(hdr);
 	printtype(hdr);
-	printmachine(hdr, is_32);
+	printmachine(hdr);
 	printfileversion(hdr);
-	printentry(hdr);
-	printpshoff(hdr);
-	printflags(hdr);
-	printhdrsize(hdr);
-	printphnum(hdr);
-	printshentsize(hdr);
-	printshnum(hdr);
-	printshstrndx(hdr);
+	printentry(hdr, is_32);
+	printpshoff(hdr, is_32);
+	printflags(hdr, is_32);
+	printhdrsize(hdr, is_32);
+	printphnum(hdr, is_32);
+	printshentsize(hdr, is_32);
+	printshnum(hdr, is_32);
+	printshstrndx(hdr, is_32);
 }
 
 /**
  * printelfh - prints elf header
  * @fp: pointer to file stream
+ * @fp2: pointer to same file stream
  * @arg_str: string containing name of program
  *
  * Return: 0 on success, otherwise 1

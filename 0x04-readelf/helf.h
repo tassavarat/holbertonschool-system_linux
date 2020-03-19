@@ -6,7 +6,12 @@
 #include <string.h>
 /* #include <sys/stat.h> */
 
-typedef struct
+/**
+ * struct hdrs - struct containing 32 and 64 bit ELF header information
+ * @hdr32: 32-bit ELF header
+ * @hdr64: 64-bit ELF header
+ */
+typedef struct hdrs
 {
 	Elf32_Ehdr hdr32;
 	Elf64_Ehdr hdr64;
@@ -19,13 +24,13 @@ void printosabi(hdrs hdr);
 void printtype(hdrs hdr);
 void printmachine(hdrs hdr);
 void printfileversion(hdrs hdr);
-void printentry(hdrs hdr);
-void printpshoff(hdrs hdr);
-void printflags(hdrs hdr);
-void printhdrsize(hdrs hdr);
-void printphnum(hdrs hdr);
-void printshentsize(hdrs hdr);
-void printshnum(hdrs hdr);
-void printshstrndx(hdrs hdr);
+void printentry(hdrs hdr, int is_32);
+void printpshoff(hdrs hdr, int is_32);
+void printflags(hdrs hdr, int is_32);
+void printhdrsize(hdrs hdr, int is_32);
+void printphnum(hdrs hdr, int is_32);
+void printshentsize(hdrs hdr, int is_32);
+void printshnum(hdrs hdr, int is_32);
+void printshstrndx(hdrs hdr, int is_32);
 
 #endif /* HELF_H */

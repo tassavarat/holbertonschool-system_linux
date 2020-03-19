@@ -27,7 +27,7 @@ void printmachine2(Elf64_Half machine)
 			printf("%s\n", "Intel Merced");
 			break;
 		case EM_X86_64:
-			printf("%s\n", "AMD x86-64 architecture");
+			printf("%s\n", "Advanced Micro Devices X86-64");
 			break;
 		case EM_VAX:
 			printf("%s\n", "Digital VAX");
