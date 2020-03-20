@@ -4,7 +4,7 @@
 #include <elf.h>
 #include <stdio.h>
 #include <string.h>
-/* #include <sys/stat.h> */
+#include <sys/stat.h>
 
 /**
  * struct hdrs - struct containing 32 and 64 bit ELF header information

@@ -10,11 +10,19 @@
 FILE *parse_args(int argc, char **argv)
 {
 	FILE *fp;
+	struct stat sb;
 
 	if (argc != 2)
 	{
 		fprintf(stderr, "%s: Warning: Nothing to do.\n"
 				"Usage: %s elf-file\n", *argv, *argv);
+		goto out;
+	}
+	stat(argv[1], &sb);
+	if (!S_ISREG(sb.st_mode))
+	{
+		fprintf(stderr, "%s: Error: '%s': is not an ordinary file\n",
+				argv[0], argv[1]);
 		goto out;
 	}
 	fp = fopen(argv[1], "rb");
