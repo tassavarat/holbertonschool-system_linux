@@ -118,13 +118,13 @@ void printentry(hdrs hdr, int is_32, int is_msb)
 	{
 		if (is_msb)
 			convertmsb((char *) &entry32, sizeof(entry32));
-		printf("%21s%-16c%#x\n", "Entry point address", ':', entry32);
+		printf("%21s%-16c0x%x\n", "Entry point address", ':', entry32);
 	}
 	else
 	{
 		if (is_msb)
 			convertmsb((char *) &entry64, sizeof(entry64));
-		printf("%21s%-16c%#lx\n", "Entry point address", ':', entry64);
+		printf("%21s%-16c0x%lx\n", "Entry point address", ':', entry64);
 	}
 }
 
