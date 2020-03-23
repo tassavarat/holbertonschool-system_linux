@@ -8,8 +8,10 @@
 
 /**
  * struct hdrs - struct containing 32 and 64 bit ELF header information
- * @hdr32: 32-bit ELF header
- * @hdr64: 64-bit ELF header
+ * @Ehdr32: 32-bit ELF header
+ * @Ehdr64: 64-bit ELF header
+ * @Shdr32: 32-bit ELF section header
+ * @Shdr64: 64-bit ELF section header
  */
 typedef struct hdrs
 {

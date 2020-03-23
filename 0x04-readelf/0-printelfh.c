@@ -73,7 +73,7 @@ void printmag(hdrs hdr)
 }
 
 /**
- * printelfh2 - wrapper function to handle printing of elf header
+ * printelfhwrapper - wrapper function to handle printing of elf header
  * @hdr: struct containing elf header information
  */
 void printelfhwrapper(hdrs hdr)
