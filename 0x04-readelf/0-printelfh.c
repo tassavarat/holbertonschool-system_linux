@@ -100,13 +100,13 @@ void printelfh2(hdrs hdr)
  *
  * Return: 0 on success, otherwise 1
  */
-int printelfh(FILE *fp, FILE *fp2, char *arg_str)
+int printelfh(FILE *fp64, FILE *fp32, char *arg_str)
 {
 	hdrs hdr;
 	int exit_stat;
 
-	fread(&hdr.hdr32, 1, sizeof(hdr.hdr32), fp2);
-	fread(&hdr.hdr64, 1, sizeof(hdr.hdr64), fp);
+	fread(&hdr.hdr64, 1, sizeof(hdr.hdr64), fp64);
+	fread(&hdr.hdr32, 1, sizeof(hdr.hdr32), fp32);
 	if (memcmp(hdr.hdr64.e_ident, ELFMAG, SELFMAG))
 	{
 		fprintf(stderr, "%s: %s%s\n", arg_str,
@@ -129,8 +129,8 @@ int printelfh(FILE *fp, FILE *fp2, char *arg_str)
 	printelfh2(hdr);
 	exit_stat = 0;
 out:
-	fclose(fp);
-	fclose(fp2);
+	fclose(fp64);
+	fclose(fp32);
 	if (exit_stat)
 		return (1);
 	return (0);
