@@ -123,40 +123,43 @@ void printtype(hdrs hdr, int is_msb)
  */
 void printosabi(hdrs hdr)
 {
-	printf("%8s%-29c%s", "OS/ABI", ':', "UNIX - ");
+	printf("%8s%-29c", "OS/ABI", ':');
 	switch (hdr.hdr64.e_ident[EI_OSABI])
 	{
 		case ELFOSABI_NONE:
-			printf("System V");
+			printf("UNIX - System V\n");
 			break;
 		case ELFOSABI_HPUX:
-			printf("HP-UX");
+			printf("UNIX - HP-UX\n");
 			break;
 		case ELFOSABI_NETBSD:
-			printf("NetBSD");
+			printf("UNIX - NetBSD\n");
 			break;
 		case ELFOSABI_LINUX:
-			printf("Linux");
+			printf("UNIX - Linux\n");
 			break;
 		case ELFOSABI_SOLARIS:
-			printf("Sun Solaris");
+			printf("UNIX - Solaris\n");
 			break;
 		case ELFOSABI_IRIX:
-			printf("SGI Irix");
+			printf("UNIX - SGI Irix\n");
 			break;
 		case ELFOSABI_FREEBSD:
-			printf("FreeBSD");
+			printf("UNIX - FreeBSD\n");
 			break;
 		case ELFOSABI_TRU64:
-			printf("Compaq TRU64");
+			printf("UNIX - Compaq TRU64\n");
 			break;
 		case ELFOSABI_ARM:
-			printf("ARM");
+			printf("UNIX - ARM\n");
 			break;
 		case ELFOSABI_STANDALONE:
-			printf("Standalone (embedded) application");
+			printf("UNIX - Standalone (embedded) application\n");
+			break;
+		default:
+			printf("<unknown: %x>\n", hdr.hdr64.e_ident[EI_OSABI]);
 	}
-	printf("\n%14s%24i\n", "ABI Version:",
+	printf("%14s%24i\n", "ABI Version:",
 			hdr.hdr64.e_ident[EI_ABIVERSION]);
 }
 
