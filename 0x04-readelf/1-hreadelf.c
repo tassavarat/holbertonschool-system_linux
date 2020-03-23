@@ -73,13 +73,9 @@ int printelfsh(FILE *fp, char *arg_str)
 	hdrs hdr;
 	int exit_stat;
 
-	fread(&hdr.Ehdr64, 1, sizeof(hdr.Ehdr64), fp);
+	fread(&hdr.Ehdr64, sizeof(hdr.Ehdr64), 1, fp);
 	rewind(fp);
-	fread(&hdr.Ehdr32, 1, sizeof(hdr.Ehdr32), fp);
-	rewind(fp);
-	fread(&hdr.Shdr64, 1, sizeof(hdr.Shdr64), fp);
-	rewind(fp);
-	fread(&hdr.Shdr32, 1, sizeof(hdr.Shdr32), fp);
+	fread(&hdr.Ehdr32, sizeof(hdr.Ehdr32), 1, fp);
 	if (memcmp(hdr.Ehdr64.e_ident, ELFMAG, SELFMAG))
 	{
 		fprintf(stderr, "%s: %s%s\n", arg_str,
@@ -91,6 +87,10 @@ int printelfsh(FILE *fp, char *arg_str)
 	exit_stat = checkbitend(hdr, arg_str);
 	if (exit_stat)
 		goto out;
+	fseek(fp, hdr.Ehdr64.e_shoff, SEEK_SET);
+	fread(&hdr.Shdr64, sizeof(hdr.Shdr64), 1, fp);
+	fseek(fp, hdr.Ehdr32.e_shoff, SEEK_SET);
+	fread(&hdr.Shdr32, sizeof(hdr.Shdr32), 1, fp);
 	printf("There are %i section headers, starting at ",
 			shnum(hdr, is_32, is_msb));
 	printoffset(hdr, is_32, is_msb);

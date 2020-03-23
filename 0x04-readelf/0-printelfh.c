@@ -104,9 +104,9 @@ int printelfh(FILE *fp, char *arg_str)
 	hdrs hdr;
 	int exit_stat;
 
-	fread(&hdr.Ehdr64, 1, sizeof(hdr.Ehdr64), fp);
+	fread(&hdr.Ehdr64, sizeof(hdr.Ehdr64), 1, fp);
 	rewind(fp);
-	fread(&hdr.Ehdr32, 1, sizeof(hdr.Ehdr32), fp);
+	fread(&hdr.Ehdr32, sizeof(hdr.Ehdr32), 1, fp);
 	if (memcmp(hdr.Ehdr64.e_ident, ELFMAG, SELFMAG))
 	{
 		fprintf(stderr, "%s: %s%s\n", arg_str,
