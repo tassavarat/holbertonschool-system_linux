@@ -17,7 +17,8 @@ typedef struct hdrs
 	Elf64_Ehdr hdr64;
 } hdrs;
 
-/* 0-hreadelf */
+/* shared */
+FILE *parse_args(int argc, char **argv);
 void convertmsb(char *type, size_t size);
 
 /* 0-printelfh */

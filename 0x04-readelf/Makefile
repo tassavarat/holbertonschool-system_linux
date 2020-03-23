@@ -3,10 +3,11 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89 -g
 
 SRC = $(wildcard *.c)
 OBJS = $(patsubst %.c, %.o, $(SRC))
-0 = $(patsubst %.c, %.o, $(wildcard 0-*.c))
-1 = $(patsubst %.c, %.o, $(wildcard 1-*.c))
-2 = $(patsubst %.c, %.o, $(wildcard 2-*.c))
-100 = $(patsubst %.c, %.o, $(wildcard 100-*.c))
+LIBS = $(patsubst %.c, %.o, shared.c)
+0 = $(patsubst %.c, %.o, $(wildcard 0-*.c)) $(LIBS)
+1 = $(patsubst %.c, %.o, $(wildcard 1-*.c)) $(LIBS)
+2 = $(patsubst %.c, %.o, $(wildcard 2-*.c)) $(LIBS)
+100 = $(patsubst %.c, %.o, $(wildcard 100-*.c)) $(LIBS)
 
 .PHONY: 0-hreadelf 1-hreadelf 2-hreadelf 100-hreadelf clean
 
