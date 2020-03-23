@@ -44,7 +44,7 @@ void printmachine2(Elf64_Half machine)
  */
 void printmachine(hdrs hdr, int is_msb)
 {
-	Elf64_Half machine = hdr.hdr64.e_machine;
+	Elf64_Half machine = hdr.Ehdr64.e_machine;
 
 	if (is_msb)
 		convertmsb((char *) &machine, sizeof(machine));
@@ -93,7 +93,7 @@ void printmachine(hdrs hdr, int is_msb)
  */
 void printtype(hdrs hdr, int is_msb)
 {
-	Elf64_Half type = hdr.hdr64.e_type;
+	Elf64_Half type = hdr.Ehdr64.e_type;
 
 	if (is_msb)
 		convertmsb((char *) &type, sizeof(type));
@@ -124,7 +124,7 @@ void printtype(hdrs hdr, int is_msb)
 void printosabi(hdrs hdr)
 {
 	printf("%8s%-29c", "OS/ABI", ':');
-	switch (hdr.hdr64.e_ident[EI_OSABI])
+	switch (hdr.Ehdr64.e_ident[EI_OSABI])
 	{
 		case ELFOSABI_NONE:
 			printf("UNIX - System V\n");
@@ -157,10 +157,10 @@ void printosabi(hdrs hdr)
 			printf("UNIX - Standalone (embedded) application\n");
 			break;
 		default:
-			printf("<unknown: %x>\n", hdr.hdr64.e_ident[EI_OSABI]);
+			printf("<unknown: %x>\n", hdr.Ehdr64.e_ident[EI_OSABI]);
 	}
 	printf("%14s%24i\n", "ABI Version:",
-			hdr.hdr64.e_ident[EI_ABIVERSION]);
+			hdr.Ehdr64.e_ident[EI_ABIVERSION]);
 }
 
 /**
@@ -172,7 +172,7 @@ void printosabi(hdrs hdr)
  */
 int printversion(hdrs hdr, char *arg_str)
 {
-	if (hdr.hdr64.e_ident[EI_VERSION] == EV_NONE)
+	if (hdr.Ehdr64.e_ident[EI_VERSION] == EV_NONE)
 	{
 		fprintf(stderr, "%s: Error: Invalid ELF version\n", arg_str);
 		return (1);

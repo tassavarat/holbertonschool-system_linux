@@ -8,8 +8,8 @@
  */
 void printshstrndx(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Half shstrndx32 = hdr.hdr32.e_shstrndx;
-	Elf64_Half shstrndx64 = hdr.hdr64.e_shstrndx;
+	Elf32_Half shstrndx32 = hdr.Ehdr32.e_shstrndx;
+	Elf64_Half shstrndx64 = hdr.Ehdr64.e_shstrndx;
 
 	if (is_32)
 	{
@@ -35,8 +35,8 @@ void printshstrndx(hdrs hdr, int is_32, int is_msb)
  */
 void printshnum(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Half shnum32 = hdr.hdr32.e_shnum;
-	Elf64_Half shnum64 = hdr.hdr64.e_shnum;
+	Elf32_Half shnum32 = hdr.Ehdr32.e_shnum;
+	Elf64_Half shnum64 = hdr.Ehdr64.e_shnum;
 
 	if (is_32)
 	{
@@ -62,8 +62,8 @@ void printshnum(hdrs hdr, int is_32, int is_msb)
  */
 void printshentsize(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Half shentsize32 = hdr.hdr32.e_shentsize;
-	Elf64_Half shentsize64 = hdr.hdr64.e_shentsize;
+	Elf32_Half shentsize32 = hdr.Ehdr32.e_shentsize;
+	Elf64_Half shentsize64 = hdr.Ehdr64.e_shentsize;
 
 	if (is_32)
 	{
@@ -89,8 +89,8 @@ void printshentsize(hdrs hdr, int is_32, int is_msb)
  */
 void printphnum(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Half phnum32 = hdr.hdr32.e_phnum;
-	Elf64_Half phnum64 = hdr.hdr64.e_phnum;
+	Elf32_Half phnum32 = hdr.Ehdr32.e_phnum;
+	Elf64_Half phnum64 = hdr.Ehdr64.e_phnum;
 
 	if (is_32)
 	{

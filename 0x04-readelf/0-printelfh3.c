@@ -8,10 +8,10 @@
  */
 void printhdrsize(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Half ehsize32 = hdr.hdr32.e_ehsize;
-	Elf32_Half phentsize32 = hdr.hdr32.e_phentsize;
-	Elf64_Half ehsize64 = hdr.hdr64.e_ehsize;
-	Elf64_Half phentsize64 = hdr.hdr64.e_phentsize;
+	Elf32_Half ehsize32 = hdr.Ehdr32.e_ehsize;
+	Elf32_Half phentsize32 = hdr.Ehdr32.e_phentsize;
+	Elf64_Half ehsize64 = hdr.Ehdr64.e_ehsize;
+	Elf64_Half phentsize64 = hdr.Ehdr64.e_phentsize;
 
 	if (is_32)
 	{
@@ -47,8 +47,8 @@ void printhdrsize(hdrs hdr, int is_32, int is_msb)
  */
 void printflags(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Word flags32 = hdr.hdr32.e_flags;
-	Elf64_Word flags64 = hdr.hdr64.e_flags;
+	Elf32_Word flags32 = hdr.Ehdr32.e_flags;
+	Elf64_Word flags64 = hdr.Ehdr64.e_flags;
 
 	if (is_32)
 	{
@@ -72,10 +72,10 @@ void printflags(hdrs hdr, int is_32, int is_msb)
  */
 void printpshoff(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Off phoff32 = hdr.hdr32.e_phoff;
-	Elf32_Off shoff32 = hdr.hdr32.e_shoff;
-	Elf64_Off phoff64 = hdr.hdr64.e_phoff;
-	Elf64_Off shoff64 = hdr.hdr64.e_shoff;
+	Elf32_Off phoff32 = hdr.Ehdr32.e_phoff;
+	Elf32_Off shoff32 = hdr.Ehdr32.e_shoff;
+	Elf64_Off phoff64 = hdr.Ehdr64.e_phoff;
+	Elf64_Off shoff64 = hdr.Ehdr64.e_shoff;
 
 	if (is_32)
 	{
@@ -111,8 +111,8 @@ void printpshoff(hdrs hdr, int is_32, int is_msb)
  */
 void printentry(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Addr entry32 = hdr.hdr64.e_entry;
-	Elf64_Addr entry64 = hdr.hdr64.e_entry;
+	Elf32_Addr entry32 = hdr.Ehdr64.e_entry;
+	Elf64_Addr entry64 = hdr.Ehdr64.e_entry;
 
 	if (is_32)
 	{
@@ -135,7 +135,7 @@ void printentry(hdrs hdr, int is_32, int is_msb)
  */
 void printfileversion(hdrs hdr, int is_msb)
 {
-	Elf64_Word version = hdr.hdr64.e_version;
+	Elf64_Word version = hdr.Ehdr64.e_version;
 
 	if (is_msb)
 		convertmsb((char *) &version, sizeof(version));

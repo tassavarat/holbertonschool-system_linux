@@ -12,12 +12,12 @@ static int is_msb;
  */
 int printdata(hdrs hdr, char *arg_str)
 {
-	if (hdr.hdr64.e_ident[EI_DATA] == ELFDATANONE)
+	if (hdr.Ehdr64.e_ident[EI_DATA] == ELFDATANONE)
 	{
 		fprintf(stderr, "%s: Error: Invalid data encoding\n", arg_str);
 		return (1);
 	}
-	if (hdr.hdr64.e_ident[EI_DATA] == ELFDATA2LSB)
+	if (hdr.Ehdr64.e_ident[EI_DATA] == ELFDATA2LSB)
 	{
 		printf("%6s%-31c%s%s\n", "Data", ':', "2's complement, ",
 				"little endian");
@@ -40,12 +40,12 @@ int printdata(hdrs hdr, char *arg_str)
  */
 int printclass(hdrs hdr, char *arg_str)
 {
-	if (hdr.hdr64.e_ident[EI_CLASS] == ELFCLASSNONE)
+	if (hdr.Ehdr64.e_ident[EI_CLASS] == ELFCLASSNONE)
 	{
 		fprintf(stderr, "%s: Error: Invalid class\n", arg_str);
 		return (1);
 	}
-	if (hdr.hdr64.e_ident[EI_CLASS] == ELFCLASS32)
+	if (hdr.Ehdr64.e_ident[EI_CLASS] == ELFCLASS32)
 	{
 		printf("%7s%-30c%s\n", "Class", ':', "ELF32");
 		is_32 = 1;
@@ -68,7 +68,7 @@ void printmag(hdrs hdr)
 
 	printf("%11s", "Magic:   ");
 	for (i = 0; i < EI_NIDENT; ++i)
-		printf("%02x ", hdr.hdr64.e_ident[i]);
+		printf("%02x ", hdr.Ehdr64.e_ident[i]);
 	putchar('\n');
 }
 
@@ -105,9 +105,9 @@ int printelfh(FILE *fp64, FILE *fp32, char *arg_str)
 	hdrs hdr;
 	int exit_stat;
 
-	fread(&hdr.hdr64, 1, sizeof(hdr.hdr64), fp64);
-	fread(&hdr.hdr32, 1, sizeof(hdr.hdr32), fp32);
-	if (memcmp(hdr.hdr64.e_ident, ELFMAG, SELFMAG))
+	fread(&hdr.Ehdr64, 1, sizeof(hdr.Ehdr64), fp64);
+	fread(&hdr.Ehdr32, 1, sizeof(hdr.Ehdr32), fp32);
+	if (memcmp(hdr.Ehdr64.e_ident, ELFMAG, SELFMAG))
 	{
 		fprintf(stderr, "%s: %s%s\n", arg_str,
 				"Error: Not an ELF file - ",
