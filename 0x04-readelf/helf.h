@@ -24,7 +24,7 @@ FILE *parse_args(int argc, char **argv);
 void convertmsb(char *type, size_t size);
 
 /* 0-printelfh */
-int printelfh(FILE *fp, FILE *fp2, char *arg_str);
+int printelfh(FILE *fp, char *arg_str);
 int printversion(hdrs hdr, char *arg_str);
 void printosabi(hdrs hdr);
 void printtype(hdrs hdr, int is_msb);

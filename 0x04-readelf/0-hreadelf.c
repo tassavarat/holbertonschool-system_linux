@@ -9,13 +9,12 @@
  */
 int main(int argc, char **argv)
 {
-	FILE *fp64, *fp32;
+	FILE *fp;
 	int exit_stat;
 
-	fp64 = parse_args(argc, argv);
-	if (!fp64)
+	fp = parse_args(argc, argv);
+	if (!fp)
 		return (1);
-	fp32 = fopen(argv[1], "rb");
-	exit_stat = printelfh(fp64, fp32, *argv);
+	exit_stat = printelfh(fp, *argv);
 	return (exit_stat);
 }

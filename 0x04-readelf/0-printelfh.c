@@ -95,18 +95,18 @@ void printelfhwrapper(hdrs hdr)
 /**
  * printelfh - prints elf header
  * @fp: pointer to file stream
- * @fp2: pointer to same file stream
  * @arg_str: string containing name of program
  *
  * Return: 0 on success, otherwise 1
  */
-int printelfh(FILE *fp64, FILE *fp32, char *arg_str)
+int printelfh(FILE *fp, char *arg_str)
 {
 	hdrs hdr;
 	int exit_stat;
 
-	fread(&hdr.Ehdr64, 1, sizeof(hdr.Ehdr64), fp64);
-	fread(&hdr.Ehdr32, 1, sizeof(hdr.Ehdr32), fp32);
+	fread(&hdr.Ehdr64, 1, sizeof(hdr.Ehdr64), fp);
+	rewind(fp);
+	fread(&hdr.Ehdr32, 1, sizeof(hdr.Ehdr32), fp);
 	if (memcmp(hdr.Ehdr64.e_ident, ELFMAG, SELFMAG))
 	{
 		fprintf(stderr, "%s: %s%s\n", arg_str,
@@ -129,8 +129,7 @@ int printelfh(FILE *fp64, FILE *fp32, char *arg_str)
 	printelfhwrapper(hdr);
 	exit_stat = 0;
 out:
-	fclose(fp64);
-	fclose(fp32);
+	fclose(fp);
 	if (exit_stat)
 		return (1);
 	return (0);
