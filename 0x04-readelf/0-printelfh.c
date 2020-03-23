@@ -1,6 +1,7 @@
 #include "helf.h"
 
 static int is_32;
+static int is_msb;
 
 /**
  * printdata - prints data encoding of processor-specific data in the file
@@ -16,9 +17,17 @@ int printdata(hdrs hdr, char *arg_str)
 		fprintf(stderr, "%s: Error: Invalid data encoding\n", arg_str);
 		return (1);
 	}
-	printf("%6s%-31c%s%s\n", "Data", ':', "2's complement, ",
-			hdr.hdr64.e_ident[EI_DATA] == ELFDATA2LSB ?
-			"little endian" : "big endian");
+	if (hdr.hdr64.e_ident[EI_DATA] == ELFDATA2LSB)
+	{
+		printf("%6s%-31c%s%s\n", "Data", ':', "2's complement, ",
+				"little endian");
+	}
+	else
+	{
+		printf("%6s%-31c%s%s\n", "Data", ':', "2's complement, ",
+				"big endian");
+		is_msb = 1;
+	}
 	return (0);
 }
 
@@ -70,17 +79,17 @@ void printmag(hdrs hdr)
 void printelfh2(hdrs hdr)
 {
 	printosabi(hdr);
-	printtype(hdr);
-	printmachine(hdr);
-	printfileversion(hdr);
-	printentry(hdr, is_32);
-	printpshoff(hdr, is_32);
-	printflags(hdr, is_32);
-	printhdrsize(hdr, is_32);
-	printphnum(hdr, is_32);
-	printshentsize(hdr, is_32);
-	printshnum(hdr, is_32);
-	printshstrndx(hdr, is_32);
+	printtype(hdr, is_msb);
+	printmachine(hdr, is_msb);
+	printfileversion(hdr, is_msb);
+	printentry(hdr, is_32, is_msb);
+	printpshoff(hdr, is_32, is_msb);
+	printflags(hdr, is_32, is_msb);
+	printhdrsize(hdr, is_32, is_msb);
+	printphnum(hdr, is_32, is_msb);
+	printshentsize(hdr, is_32, is_msb);
+	printshnum(hdr, is_32, is_msb);
+	printshstrndx(hdr, is_32, is_msb);
 }
 
 /**

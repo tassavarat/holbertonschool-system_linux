@@ -17,20 +17,23 @@ typedef struct hdrs
 	Elf64_Ehdr hdr64;
 } hdrs;
 
-/* printelfh */
+/* 0-hreadelf */
+void convertmsb(char *type, size_t size);
+
+/* 0-printelfh */
 int printelfh(FILE *fp, FILE *fp2, char *arg_str);
 int printversion(hdrs hdr, char *arg_str);
 void printosabi(hdrs hdr);
-void printtype(hdrs hdr);
-void printmachine(hdrs hdr);
-void printfileversion(hdrs hdr);
-void printentry(hdrs hdr, int is_32);
-void printpshoff(hdrs hdr, int is_32);
-void printflags(hdrs hdr, int is_32);
-void printhdrsize(hdrs hdr, int is_32);
-void printphnum(hdrs hdr, int is_32);
-void printshentsize(hdrs hdr, int is_32);
-void printshnum(hdrs hdr, int is_32);
-void printshstrndx(hdrs hdr, int is_32);
+void printtype(hdrs hdr, int is_msb);
+void printmachine(hdrs hdr, int is_msb);
+void printfileversion(hdrs hdr, int is_msb);
+void printentry(hdrs hdr, int is_32, int is_msb);
+void printpshoff(hdrs hdr, int is_32, int is_msb);
+void printflags(hdrs hdr, int is_32, int is_msb);
+void printhdrsize(hdrs hdr, int is_32, int is_msb);
+void printphnum(hdrs hdr, int is_32, int is_msb);
+void printshentsize(hdrs hdr, int is_32, int is_msb);
+void printshnum(hdrs hdr, int is_32, int is_msb);
+void printshstrndx(hdrs hdr, int is_32, int is_msb);
 
 #endif /* HELF_H */

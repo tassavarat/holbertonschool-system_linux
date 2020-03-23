@@ -8,6 +8,9 @@ void printmachine2(Elf64_Half machine)
 {
 	switch (machine)
 	{
+		case EM_PPC:
+			printf("%s\n", "PowerPC");
+			break;
 		case EM_PPC64:
 			printf("%s\n", "PowerPC 64-bit");
 			break;
@@ -37,11 +40,16 @@ void printmachine2(Elf64_Half machine)
 /**
  * printmachine - prints architecture
  * @hdr: struct containing elf header information
+ * @is_msb: specifies if ELF file is big endian
  */
-void printmachine(hdrs hdr)
+void printmachine(hdrs hdr, int is_msb)
 {
+	Elf64_Half machine = hdr.hdr64.e_machine;
+
+	if (is_msb)
+		convertmsb((char *) &machine, sizeof(machine));
 	printf("%9s%-28c", "Machine", ':');
-	switch (hdr.hdr64.e_machine)
+	switch (machine)
 	{
 		case EM_NONE:
 			printf("%s\n", "No machine");
@@ -50,7 +58,7 @@ void printmachine(hdrs hdr)
 			printf("%s\n", "AT&T WE 32100");
 			break;
 		case EM_SPARC:
-			printf("%s\n", "SUN SPARC");
+			printf("%s\n", "Sparc");
 			break;
 		case EM_386:
 			printf("%s\n", "Intel 80386");
@@ -73,37 +81,39 @@ void printmachine(hdrs hdr)
 		case EM_SPARC32PLUS:
 			printf("%s\n", "Sun's \"v8plus\"");
 			break;
-		case EM_PPC:
-			printf("%s\n", "PowerPC");
-			break;
 		default:
-			printmachine2(hdr.hdr64.e_machine);
+			printmachine2(machine);
 	}
 }
 
 /**
  * printtype - prints the object file type
  * @hdr: struct containing elf header information
+ * @is_msb: specifies if ELF file is big endian
  */
-void printtype(hdrs hdr)
+void printtype(hdrs hdr, int is_msb)
 {
+	Elf64_Half type = hdr.hdr64.e_type;
+
+	if (is_msb)
+		convertmsb((char *) &type, sizeof(type));
 	printf("%6s%-31c", "Type", ':');
-	switch (hdr.hdr64.e_type)
+	switch (type)
 	{
 		case ET_NONE:
-			printf("%s\n", "NONE (No file type)");
+			puts("NONE (No file type)");
 			break;
 		case ET_REL:
-			printf("%s\n", "REL (Relocatable file)");
+			puts("REL (Relocatable file)");
 			break;
 		case ET_EXEC:
-			printf("%s\n", "EXEC (Executable file)");
+			puts("EXEC (Executable file)");
 			break;
 		case ET_DYN:
-			printf("%s\n", "DYN (Shared object file)");
+			puts("DYN (Shared object file)");
 			break;
 		case ET_CORE:
-			printf("%s\n", "CORE (Core file)");
+			puts("CORE (Core file)");
 	}
 }
 

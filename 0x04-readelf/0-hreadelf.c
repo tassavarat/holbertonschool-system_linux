@@ -1,6 +1,23 @@
 #include "helf.h"
 
 /**
+ * convertmsb - converts to big endian
+ * @ptr: pointer to first octet of word
+ * @size: size of type ptr points to
+ */
+void convertmsb(char *ptr, size_t size)
+{
+	size_t tmp, start, end;
+
+	for (start = 0, end = size - 1; start < end; ++start, --end)
+	{
+		tmp = ptr[start];
+		ptr[start] = ptr[end];
+		ptr[end] = tmp;
+	}
+}
+
+/**
  * parse_args - checks for usage errors
  * @argc: number of arguments
  * @argv: pointer to array of characters containing arguments
