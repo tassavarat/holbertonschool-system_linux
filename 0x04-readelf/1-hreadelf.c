@@ -3,6 +3,12 @@
 static int is_32;
 static int is_msb;
 
+/**
+ * printoffset - prints the section header offset
+ * @hdr: struct containing elf header information
+ * @is_32: specifies whether ELF file is 32-bit
+ * @is_msb: specifies if ELF file is big endian
+ */
 void printoffset(hdrs hdr, int is_32, int is_msb)
 {
 	Elf32_Off offset32 = hdr.Shdr32.sh_offset;
@@ -22,6 +28,14 @@ void printoffset(hdrs hdr, int is_32, int is_msb)
 	}
 }
 
+/**
+ * shnum - gets the number of section headers
+ * @hdr: struct containing elf header information
+ * @is_32: specifies whether ELF file is 32-bit
+ * @is_msb: specifies if ELF file is big endian
+ *
+ * Return: number of section headers
+ */
 int shnum(hdrs hdr, int is_32, int is_msb)
 {
 	Elf32_Half shnum32 = hdr.Ehdr32.e_shnum;
@@ -41,6 +55,13 @@ int shnum(hdrs hdr, int is_32, int is_msb)
 	}
 }
 
+/**
+ * checkbitend - checks system bit and endian
+ * @hdr: struct containing elf header information
+ * @arg_str: string containing name of program
+ *
+ * Return: 0 on success, otherwise 1
+ */
 int checkbitend(hdrs hdr, char *arg_str)
 {
 	if (hdr.Ehdr64.e_ident[EI_CLASS] == ELFCLASSNONE)
@@ -62,7 +83,7 @@ out:
 }
 
 /**
- * printelfh - prints elf header
+ * printelfsh - prints elf header
  * @fp: pointer to file stream
  * @arg_str: string containing name of program
  *
@@ -94,18 +115,6 @@ int printelfsh(FILE *fp, char *arg_str)
 	printf("There are %i section headers, starting at ",
 			shnum(hdr, is_32, is_msb));
 	printoffset(hdr, is_32, is_msb);
-	/* puts("ELF Header:"); */
-	/* printmag(hdr); */
-	/* exit_stat = printclass(hdr, arg_str); */
-	/* if (exit_stat) */
-	/* 	goto out; */
-	/* exit_stat = printdata(hdr, arg_str); */
-	/* if (exit_stat) */
-	/* 	goto out; */
-	/* exit_stat = printversion(hdr, arg_str); */
-	/* if (exit_stat) */
-	/* 	goto out; */
-	/* printelfhwrapper(hdr); */
 	exit_stat = 0;
 out:
 	fclose(fp);
@@ -114,6 +123,13 @@ out:
 	return (0);
 }
 
+/**
+ * main - calls parse_args and printelfsh
+ * @argc: number of arguments
+ * @argv: pointer to array of characters containing arguments
+ *
+ * Return: 0 on success, otherwise 1
+ */
 int main(int argc, char **argv)
 {
 	FILE *fp;
