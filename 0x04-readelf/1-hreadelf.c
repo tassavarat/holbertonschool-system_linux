@@ -4,27 +4,29 @@ static int is_32;
 static int is_msb;
 
 /**
- * printoffset - prints the section header offset
+ * offset - prints the section header offset
  * @hdr: struct containing elf header information
  * @is_32: specifies whether ELF file is 32-bit
  * @is_msb: specifies if ELF file is big endian
+ *
+ * Return: section header offset
  */
-void printoffset(hdrs hdr, int is_32, int is_msb)
+int offset(hdrs hdr, int is_32, int is_msb)
 {
-	Elf32_Off offset32 = hdr.Shdr32.sh_offset;
-	Elf64_Off offset64 = hdr.Shdr64.sh_offset;
+	Elf32_Off offset32 = hdr.Ehdr32.e_shoff;
+	Elf64_Off offset64 = hdr.Ehdr64.e_shoff;
 
 	if (is_32)
 	{
 		if (is_msb)
 			convertmsb((char *) &offset32, sizeof(offset32));
-		printf("offset %#x:\n\n", offset32);
+		return (offset32);
 	}
 	else
 	{
 		if (is_msb)
 			convertmsb((char *) &offset64, sizeof(offset64));
-		printf("offset %#lx:\n\n", offset64);
+		return (offset64);
 	}
 }
 
@@ -112,9 +114,8 @@ int printelfsh(FILE *fp, char *arg_str)
 	fread(&hdr.Shdr64, sizeof(hdr.Shdr64), 1, fp);
 	fseek(fp, hdr.Ehdr32.e_shoff, SEEK_SET);
 	fread(&hdr.Shdr32, sizeof(hdr.Shdr32), 1, fp);
-	printf("There are %i section headers, starting at ",
-			shnum(hdr, is_32, is_msb));
-	printoffset(hdr, is_32, is_msb);
+	printf("There are %i section headers, starting at offset %#x:\n\n",
+			shnum(hdr, is_32, is_msb), offset(hdr, is_32, is_msb));
 	exit_stat = 0;
 out:
 	fclose(fp);
