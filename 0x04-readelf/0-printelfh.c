@@ -76,7 +76,7 @@ void printmag(hdrs hdr)
  * printelfh2 - wrapper function to handle printing of elf header
  * @hdr: struct containing elf header information
  */
-void printelfh2(hdrs hdr)
+void printelfhwrapper(hdrs hdr)
 {
 	printosabi(hdr);
 	printtype(hdr, is_msb);
@@ -126,7 +126,7 @@ int printelfh(FILE *fp64, FILE *fp32, char *arg_str)
 	exit_stat = printversion(hdr, arg_str);
 	if (exit_stat)
 		goto out;
-	printelfh2(hdr);
+	printelfhwrapper(hdr);
 	exit_stat = 0;
 out:
 	fclose(fp64);
