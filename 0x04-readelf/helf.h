@@ -13,8 +13,10 @@
  */
 typedef struct hdrs
 {
-	Elf32_Ehdr hdr32;
-	Elf64_Ehdr hdr64;
+	Elf32_Ehdr Ehdr32;
+	Elf64_Ehdr Ehdr64;
+	Elf32_Shdr Shdr32;
+	Elf64_Shdr Shdr64;
 } hdrs;
 
 /* shared */
