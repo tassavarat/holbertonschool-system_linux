@@ -21,7 +21,7 @@ loop_asm_strcmp:
 	inc rcx
 	jmp loop_asm_strcmp
 compare:
-	sub ax, bx
+	cmp ax, bx
 	je equal
 	jl less
 	jg greater
