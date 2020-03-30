@@ -13,6 +13,8 @@ asm_strncmp:
 	xor r8, r8
 	xor r9, r9
 loop_asm_strncmp:
+	cmp rcx, rdx
+	je diff
 	mov r8b, [rdi + rcx]
 	mov r9b, [rsi + rcx]
 	test r8b, r8b
@@ -22,8 +24,6 @@ loop_asm_strncmp:
 	cmp r8b, r9b
 	jne diff
 	inc rcx
-	cmp rcx, rdx
-	je diff
 	jmp loop_asm_strncmp
 diff:
 	mov eax, r8d
