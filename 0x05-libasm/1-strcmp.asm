@@ -5,6 +5,7 @@ section .text
 asm_strcmp:
 	push rbp
 	mov rbp, rsp
+	push rbx
 	push rcx
 
 	xor rcx, rcx
@@ -35,6 +36,7 @@ greater:
 	jmp end
 end:
 	pop rcx
+	pop rbx
 	mov rsp, rbp
 	pop rbp
 	ret
