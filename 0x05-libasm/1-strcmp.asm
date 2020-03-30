@@ -5,23 +5,22 @@ section .text
 asm_strcmp:
 	push rbp
 	mov rbp, rsp
-	push bx
 	push rcx
 
 	xor rcx, rcx
 loop_asm_strcmp:
-	mov ax, [rdi + rcx]
-	mov bx, [rsi + rcx]
-	test ax, ax
+	mov al, [rdi + rcx]
+	mov bl, [rsi + rcx]
+	test al, al
 	jz compare
-	test bx, bx
+	test bl, bl
 	jz compare
-	cmp ax, bx
+	cmp al, bl
 	jne compare
 	inc rcx
 	jmp loop_asm_strcmp
 compare:
-	cmp ax, bx
+	cmp al, bl
 	je equal
 	jl less
 	jg greater
@@ -35,7 +34,6 @@ greater:
 	mov rax, 1
 	jmp end
 end:
-	pop bx
 	pop rcx
 	mov rsp, rbp
 	pop rbp
