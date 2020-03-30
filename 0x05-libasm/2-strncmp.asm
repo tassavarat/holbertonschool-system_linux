@@ -12,6 +12,7 @@ asm_strncmp:
 	xor rcx, rcx
 	xor r8, r8
 	xor r9, r9
+	xor eax, eax
 loop_asm_strncmp:
 	cmp rcx, rdx
 	je diff
