@@ -8,14 +8,18 @@ asm_strchr:
 
 loop_asm_strchr:
 	mov al, [rdi]
+	test al, al
+	jz null
 	cmp al , sil
-	je end
+	je match
 	inc rdi
-	test dil, dil
-	jz end
 	jmp loop_asm_strchr
-end:
+null:
+	xor rax, rax
+	jmp end
+match:
 	mov rax, rdi
+end:
 	mov rsp, rbp
 	pop rbp
 	ret
