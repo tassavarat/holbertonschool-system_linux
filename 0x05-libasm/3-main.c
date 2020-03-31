@@ -17,15 +17,17 @@
  */
 int main(void)
 {
-	/* printf("%s\n", strchr(S1, C1)); */
-	/* printf("%s\n", asm_strchr(S1, C1)); */
-	/* printf("%s\n", strchr(S1, C2)); */
-	/* printf("%s\n", asm_strchr(S1, C2)); */
-	/* if (strchr(S1, C3) == asm_strchr(S1, C3)) */
-	/* 	puts("Match"); */
-	assert(strchr(S1, C1) == asm_strchr(S1, C1));
-	assert(strchr(S1, C2) == asm_strchr(S1, C2));
-	assert(strchr(S1, C3) == asm_strchr(S1, C3));
+	printf("%s\n", strchr(S1, C1));
+	printf("%s\n", asm_strchr(S1, C1));
+	printf("%s\n", strchr(S1, C2));
+	printf("%s\n", asm_strchr(S1, C2));
+	if (strchr(S1, C3) == asm_strchr(S1, C3))
+		puts("Match");
+	printf("%s\n", strchr(S1, 0));
+	printf("%s\n", asm_strchr(S1, 0));
+	/* assert(strchr(S1, C1) == asm_strchr(S1, C1)); */
+	/* assert(strchr(S1, C2) == asm_strchr(S1, C2)); */
+	/* assert(strchr(S1, C3) == asm_strchr(S1, C3)); */
 
 	printf("All good!\n");
 	return (EXIT_SUCCESS);

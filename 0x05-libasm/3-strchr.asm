@@ -6,15 +6,12 @@ asm_strchr:
 	push rbp
 	mov rbp, rsp
 
-	xor rax, rax
 loop_asm_strchr:
-	test sil, sil
-	jz null
 	mov al, [rdi]
-	test al, al
-	jz null
 	cmp al , sil
 	je match
+	test al, al
+	jz null
 	inc rdi
 	jmp loop_asm_strchr
 null:
