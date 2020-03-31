@@ -6,6 +6,7 @@ asm_strchr:
 	push rbp
 	mov rbp, rsp
 
+	xor rax, rax
 loop_asm_strchr:
 	test sil, sil
 	jz null
