@@ -7,6 +7,8 @@ asm_strchr:
 	mov rbp, rsp
 
 loop_asm_strchr:
+	test sil, sil
+	jz null
 	mov al, [rdi]
 	test al, al
 	jz null
