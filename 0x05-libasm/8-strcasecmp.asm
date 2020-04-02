@@ -2,6 +2,20 @@ BITS 64
 
 global asm_strcasecmp
 
+check_8:
+	cmp r8b, 65
+	jl check_9		; rdi + rcx < 'A'
+	cmp r8b, 90
+	jg check_9		; rdi + rcx > 'Z'
+	add r8b, 32
+check_9:
+	cmp r9b, 65
+	jl cont			; rsi + rcx < 'A'
+	cmp r9b, 90
+	jg cont			; rsi + rcx > 'Z'
+	add r9b, 32
+	jmp cont
+
 asm_strcasecmp:
 	push rbp
 	mov rbp, rsp
@@ -16,37 +30,16 @@ asm_strcasecmp:
 loop_asm_strcasecmp:
 	mov r8b, [rdi + rcx]
 	mov r9b, [rsi + rcx]
-	cmp r8b, 65		; rdi + rcx >= 'A'
-	jge check_8_end
-check_9:
-	cmp r9b, 65		; rsi + rcx >= 'A'
-	jge check_9_end
+	jmp check_8
 cont:
-	test r8b, r8b
-	jz dif
-	test r9b, r9b
-	jz dif
-	cmp r8b, r9b
-	jne dif
-	inc rcx
-	jmp loop_asm_strcasecmp
-check_8_end:
-	cmp r8b, 90		; rdi + rcx <= 'Z'
-	jle conv_8
-	jmp check_9
-check_9_end:
-	cmp r9b, 90		; rsi + rcx <= 'Z'
-	jle conv_9
-	jmp cont
-conv_8:
-	add r8b, 32
-	jmp check_9
-conv_9:
-	add r9b, 32
-	jmp cont
-dif:
 	mov eax, r8d
 	sub eax, r9d
+	test eax, eax		; not 0 if difference
+	jnz end
+	test r8b, r8b
+	jz end
+	inc rcx
+	jmp loop_asm_strcasecmp
 end:
 	pop r9
 	pop r8
