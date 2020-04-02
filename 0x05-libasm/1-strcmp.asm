@@ -1,7 +1,8 @@
 BITS 64
 
+global asm_strcmp
+
 section .text
-	global asm_strcmp
 asm_strcmp:
 	push rbp
 	mov rbp, rsp

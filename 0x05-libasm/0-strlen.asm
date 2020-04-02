@@ -1,7 +1,8 @@
 BITS 64
 
+global asm_strlen
+
 section .text
-	global asm_strlen
 asm_strlen:
 	push rbp
 	mov rbp, rsp

@@ -1,7 +1,8 @@
 BITS 64
 
+global asm_putc
+
 section .text
-	global asm_putc
 asm_putc:
 	push rbp
 	mov rbp, rsp

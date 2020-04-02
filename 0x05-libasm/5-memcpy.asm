@@ -1,7 +1,8 @@
 BITS 64
 
+global asm_memcpy
+
 section .text
-	global asm_memcpy
 asm_memcpy:
 	push rbp
 	mov rbp, rsp
