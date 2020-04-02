@@ -2,6 +2,7 @@ BITS 64
 
 global asm_strncasecmp
 
+section .text
 asm_strncasecmp:
 	push rbp
 	mov rbp, rsp

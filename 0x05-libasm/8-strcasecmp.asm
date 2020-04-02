@@ -2,6 +2,7 @@ BITS 64
 
 global asm_strcasecmp
 
+section .text
 asm_strcasecmp:
 	push rbp
 	mov rbp, rsp
