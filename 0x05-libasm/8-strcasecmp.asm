@@ -16,16 +16,16 @@ asm_strcasecmp:
 loop_asm_strcasecmp:
 	mov r8b, [rdi + rcx]
 	mov r9b, [rsi + rcx]
-	test r8b, r8b
-	jz dif
-	test r9b, r9b
-	jz dif
 	cmp r8b, 65		; rdi + rcx >= 'A'
 	jge check_8_end
 check_9:
 	cmp r9b, 65		; rsi + rcx >= 'A'
 	jge check_9_end
 cont:
+	test r8b, r8b
+	jz dif
+	test r9b, r9b
+	jz dif
 	cmp r8b, r9b
 	jne dif
 	inc rcx
