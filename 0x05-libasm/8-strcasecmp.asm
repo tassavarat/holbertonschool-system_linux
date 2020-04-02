@@ -2,20 +2,6 @@ BITS 64
 
 global asm_strcasecmp
 
-check_8:
-	cmp r8b, 65
-	jl check_9		; rdi + rcx < 'A'
-	cmp r8b, 90
-	jg check_9		; rdi + rcx > 'Z'
-	add r8b, 32
-check_9:
-	cmp r9b, 65
-	jl cont			; rsi + rcx < 'A'
-	cmp r9b, 90
-	jg cont			; rsi + rcx > 'Z'
-	add r9b, 32
-	jmp cont
-
 asm_strcasecmp:
 	push rbp
 	mov rbp, rsp
@@ -30,7 +16,17 @@ asm_strcasecmp:
 loop_asm_strcasecmp:
 	mov r8b, [rdi + rcx]
 	mov r9b, [rsi + rcx]
-	jmp check_8
+	cmp r8b, 65		; begin checking r8b
+	jl check_9		; rdi + rcx < 'A'
+	cmp r8b, 90
+	jg check_9		; rdi + rcx > 'Z'
+	add r8b, 32
+check_9:
+	cmp r9b, 65
+	jl cont			; rsi + rcx < 'A'
+	cmp r9b, 90
+	jg cont			; rsi + rcx > 'Z'
+	add r9b, 32
 cont:
 	mov eax, r8d
 	sub eax, r9d
