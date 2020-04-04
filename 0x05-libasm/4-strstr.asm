@@ -17,9 +17,6 @@ asm_strstr:
 	xor r8, r8
 	xor r9, r9
 loop_strstr:
-	mov r8b, [rdi + rcx]
-	test r8b, r8b
-	jz end
 	mov rdx, rcx		; store pos before match
 	xor rbx, rbx
 loop_strstr_match:
@@ -33,6 +30,9 @@ loop_strstr_match:
 	inc rbx
 	jmp loop_strstr_match
 break:
+	mov r8b, [rdi + rcx]
+	test r8b, r8b
+	jz end
 	inc rcx
 	jmp loop_strstr
 match_pos:
