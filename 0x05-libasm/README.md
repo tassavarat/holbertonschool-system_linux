@@ -204,7 +204,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-### [5. memcpy ](./ 5-memcpy.asm)
+### [5. memcpy ](./5-memcpy.asm)
 Write a copycat of the function `memcpy(3)`, in x86-64 Assembly
 * Prototype when used in C: `void *asm_memcpy(void *dest, const void *src, size_t n);`
 ```
