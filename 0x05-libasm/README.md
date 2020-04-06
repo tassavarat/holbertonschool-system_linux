@@ -204,7 +204,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[5. memcpy ](./ 5-memcpy.asm)
+### [5. memcpy ](./ 5-memcpy.asm)
 Write a copycat of the function `memcpy(3)`, in x86-64 Assembly
 * Prototype when used in C: `void *asm_memcpy(void *dest, const void *src, size_t n);`
 ```
@@ -256,7 +256,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[6. putc](./6-putc.asm)
+### [6. putc](./6-putc.asm)
 Write a function that prints a single character on the standard output, in x86-64 Assembly
 * Prototype when used in C: `size_t asm_putc(int c);`
 * Where `c` holds the character to be printed
@@ -296,7 +296,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[7. puts](./7-puts.asm)
+### [7. puts](./7-puts.asm)
 Write a function that prints a string of characters on the standard output, in x86-64 Assembly
 * Prototype when used in C: `size_t asm_puts(const char *str);`
 * Where `str` holds the string to be printed
@@ -337,7 +337,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[8. strcasecmp](./8-strcasecmp.asm)
+### [8. strcasecmp](./8-strcasecmp.asm)
 Write a copycat of the function `strcasecmp(3)`, in x86-64 Assembly
 * Prototype when used in C: `int asm_strcasecmp(const char *s1, const char *s2);`
 ```
@@ -377,7 +377,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[9. strncasecmp](./9. strncasecmp )
+### [9. strncasecmp](./9. strncasecmp )
 Write a copycat of the function `strncasecmp(3)`, in x86-64 Assembly
 * Prototype when used in C: `int asm_strncasecmp(const char *s1, const char *s2, size_t n);`
 ```
@@ -420,7 +420,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[10. strspn](./10-strspn.asm)
+### [10. strspn](./10-strspn.asm)
 Write a copycat of the function `strspn(3)`, in x86-64 Assembly
 * Prototype when used in C: `size_t asm_strspn(const char *s, const char *accept);`
 ```
@@ -465,7 +465,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[11. strcspn](./11-strcspn.asm)
+### [11. strcspn](./11-strcspn.asm)
 Write a copycat of the function `strcspn(3)`, in x86-64 Assembly
 * Prototype when used in C: `size_t asm_strcspn(const char *s, const char *reject);`
 ```
@@ -510,7 +510,7 @@ All good!
 alex@~/0x05-libasm$
 ```
 
-[12. strpbrk](./12-strpbrk.asm)
+### [12. strpbrk](./12-strpbrk.asm)
 Write a copycat of the function `strpbrk(3)`, in x86-64 Assembly
 * Prototype when used in C: `char *asm_strpbrk(const char *s, const char *accept);`
 ```
