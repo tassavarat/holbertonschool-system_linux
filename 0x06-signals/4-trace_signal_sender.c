@@ -11,6 +11,7 @@ void sigquithandler(int sig, siginfo_t *info, void *ucontext)
 	(void) sig;
 	(void) ucontext;
 	printf("SIGQUIT sent by %i\n", info->si_pid);
+	fflush(stdout);
 }
 
 /**
