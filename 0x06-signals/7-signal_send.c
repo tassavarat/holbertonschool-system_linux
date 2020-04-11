@@ -14,6 +14,5 @@ int main(int argc, char *argv[])
 		printf("Usage: %s <pid>\n", *argv);
 		return (EXIT_FAILURE);
 	}
-	kill(atoi(argv[1]), SIGINT);
-	return (EXIT_SUCCESS);
+	return (abs(kill(atoi(argv[1]), SIGINT)));
 }
