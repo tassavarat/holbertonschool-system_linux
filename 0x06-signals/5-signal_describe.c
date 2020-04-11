@@ -1,5 +1,12 @@
 #include "signals.h"
 
+/**
+ * main - prints a description of given signal
+ * @argc: count of arguments passed
+ * @argv: array containing arguments passed
+ *
+ * Return: EXIT_SUCCESS if successful, otherwise EXIT_FAILURE
+ */
 int main(int argc, char *argv[])
 {
 	if (argc != 2)
