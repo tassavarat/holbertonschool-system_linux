@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # Sends SIGQUIT to a process using its PID
 
 if [ $# != 1 ]
@@ -6,4 +6,4 @@ then
 	echo "Usage: $0 <pid>"
 	exit 1
 fi
-kill -SIGQUIT "$1"
+kill -QUIT "$1"
