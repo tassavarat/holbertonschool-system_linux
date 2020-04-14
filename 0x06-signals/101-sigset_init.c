@@ -1,7 +1,7 @@
 #include "signals.h"
 
 /**
- * sigset_init - Initialises sigset
+ * sigset_init - initialises sigset
  * @set: pointer to signal set to initialise
  * @signals: 0-terminated array of signals
  *
