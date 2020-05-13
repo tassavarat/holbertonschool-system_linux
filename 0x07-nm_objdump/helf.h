@@ -10,9 +10,12 @@
 
 #define IS_32 (hdr->Ehdr64->e_ident[EI_CLASS] == ELFCLASS32)
 #define IS_MSB (hdr->Ehdr64->e_ident[EI_DATA] == ELFDATA2MSB)
-#define SET_EHDR(x) (IS_32 ? (void *) &(hdr->Ehdr32->x) : (void *) &(hdr->Ehdr64->x))
-#define SET_SHDR(x, i) (IS_32 ? (void *) &(hdr->Shdr32[i].x) : (void *) &(hdr->Shdr64[i].x))
-#define SET_YHDR(x, i) (IS_32 ? (void *) &(hdr->Sym32[i].x) : (void *) &(hdr->Sym64[i].x))
+#define SET_EHDR(x) (IS_32 ? \
+		(void *) &(hdr->Ehdr32->x) : (void *) &(hdr->Ehdr64->x))
+#define SET_SHDR(x, i) (IS_32 ? \
+		(void *) &(hdr->Shdr32[i].x) : (void *) &(hdr->Shdr64[i].x))
+#define SET_YHDR(x, i) (IS_32 ? \
+		(void *) &(hdr->Sym32[i].x) : (void *) &(hdr->Sym64[i].x))
 #define GET_EHDR(x) (IS_32 ? hdr->Ehdr32->x : hdr->Ehdr64->x)
 #define GET_SHDR(x, i) (IS_32 ? hdr->Shdr32[i].x : hdr->Shdr64[i].x)
 #define GET_YHDR(x, i) (IS_32 ? hdr->Sym32[i].x : hdr->Sym64[i].x)
