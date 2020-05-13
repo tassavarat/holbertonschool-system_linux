@@ -26,14 +26,15 @@ void sym(hdrs *hdr)
 	for (i = 0; i < GET_EHDR(e_shnum); ++i)
 		if (GET_SHDR(sh_type, i) == SHT_SYMTAB)
 			break;
-	str_table = &hdr->addr[GET_SHDR(sh_offset, i + 1)];
-	/* printf("%s\n", str_table + 1); */
 	hdr->Sym32 = (Elf32_Sym *) &hdr->addr[GET_SHDR(sh_offset, i)];
 	hdr->Sym64 = (Elf64_Sym *) &hdr->addr[GET_SHDR(sh_offset, i)];
+	str_table = &hdr->addr[GET_SHDR(sh_offset, i + 1)];
 	sym_size = GET_SHDR(sh_size, i) / GET_SHDR(sh_entsize, i);
-	/* printf("%lu\n", sym_size); */
 	for (j = 1; j < sym_size; ++j)
 	{
+		if ((GET_YHDR(st_info, j) & 0xf) == STT_SECTION ||
+				(GET_YHDR(st_info, j) & 0xf) == STT_FILE)
+			continue;
 		if (IS_MSB)
 		{
 			conv_msb((char *) SET_YHDR(st_value, j),
@@ -43,8 +44,6 @@ void sym(hdrs *hdr)
 			conv_msb((char *) SET_YHDR(st_name, j),
 					sizeof(GET_YHDR(st_name, j)));
 		}
-		if ((GET_YHDR(st_info, j) & 0xf) == STT_SECTION || (GET_YHDR(st_info, j) & 0xf) == STT_FILE)
-			continue;
 		printf("%0*lx %s\n", IS_32 ? 8 : 16, GET_YHDR(st_value, j),
 				&str_table[GET_YHDR(st_name, j)]);
 	}
@@ -111,7 +110,8 @@ void getelf(FILE *fp, char *prog_name, char *arg_str, int *exit_stat)
 		*exit_stat = 1;
 		goto out;
 	}
-	hdr.addr = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fileno(fp), 0);
+	hdr.addr = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE,
+			fileno(fp), 0);
 	/* check errors */
 	init_ehdr(&hdr);
 	if (memcmp(hdr.Ehdr64->e_ident, ELFMAG, SELFMAG))
