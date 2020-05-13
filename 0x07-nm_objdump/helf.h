@@ -18,7 +18,12 @@
 		(void *) &(hdr->Sym32[i].x) : (void *) &(hdr->Sym64[i].x))
 #define GET_EHDR(x) (IS_32 ? hdr->Ehdr32->x : hdr->Ehdr64->x)
 #define GET_SHDR(x, i) (IS_32 ? hdr->Shdr32[i].x : hdr->Shdr64[i].x)
-#define GET_YHDR(x, i) (IS_32 ? hdr->Sym32[i].x : hdr->Sym64[i].x)
+#define GET_SYM(x, i) (IS_32 ? hdr->Sym32[i].x : hdr->Sym64[i].x)
+#define EHDR_SIZE(x) (IS_32 ? sizeof(hdr->Ehdr32->x) : sizeof(hdr->Ehdr64->x))
+#define SHDR_SIZE(x, i) (IS_32 ? \
+		sizeof(hdr->Shdr32[i].x) : sizeof(hdr->Shdr64[i].x))
+#define SYM_SIZE(x, i) (IS_32 ? \
+		sizeof(hdr->Sym32[i].x) : sizeof(hdr->Sym64[i].x))
 
 /**
  *  struct hdrs - contains 32 and 64 bit ELF header information
