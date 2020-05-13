@@ -1,11 +1,11 @@
 #include "helf.h"
 
 /**
- * convert_msb - convert to big endian by reversing given array
+ * conv_msb - convert to big endian by reversing given array
  * @ptr: pointer to first octet of word
  * @size: size of type ptr points to
  */
-void convert_msb(char *ptr, size_t size)
+void conv_msb(char *ptr, size_t size)
 {
 	size_t start, end;
 
@@ -17,7 +17,7 @@ void convert_msb(char *ptr, size_t size)
 	}
 }
 
-void read_sym(hdrs *hdr)
+void sym(hdrs *hdr)
 {
 	int i;
 	size_t j, sym_size;
@@ -36,11 +36,11 @@ void read_sym(hdrs *hdr)
 	{
 		if (IS_MSB)
 		{
-			convert_msb((char *) SET_YHDR(st_value, j),
+			conv_msb((char *) SET_YHDR(st_value, j),
 					sizeof(GET_YHDR(st_value, j)));
-			convert_msb((char *) SET_YHDR(st_info, j),
+			conv_msb((char *) SET_YHDR(st_info, j),
 					sizeof(GET_YHDR(st_info, j)));
-			convert_msb((char *) SET_YHDR(st_name, j),
+			conv_msb((char *) SET_YHDR(st_name, j),
 					sizeof(GET_YHDR(st_name, j)));
 		}
 		if ((GET_YHDR(st_info, j) & 0xf) == STT_SECTION || (GET_YHDR(st_info, j) & 0xf) == STT_FILE)
@@ -50,42 +50,46 @@ void read_sym(hdrs *hdr)
 	}
 }
 
-/**
- * checkbitend - checks system bit and endian
- * @hdr: struct containing elf header information
- * @arg_str: string containing name of program
- */
-void checkbitend(hdrs *hdr)
+void init_shdr(hdrs *hdr)
 {
 	int i;
 
-	hdr->Ehdr32 = (Elf32_Ehdr *) hdr->addr;
-	hdr->Ehdr64 = (Elf64_Ehdr *) hdr->addr;
-	if (IS_MSB)
-	{
-		printf("is_32 %i\n", IS_32);
-		convert_msb((char *) SET_EHDR(e_shoff),
-				sizeof(GET_EHDR(e_shoff)));
-		convert_msb((char *) SET_EHDR(e_shentsize),
-				sizeof(GET_EHDR(e_shentsize)));
-		convert_msb((char *) SET_EHDR(e_shnum),
-				sizeof(GET_EHDR(e_shnum)));
-	}
 	hdr->Shdr32 = (Elf32_Shdr *) &hdr->addr[GET_EHDR(e_shoff)];
 	hdr->Shdr64 = (Elf64_Shdr *) &hdr->addr[GET_EHDR(e_shoff)];
 	if (IS_MSB)
 		for (i = 0; i < GET_EHDR(e_shnum); ++i)
 		{
 			printf("i is %i\n", i);
-			convert_msb((char *) SET_SHDR(sh_type, i),
+			conv_msb((char *) SET_SHDR(sh_type, i),
 					sizeof(GET_SHDR(sh_type, i)));
-			convert_msb((char *) SET_SHDR(sh_offset, i),
+			conv_msb((char *) SET_SHDR(sh_offset, i),
 					sizeof(GET_SHDR(sh_offset, i)));
-			convert_msb((char *) SET_SHDR(sh_size, i),
+			conv_msb((char *) SET_SHDR(sh_size, i),
 					sizeof(GET_SHDR(sh_size, i)));
-			convert_msb((char *) SET_SHDR(sh_entsize, i),
+			conv_msb((char *) SET_SHDR(sh_entsize, i),
 					sizeof(GET_SHDR(sh_entsize, i)));
 		}
+}
+
+/**
+ * checkbitend - checks system bit and endian
+ * @hdr: struct containing elf header information
+ * @arg_str: string containing name of program
+ */
+void init_ehdr(hdrs *hdr)
+{
+	hdr->Ehdr32 = (Elf32_Ehdr *) hdr->addr;
+	hdr->Ehdr64 = (Elf64_Ehdr *) hdr->addr;
+	if (IS_MSB)
+	{
+		printf("is_32 %i\n", IS_32);
+		conv_msb((char *) SET_EHDR(e_shoff),
+				sizeof(GET_EHDR(e_shoff)));
+		conv_msb((char *) SET_EHDR(e_shentsize),
+				sizeof(GET_EHDR(e_shentsize)));
+		conv_msb((char *) SET_EHDR(e_shnum),
+				sizeof(GET_EHDR(e_shnum)));
+	}
 }
 
 /**
@@ -109,7 +113,7 @@ void getelf(FILE *fp, char *prog_name, char *arg_str, int *exit_stat)
 	}
 	hdr.addr = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fileno(fp), 0);
 	/* check errors */
-	checkbitend(&hdr);
+	init_ehdr(&hdr);
 	if (memcmp(hdr.Ehdr64->e_ident, ELFMAG, SELFMAG))
 	{
 		fprintf(stderr, "%s: %s: file format not recognized\n",
@@ -117,8 +121,9 @@ void getelf(FILE *fp, char *prog_name, char *arg_str, int *exit_stat)
 		*exit_stat = 1;
 		goto out;
 	}
-	read_sym(&hdr);
-	/* puts("No error"); */
+	init_shdr(&hdr);
+	sym(&hdr);
+	puts("No error");
 out:
 	fclose(fp);
 }
