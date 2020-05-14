@@ -30,9 +30,16 @@
 		ELF64_ST_TYPE(hdr->Sym64[i].st_info))
 
 /**
- *  struct hdrs - contains 32 and 64 bit ELF header information
+ * struct hdrs - contains 32 and 64 bit ELF header information
+ * @addr: pointer to mapped area
  * @Ehdr32: 32-bit ELF header
  * @Ehdr64: 64-bit ELF header
+ * @is_32: specifies if ELF file is 32-bit
+ * @is_msb: specifies if ELF file is big-endian
+ * @Shdr32: 32-bit ELF section header
+ * @Shdr64: 64-bit ELF section header
+ * @Sym32: 32-bit ELF symbol table
+ * @Sym64: 64-bit ELF symbol table
  */
 typedef struct hdrs
 {
@@ -46,5 +53,13 @@ typedef struct hdrs
 	Elf32_Sym *Sym32;
 	Elf64_Sym *Sym64;
 } hdrs;
+
+/* hnm */
+void conv_msb(char *ptr, size_t size);
+
+/* elf */
+void init_ehdr(hdrs *hdr);
+void init_shdr(hdrs *hdr);
+int sym(hdrs *hdr);
 
 #endif /* HELF_H */
