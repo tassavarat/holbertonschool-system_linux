@@ -24,6 +24,10 @@
 		sizeof(hdr->Shdr32[i].x) : sizeof(hdr->Shdr64[i].x))
 #define SYM_SIZE(x, i) (IS_32 ? \
 		sizeof(hdr->Sym32[i].x) : sizeof(hdr->Sym64[i].x))
+#define ELFN_ST_BIND (IS_32 ? ELF32_ST_BIND(hdr->Sym32[i].st_info) : \
+		ELF64_ST_BIND(hdr->Sym64[i].st_info))
+#define ELFN_ST_TYPE (IS_32 ? ELF32_ST_TYPE(hdr->Sym32[i].st_info) : \
+		ELF64_ST_TYPE(hdr->Sym64[i].st_info))
 
 /**
  *  struct hdrs - contains 32 and 64 bit ELF header information
