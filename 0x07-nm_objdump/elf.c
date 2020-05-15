@@ -42,8 +42,8 @@ char get_info(hdrs *hdr, int i)
 	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i)) == SHT_DYNAMIC)
 		c = 'D';
 	else
-		c = '?';
-	if (ELFN_ST_BIND == STB_LOCAL && c != '?')
+		c = 'D';
+	if (ELFN_ST_BIND == STB_LOCAL)
 		c += 32;
 	return (c);
 }
@@ -85,11 +85,13 @@ int sym(hdrs *hdr)
 			continue;
 		if (!GET_SYM(st_value, j))
 			printf("%*c %c %s\n", IS_32 ? 8 : 16, ' ',
-					get_info(hdr, j), &str_table[GET_SYM(st_name, j)]);
+					get_info(hdr, j),
+					&str_table[GET_SYM(st_name, j)]);
 		else
 			printf("%0*lx %c %s\n", IS_32 ? 8 : 16,
 					GET_SYM(st_value, j),
-					get_info(hdr, j), &str_table[GET_SYM(st_name, j)]);
+					get_info(hdr, j),
+					&str_table[GET_SYM(st_name, j)]);
 	}
 	return (1);
 }
