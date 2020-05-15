@@ -89,7 +89,6 @@ int sym(hdrs *hdr)
 					&str_table[GET_SYM(st_name, j)]);
 		else
 		{
-			puts("called");
 			printf("%0*lx %c %s\n", IS_32 ? 8 : 16,
 					GET_SYM(st_value, j),
 					get_info(hdr, j),
