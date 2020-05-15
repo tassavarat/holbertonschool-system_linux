@@ -13,10 +13,10 @@ char get_info(hdrs *hdr, int i)
 
 	if (ELFN_ST_BIND == STB_GNU_UNIQUE)
 		c = 'u';
-	else if (ELFN_ST_BIND == STB_WEAK)
-		c = GET_SYM(st_shndx, i) == SHN_UNDEF ? 'w' : 'W';
 	else if (ELFN_ST_BIND == STB_WEAK && ELFN_ST_TYPE == STT_OBJECT)
 		c = GET_SYM(st_shndx, i) == SHN_UNDEF ? 'v' : 'V';
+	else if (ELFN_ST_BIND == STB_WEAK)
+		c = GET_SYM(st_shndx, i) == SHN_UNDEF ? 'w' : 'W';
 	else if (GET_SYM(st_shndx, i) == SHN_UNDEF)
 		c = 'U';
 	else if (GET_SYM(st_shndx, i) == SHN_ABS)
@@ -24,27 +24,27 @@ char get_info(hdrs *hdr, int i)
 	else if (GET_SYM(st_shndx, i) == SHN_COMMON)
 		c = 'C';
 	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i)) == SHT_NOBITS
-			&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i) ==
-				(SHF_ALLOC | SHF_WRITE)))
+			&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i)) ==
+				(SHF_ALLOC | SHF_WRITE))
 		c = 'B';
-	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i) == SHT_PROGBITS
-				&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i) ==
-					SHF_ALLOC)))
+	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i)) == SHT_PROGBITS
+				&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i)) ==
+					SHF_ALLOC)
 		c = 'R';
-	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i) == SHT_PROGBITS
-				&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i) ==
-					(SHF_ALLOC | SHF_WRITE))))
+	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i)) == SHT_PROGBITS
+				&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i)) ==
+					(SHF_ALLOC | SHF_WRITE))
 		c = 'D';
-	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i) == SHT_PROGBITS
-				&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i) ==
-					(SHF_ALLOC | SHF_EXECINSTR))))
+	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i)) == SHT_PROGBITS
+				&& GET_SHDR(sh_flags, GET_SYM(st_shndx, i)) ==
+					(SHF_ALLOC | SHF_EXECINSTR))
 		c = 'T';
-	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i) == SHT_DYNAMIC))
+	else if (GET_SHDR(sh_type, GET_SYM(st_shndx, i)) == SHT_DYNAMIC)
 		c = 'D';
 	else
 		c = '?';
-	/* if (ELFN_ST_BIND == STB_LOCAL && c != '?') */
-		/* c += 32; */
+	if (ELFN_ST_BIND == STB_LOCAL && c != '?')
+		c += 32;
 	return (c);
 }
 
@@ -69,11 +69,8 @@ int sym(hdrs *hdr)
 	hdr->Sym64 = (Elf64_Sym *) &hdr->addr[GET_SHDR(sh_offset, i)];
 	str_table = &hdr->addr[GET_SHDR(sh_offset, i + 1)];
 	sym_size = GET_SHDR(sh_size, i) / GET_SHDR(sh_entsize, i);
-	for (j = 0; j < sym_size; ++j)
+	for (j = 1; j < sym_size; ++j)
 	{
-		if ((GET_SYM(st_info, j) & 0xf) == STT_SECTION ||
-				(GET_SYM(st_info, j) & 0xf) == STT_FILE)
-			continue;
 		if (IS_MSB)
 		{
 			conv_msb((char *) SET_YHDR(st_value, j),
@@ -83,8 +80,16 @@ int sym(hdrs *hdr)
 			conv_msb((char *) SET_YHDR(st_name, j),
 					SYM_SIZE(st_name, i));
 		}
-		printf("%0*lx %s\n", IS_32 ? 8 : 16, GET_SYM(st_value, j),
-				&str_table[GET_SYM(st_name, j)]);
+		if ((GET_SYM(st_info, j) & 15) == STT_SECTION ||
+				(GET_SYM(st_info, j) & 15) == STT_FILE)
+			continue;
+		if (!GET_SYM(st_value, j))
+			printf("%*c %c %s\n", IS_32 ? 8 : 16, ' ',
+					get_info(hdr, j), &str_table[GET_SYM(st_name, j)]);
+		else
+			printf("%0*lx %c %s\n", IS_32 ? 8 : 16,
+					GET_SYM(st_value, j),
+					get_info(hdr, j), &str_table[GET_SYM(st_name, j)]);
 	}
 	return (1);
 }

@@ -79,7 +79,7 @@ FILE *parse_args(int argc, char *argv[], int i)
 				argv[0], argv[i]);
 		return (NULL);
 	}
-	fp = fopen(argv[i], "r+b");
+	fp = fopen(argv[i], "rb");
 	if (!fp)
 	{
 		fprintf(stderr, "%s: '%s': No such file\n", argv[0], argv[i]);
