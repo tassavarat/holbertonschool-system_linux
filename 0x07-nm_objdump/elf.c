@@ -83,15 +83,18 @@ int sym(hdrs *hdr)
 		if ((GET_SYM(st_info, j) & 15) == STT_SECTION ||
 				(GET_SYM(st_info, j) & 15) == STT_FILE)
 			continue;
-		if (!GET_SYM(st_value, j))
+		if (!GET_SYM(st_size, j) && !GET_SYM(st_value, j))
 			printf("%*c %c %s\n", IS_32 ? 8 : 16, ' ',
 					get_info(hdr, j),
 					&str_table[GET_SYM(st_name, j)]);
 		else
+		{
+			puts("called");
 			printf("%0*lx %c %s\n", IS_32 ? 8 : 16,
 					GET_SYM(st_value, j),
 					get_info(hdr, j),
 					&str_table[GET_SYM(st_name, j)]);
+		}
 	}
 	return (1);
 }
