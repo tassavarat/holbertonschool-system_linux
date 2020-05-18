@@ -1,7 +1,7 @@
 #include <Python.h>
 
 /**
- * print_python_list - print basic info about Python lists
+ * print_python_list - print basic info about Python list objects
  * @p: Python object
  */
 void print_python_list(PyObject *p)
