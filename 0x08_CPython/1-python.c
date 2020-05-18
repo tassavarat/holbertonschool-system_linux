@@ -1,6 +1,9 @@
 #include <Python.h>
-#include <stdio.h>
 
+/**
+ * print_python_list - print basic info about Python lists
+ * @list: Python object
+ */
 void print_python_list(PyObject *list)
 {
 	Py_ssize_t i;
