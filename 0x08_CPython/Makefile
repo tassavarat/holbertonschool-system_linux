@@ -12,5 +12,7 @@ CFLAGSLIBPYTHON = -Wall -Werror -Wextra -pedantic -std=c99 -shared -Wl,-soname,l
 	$(CC) $(CFLAGSLIBPYTHON) 3-python.c
 4:	
 	$(CC) $(CFLAGSLIBPYTHON) 4-python.c
+5:	
+	$(CC) $(CFLAGSLIBPYTHON) 5-python.c
 clean:
 	rm -f *.so
