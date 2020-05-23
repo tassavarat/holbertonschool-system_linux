@@ -28,3 +28,5 @@ i = 18446744073709551616
 lib.print_python_int(i)
 i = "1"
 lib.print_python_int(i)
+i = 18446744073709551615
+lib.print_python_int(i)

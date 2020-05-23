@@ -17,13 +17,15 @@ void print_python_int(PyObject *p)
 	}
 	size = ((PyVarObject *) p)->ob_size;
 	digit = ((PyLongObject *) p)->ob_digit;
+	if (size > 3 || (size == 3 && digit[2] > 15))
+	{
+		puts("C unsigned long int overflow");
+		return;
+	}
 	n = 0;
 	for (i = 0; i < (size < 0 ? size * -1 : size); ++i)
 		n += digit[i] * (1L << (PyLong_SHIFT * i));
 	if (size < 0)
 		putchar('-');
-	if (size && !n)
-		puts("C unsigned long int overflow");
-	else
-		printf("%lu\n", n);
+	printf("%lu\n", n);
 }
