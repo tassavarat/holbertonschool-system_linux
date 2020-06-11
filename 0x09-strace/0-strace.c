@@ -32,7 +32,7 @@ int trace(pid_t pid)
 	int wstatus;
 
 	setbuf(stdout, NULL);
-	if (waitpid(pid, &wstatus, 0) != pid)
+	if (waitpid(pid, &wstatus, 0) < 0)
 		return (1);
 	ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACESYSGOOD);
 	while (1)
