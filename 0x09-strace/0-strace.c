@@ -1,5 +1,4 @@
 #include "strace.h"
-#include <sys/reg.h>
 
 /**
  * step_syscall - start or stop process at next entry or exit from system call
@@ -32,6 +31,7 @@ int trace(pid_t pid)
 {
 	int wstatus;
 
+	setbuf(stdout, NULL);
 	if (waitpid(pid, &wstatus, 0) != pid)
 		return (1);
 	ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACESYSGOOD);
