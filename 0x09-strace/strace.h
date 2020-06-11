@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/ptrace.h>
 #include <sys/reg.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 

@@ -60,6 +60,31 @@ int attach(char *args[])
 }
 
 /**
+ * parse_args - check for usage errors
+ * @argc: number of command-line arguments
+ * @argv: pointer to array of character strings that contain the arguments
+ *
+ * Return: 0 on success, 1 on error
+ */
+int parse_args(int argc, char *argv[])
+{
+	struct stat sb;
+
+	if (argc < 2)
+	{
+		fprintf(stderr, "%s command [args...]\n", *argv);
+		return (1);
+	}
+	if (stat(argv[1], &sb) < 0)
+	{
+		fprintf(stderr, "%s: Can't stat '%s': No such file or directory\n",
+				*argv, argv[1]);
+		return (1);
+	}
+	return (0);
+}
+
+/**
  * main - entry point
  * @argc: number of command-line arguments
  * @argv: pointer to an array of character strings that contain the arguments
@@ -70,11 +95,8 @@ int main(int argc, char *argv[])
 {
 	pid_t pid;
 
-	if (argc < 2)
-	{
-		fprintf(stderr, "%s command [args...]\n", *argv);
+	if (parse_args(argc, argv))
 		return (1);
-	}
 	pid = fork();
 	if (pid < 0)
 		return (1);
