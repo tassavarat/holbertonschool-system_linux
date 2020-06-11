@@ -11,4 +11,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+/* shared */
+int parse_args(int argc, char *argv[]);
+int attach(char *args[]);
+int step_syscall(pid_t pid);
+
 #endif /* STRACE_H */

@@ -3,6 +3,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89 -g3
 
 SRC = $(wildcard *.c)
 OBJS = $(patsubst %.c, %.o, $(SRC))
+LIBS = $(patsubst %.c, %.o, shared.c)
 0 = $(patsubst %.c, %.o, $(wildcard 0-*.c)) $(LIBS)
 1 = $(patsubst %.c, %.o, $(wildcard 1-*.c)) $(LIBS)
 2 = $(patsubst %.c, %.o, $(wildcard 2-*.c)) $(LIBS)
