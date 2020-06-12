@@ -8,6 +8,7 @@
 #include <sys/ptrace.h>
 #include <sys/reg.h>
 #include <sys/stat.h>
+#include <sys/user.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
