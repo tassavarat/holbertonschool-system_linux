@@ -12,8 +12,9 @@ int step_syscall(pid_t pid)
 
 	while (1)
 	{
-		ptrace(PTRACE_SYSCALL, pid, 0, 0);
-		if (waitpid(pid, &wstatus, 0) < 0)
+		if (ptrace(PTRACE_SYSCALL, pid, 0, 0) == -1)
+			exit(1);
+		if (waitpid(pid, &wstatus, 0) == -1)
 			exit(1);
 		if (WIFSTOPPED(wstatus) && WSTOPSIG(wstatus) & 0x80)
 			return (1);
@@ -30,8 +31,10 @@ int step_syscall(pid_t pid)
  */
 int attach(char *args[])
 {
-	ptrace(PTRACE_TRACEME);
-	kill(getpid(), SIGSTOP);
+	if (ptrace(PTRACE_TRACEME) == -1)
+		return (-1);
+	if (kill(getpid(), SIGSTOP) == -1)
+		return (-1);
 	return (execvp(*args, args));
 }
 
@@ -51,7 +54,7 @@ int parse_args(int argc, char *argv[])
 		fprintf(stderr, "%s command [args...]\n", *argv);
 		return (1);
 	}
-	if (stat(argv[1], &sb) < 0)
+	if (stat(argv[1], &sb) == -1)
 	{
 		fprintf(stderr, "%s: Can't stat '%s': No such file or directory\n",
 				*argv, argv[1]);
