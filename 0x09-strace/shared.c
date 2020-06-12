@@ -12,10 +12,8 @@ int step_syscall(pid_t pid)
 
 	while (1)
 	{
-		if (ptrace(PTRACE_SYSCALL, pid, 0, 0) == -1)
-			exit(1);
-		if (waitpid(pid, &wstatus, 0) == -1)
-			exit(1);
+		ptrace(PTRACE_SYSCALL, pid, 0, 0);
+		waitpid(pid, &wstatus, 0);
 		if (WIFSTOPPED(wstatus) && WSTOPSIG(wstatus) & 0x80)
 			return (1);
 		if (WIFEXITED(wstatus))
@@ -33,8 +31,7 @@ int attach(char *args[])
 {
 	if (ptrace(PTRACE_TRACEME) == -1)
 		return (-1);
-	if (kill(getpid(), SIGSTOP) == -1)
-		return (-1);
+	kill(getpid(), SIGSTOP);
 	return (execvp(*args, args));
 }
 
