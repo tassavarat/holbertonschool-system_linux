@@ -1,7 +1,7 @@
 #include "strace.h"
 
 /**
- * trace - trace specified process
+ * trace_sysnum - trace specified process and print out system call number
  * @pid: id of process to trace
  *
  * Return: 0 on success, 1 on failure
