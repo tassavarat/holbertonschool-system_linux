@@ -3,10 +3,8 @@
 /**
  * trace_sysnum - trace specified process and print out system call number
  * @pid: id of process to trace
- *
- * Return: 0 on success, 1 on failure
  */
-int trace_sysnum(pid_t pid)
+void trace_sysnum(pid_t pid)
 {
 	int wstatus;
 
@@ -21,7 +19,6 @@ int trace_sysnum(pid_t pid)
 		if (!step_syscall(pid))
 			break;
 	}
-	return (0);
 }
 
 /**
@@ -42,6 +39,6 @@ int main(int argc, char *argv[])
 		return (1);
 	if (!pid)
 		return (attach(argv + 1) == -1);
-	else
-		return (trace_sysnum(pid));
+	trace_sysnum(pid);
+	return (0);
 }

@@ -4,10 +4,8 @@
 /**
  * trace_sysname - trace specified process and print out system call name
  * @pid: id of process to trace
- *
- * Return: 0 on success, 1 on failure
  */
-int trace_sysname(pid_t pid)
+void trace_sysname(pid_t pid)
 {
 	int wstatus;
 	long sysnum;
@@ -26,7 +24,6 @@ int trace_sysname(pid_t pid)
 		putchar('\n');
 	}
 	putchar('\n');
-	return (0);
 }
 
 /**
@@ -47,6 +44,6 @@ int main(int argc, char *argv[])
 		return (1);
 	if (!pid)
 		return (attach(argv + 1) == -1);
-	else
-		return (trace_sysname(pid));
+	trace_sysname(pid);
+	return (0);
 }

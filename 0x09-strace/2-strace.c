@@ -4,10 +4,8 @@
 /**
  * trace_sysname_ret - print out system call name and return value of process
  * @pid: id of process to trace
- *
- * Return: 0 on success, 1 on failure
  */
-int trace_sysname_ret(pid_t pid)
+void trace_sysname_ret(pid_t pid)
 {
 	int wstatus;
 	long sysnum;
@@ -28,7 +26,6 @@ int trace_sysname_ret(pid_t pid)
 	}
 	syscalls_64_g[sysnum].ret == VOID ? puts(" = ?") :
 		printf(" = %#lx\n", ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * RAX));
-	return (0);
 }
 
 /**
@@ -49,6 +46,6 @@ int main(int argc, char *argv[])
 		return (1);
 	if (!pid)
 		return (attach(argv + 1) == -1);
-	else
-		return (trace_sysname_ret(pid));
+	trace_sysname_ret(pid);
+	return (0);
 }
