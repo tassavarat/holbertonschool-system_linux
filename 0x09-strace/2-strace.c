@@ -20,8 +20,6 @@ int trace_sysname_ret(pid_t pid)
 		if (!step_syscall(pid))
 			break;
 		sysnum = ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * ORIG_RAX);
-		if (sysnum == -1)
-			return (1);
 		printf("%s", syscalls_64_g[sysnum].name);
 		if (!step_syscall(pid))
 			break;
