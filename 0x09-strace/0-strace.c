@@ -9,16 +9,21 @@
 int trace_sysnum(pid_t pid)
 {
 	int wstatus;
+	long sysnum;
 
 	setbuf(stdout, NULL);
 	if (waitpid(pid, &wstatus, 0) < 0)
 		return (1);
-	ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACESYSGOOD);
+	if (ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACESYSGOOD) < 0)
+		return (1);
 	while (1)
 	{
 		if (!step_syscall(pid))
 			break;
-		printf("%li\n", ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * ORIG_RAX));
+		sysnum = ptrace(PTRACE_PEEKUSER, pid, sizeof(long) * ORIG_RAX);
+		if (sysnum < 0)
+			return (1);
+		printf("%li\n", sysnum);
 		if (!step_syscall(pid))
 			break;
 	}
