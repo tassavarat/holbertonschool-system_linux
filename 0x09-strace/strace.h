@@ -12,6 +12,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define NAME_PARAMS	0
+#define RET		1
+
 /* shared */
 int parse_args(int argc, char *argv[]);
 int attach(char *args[]);
