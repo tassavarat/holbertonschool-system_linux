@@ -12,7 +12,7 @@ int step_syscall(pid_t pid)
 
 	while (1)
 	{
-		ptrace(PTRACE_SYSCALL, pid, 0, 0);
+		ptrace(PTRACE_SYSCALL, pid, NULL, NULL);
 		waitpid(pid, &wstatus, 0);
 		if (WIFSTOPPED(wstatus) && WSTOPSIG(wstatus) & 0x80)
 			return (1);

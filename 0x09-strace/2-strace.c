@@ -12,7 +12,7 @@ void trace_sysname_ret(pid_t pid)
 
 	setbuf(stdout, NULL);
 	waitpid(pid, &wstatus, 0);
-	ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_TRACESYSGOOD);
+	ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACESYSGOOD);
 	while (1)
 	{
 		if (!step_syscall(pid))
