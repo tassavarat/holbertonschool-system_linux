@@ -6,11 +6,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-typedef struct _thread_data_t {
-	int tid;
-	double stuff;
-} thread_data_t;
-
 /**
  * struct pixel_s - RGB pixel
  *
