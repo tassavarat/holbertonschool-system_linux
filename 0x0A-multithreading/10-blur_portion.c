@@ -43,18 +43,18 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 		}
 		/* putchar('\n'); */
 	}
-	printf("r_sum: %f\ng_sum: %f\nb_sum: %f\n", r_avg, g_avg, b_avg);
-	printf("kernel sum: %f\n", k_sum);
+	/* printf("r_sum: %f\ng_sum: %f\nb_sum: %f\n", r_avg, g_avg, b_avg); */
+	/* printf("kernel sum: %f\n", k_sum); */
 	r_avg /= k_sum;
 	g_avg /= k_sum;
 	b_avg /= k_sum;
-	printf("r_avg: %f\ng_avg: %f\nb_avg: %f\n", r_avg, g_avg, b_avg);
-	printf("before:\nblur_r: %i\nblur_g: %i\nblur_b: %i\n", portion->img_blur->pixels[pixel].r, portion->img_blur->pixels[pixel].g, portion->img_blur->pixels[pixel].b);
+	/* printf("r_avg: %f\ng_avg: %f\nb_avg: %f\n", r_avg, g_avg, b_avg); */
+	/* printf("before:\nblur_r: %i\nblur_g: %i\nblur_b: %i\n", portion->img_blur->pixels[pixel].r, portion->img_blur->pixels[pixel].g, portion->img_blur->pixels[pixel].b); */
 	portion->img_blur->pixels[pixel].r = r_avg;
 	portion->img_blur->pixels[pixel].g = g_avg;
 	portion->img_blur->pixels[pixel].b = b_avg;
-	printf("after\nblur_r: %i\nblur_g: %i\nblur_b: %i\n", portion->img_blur->pixels[pixel].r, portion->img_blur->pixels[pixel].g, portion->img_blur->pixels[pixel].b);
-	exit(1);
+	/* printf("after\nblur_r: %i\nblur_g: %i\nblur_b: %i\n", portion->img_blur->pixels[pixel].r, portion->img_blur->pixels[pixel].g, portion->img_blur->pixels[pixel].b); */
+	/* exit(1); */
 }
 
 /* 0 indexed */
@@ -165,31 +165,23 @@ void *thread_start(void *arg)
 /* y: 135 */
 void blur_portion(blur_portion_t const *portion)
 {
-	int i;
-	int s;
-	tinfo_t *tinfo;
+	size_t i, start_pixel, stop_pixel_y, stop_pixel_x;
 
 	if (!portion)
 		return;
-	printf("NUM_THREADS: %i\n", NUM_THREADS);
-	tinfo = calloc(NUM_THREADS, sizeof(*tinfo));
-	for (i = 0; i < NUM_THREADS; ++i)
+	i = start_pixel = portion->y * portion->img->w + portion->x;
+	stop_pixel_x = start_pixel + portion->w;
+	stop_pixel_y = stop_pixel_x + portion->img->w * (portion->h - 1);
+	while (i < stop_pixel_y)
 	{
-		tinfo[i].tnum = i;
-		tinfo[i].portion = portion;
-		s = pthread_create(&tinfo[i].tid, NULL, &thread_start, tinfo + i);
-		if (s != 0)
-			goto out;
-	}
-	for (i = 0; i < NUM_THREADS; ++i)
-	{
-		s = pthread_join(tinfo[i].tid, NULL);
-		if (s != 0)
+		/* printf("pixel: %lu\n", i); */
+		blur_pixel(portion, i);
+		i += portion->img->w;
+		if (i > stop_pixel_y)
 		{
-out:
-			perror(NULL);
-			return;
+			i = start_pixel += 1;
+			if (i >= stop_pixel_x)
+				break;
 		}
 	}
-	free(tinfo);
 }
