@@ -5,6 +5,11 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/sysinfo.h>
+
+#define NUM_THREADS get_nprocs()
+/* #define NUM_THREADS 1 */
 
 /**
  * struct pixel_s - RGB pixel
@@ -67,6 +72,19 @@ typedef struct blur_portion_s
 	size_t h;
 	kernel_t const *kernel;
 } blur_portion_t;
+
+/**
+ * struct tinfo_s - argument for thread_start()
+ * @tid:	id returned by pthread_create()
+ * @tnum:	application-defined thread number
+ * @portion:	pointer to blur_portion_s struct
+ */
+typedef struct tinfo_s
+{
+	pthread_t tid;
+	int tnum;
+	blur_portion_t const *portion;
+} tinfo_t;
 
 void *thread_entry(void *arg);
 int tprintf(char const *format, ...);
