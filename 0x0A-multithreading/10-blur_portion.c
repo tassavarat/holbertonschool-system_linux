@@ -12,9 +12,6 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 	k_x = k_y = 0;
 	r_avg = g_avg = b_avg = 0;
 	/* printf("pixel: %lu\n", pixel); */
-	/* printf("grid_start: %lu\n", grid_start); */
-	/* printf("grid_stop_x: %lu\n", grid_stop_x); */
-	/* printf("grid_stop_y: %lu\n", grid_stop_y); */
 	while (grid_idx < grid_stop_y)
 	{
 		/* printf("subp: %lu\n", grid_idx); */
@@ -35,14 +32,8 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 		}
 	}
 	for (k_y = 0, k_sum = 0; k_y < portion->kernel->size; ++k_y)
-	{
 		for (k_x = 0; k_x < portion->kernel->size; ++k_x)
-		{
-			/* printf("%f ", portion->kernel->matrix[k_y][k_x]); */
 			k_sum += portion->kernel->matrix[k_y][k_x];
-		}
-		/* putchar('\n'); */
-	}
 	/* printf("r_sum: %f\ng_sum: %f\nb_sum: %f\n", r_avg, g_avg, b_avg); */
 	/* printf("kernel sum: %f\n", k_sum); */
 	r_avg /= k_sum;
@@ -54,7 +45,6 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 	portion->img_blur->pixels[pixel].g = g_avg;
 	portion->img_blur->pixels[pixel].b = b_avg;
 	/* printf("after\nblur_r: %i\nblur_g: %i\nblur_b: %i\n", portion->img_blur->pixels[pixel].r, portion->img_blur->pixels[pixel].g, portion->img_blur->pixels[pixel].b); */
-	/* exit(1); */
 }
 
 /* 0 indexed */
@@ -118,40 +108,6 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 /* 11111 */
 /* 11111 */
 /* 11111 */
-void *thread_start(void *arg)
-{
-	tinfo_t *tinfo = arg;
-	size_t i, start_pixel, stop_pixel_y, stop_pixel_x;
-
-	/* if (tinfo->tnum != 0) */
-	/* 	pthread_exit(NULL); */
-	/* printf("tnum: %i\n", tinfo->tnum); */
-	/* printf("w: %lu\n", tinfo->portion->w); */
-	/* printf("h: %lu\n", tinfo->portion->h); */
-	/* printf("x: %lu\n", tinfo->portion->x); */
-	/* printf("y: %lu\n", tinfo->portion->y); */
-	/* printf("img_w: %lu\n", tinfo->portion->img->w); */
-	/* printf("img_h: %lu\n", tinfo->portion->img->h); */
-	i = start_pixel = tinfo->portion->y * tinfo->portion->img->w + tinfo->portion->x + tinfo->tnum;
-	stop_pixel_x = start_pixel - tinfo->tnum + tinfo->portion->w;
-	stop_pixel_y = stop_pixel_x + tinfo->portion->img->w * (tinfo->portion->h - 1);
-	/* printf("start_pixel: %lu\n", start_pixel); */
-	/* printf("stop_pixel_x: %lu\n", stop_pixel_x); */
-	/* printf("stop_pixel_y: %lu\n", stop_pixel_y); */
-	while (i < stop_pixel_y)
-	{
-		/* printf("pixel: %lu\n", i); */
-		blur_pixel(tinfo->portion, i);
-		i += tinfo->portion->img->w;
-		if (i > stop_pixel_y)
-		{
-			i = start_pixel += NUM_THREADS;
-			if (i >= stop_pixel_x)
-				pthread_exit(NULL);
-		}
-	}
-	pthread_exit(NULL);
-}
 
 /**
  * blur_portion - blur portion of an image using Gaussian blur
