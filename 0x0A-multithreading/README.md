@@ -114,3 +114,17 @@ alex@~/0x0A-multithreading$ ./1-tprintf
 [139794656094016] Hello from main thread
 alex@~/0x0A-multithreading$
 ```
+
+### [2. Blur portion of an image](./10-blur_portion.c)
+Write a method that blurs a portion of an image using a Gaussian Blur.
+
+* Prototype: `void blur_portion(blur_portion_t const *portion);`, where:
+	* `portion` points to a data structure described in the project requirements
+
+```
+alex@~/0x0A-multithreading$ gcc -Wall -Wextra -Werror -pedantic -g3 10-main.c 10-blur_portion.c -o 10-blur_portion
+alex@~/0x0A-multithreading$ ./10-blur_portion images/car.pbm images/kernel_0.knl
+Image size -> 960 * 540
+Kernel size -> 5
+alex@~/0x0A-multithreading$
+```
