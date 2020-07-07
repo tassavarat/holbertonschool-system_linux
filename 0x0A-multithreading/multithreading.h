@@ -83,12 +83,16 @@ typedef struct tinfo_s
 {
 	pthread_t tid;
 	int tnum;
-	blur_portion_t const *portion;
+	blur_portion_t *portion;
+	pixel_t **pixels;
 } tinfo_t;
 
 void *thread_entry(void *arg);
 int tprintf(char const *format, ...);
 void blur_portion(blur_portion_t const *portion);
+pixel_t **convert_array(img_t const *img);
+void blur_pixel(blur_portion_t const *portion, pixel_t **pixels, size_t x,
+		size_t y, size_t px);
 void blur_image(img_t *img_blur, img_t const *img, kernel_t const *kernel);
 int tprintf(char const *format, ...);
 

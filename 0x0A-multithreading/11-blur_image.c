@@ -1,195 +1,147 @@
 #include "multithreading.h"
 
-void blur_pixel(blur_portion_t const *portion, size_t pixel)
-{
-	size_t grid_start, grid_stop_x, grid_stop_y, half_kernel, grid_idx, k_x, k_y;
-	float r_avg, g_avg, b_avg, k_sum;
+/*              1111111111 */
+/*     01234567890123456789 x */
+/*  0  01234567012345670123 */
+/*  1  01234567012345670123 */
+/*  2  01234567012345670123 */
+/*  3  01234567012345670123 */
+/*  4  01234567012345670123 */
+/*  5  01234567012345670123 */
+/*  6  01234567012345670123 */
+/*  7  01234567012345670123 */
+/*  8  01234567012345670123 */
+/*  9  01234567012345670123 */
+/* 10  01234567012345670123 */
+/* 11  01234567012345670123 */
+/* 12  01234567012345670123 */
+/* 13  01234567012345670123 */
+/* 14  01234567012345670123 */
+/* 15  01234567012345670123 */
+/* 16  01234567012345670123 */
+/* 17  01234567012345670123 */
+/* 18  01234567012345670123 */
+/* 19  01234567012345670123 */
+/*  y */
 
-	half_kernel = portion->kernel->size / 2;
-	grid_idx = grid_start = (pixel - half_kernel) - half_kernel * portion->img->w;
-	grid_stop_x = grid_start + portion->kernel->size;
-	grid_stop_y = grid_stop_x + portion->img->w * (portion->kernel->size - 1);
-	k_x = k_y = 0;
-	r_avg = g_avg = b_avg = 0;
-	/* printf("pixel: %lu\n", pixel); */
-	/* printf("grid_start: %lu\n", grid_start); */
-	/* printf("grid_stop_x: %lu\n", grid_stop_x); */
-	/* printf("grid_stop_y: %lu\n", grid_stop_y); */
-	while (grid_idx < grid_stop_y)
-	{
-		/* printf("subp: %lu\n", grid_idx); */
-		/* printf("img_r: %i * matrix: %f = %f\n", portion->img->pixels[pixel].r, portion->kernel->matrix[k_y][k_x], portion->img->pixels[pixel].r * portion->kernel->matrix[k_y][k_x]); */
-		/* printf("img_r: %i\n", portion->img->pixels[pixel].r); */
-		/* printf("img_g: %i\n", portion->img->pixels[pixel].g); */
-		/* printf("img_b: %i\n", portion->img->pixels[pixel].b); */
-		r_avg += portion->kernel->matrix[k_y][k_x] * portion->img->pixels[pixel].r;
-		g_avg += portion->kernel->matrix[k_y][k_x] * portion->img->pixels[pixel].g;
-		b_avg += portion->kernel->matrix[k_y][k_x] * portion->img->pixels[pixel].b;
-		++grid_idx, ++k_x;
-		if (grid_idx >= grid_stop_x)
+/* 11111 */
+/* 11111 */
+/* 11111 */
+/* 11111 */
+/* 11111 */
+
+/**
+ * blur_portion_thread - blur portion of an image using Gaussian blur
+ * @tinfo: pointer to structure with pointers to portion and pixels
+ */
+void blur_portion_thread(tinfo_t *tinfo)
+{
+	size_t i, j, px, start, stop_x, stop_y;
+	blur_portion_t *portion = tinfo->portion;
+
+	if (!portion)
+		return;
+	start = px = portion->x + portion->y * portion->img->w;
+	stop_x = start + portion->w;
+	stop_y = stop_x + portion->img->w * (portion->h - 1);
+	for (i = portion->x; i < portion->w + portion->x; ++i)
+		for (j = portion->y; j < portion->h + portion->y; ++j)
 		{
-			grid_stop_x += portion->img->w;
-			grid_idx = grid_start += portion->img->w;
-			k_x = 0;
-			++k_y;
+			blur_pixel(portion, tinfo->pixels, i, j, px);
+			px += portion->img->w;
+			if (px >= stop_y)
+			{
+				px = start += 1;
+				if (px >= stop_x)
+					break;
+			}
 		}
-	}
-	for (k_y = 0, k_sum = 0; k_y < portion->kernel->size; ++k_y)
-	{
-		for (k_x = 0; k_x < portion->kernel->size; ++k_x)
-		{
-			/* printf("%f ", portion->kernel->matrix[k_y][k_x]); */
-			k_sum += portion->kernel->matrix[k_y][k_x];
-		}
-		/* putchar('\n'); */
-	}
-	printf("r_sum: %f\ng_sum: %f\nb_sum: %f\n", r_avg, g_avg, b_avg);
-	printf("kernel sum: %f\n", k_sum);
-	r_avg /= k_sum;
-	g_avg /= k_sum;
-	b_avg /= k_sum;
-	printf("r_avg: %f\ng_avg: %f\nb_avg: %f\n", r_avg, g_avg, b_avg);
-	printf("before:\nblur_r: %i\nblur_g: %i\nblur_b: %i\n", portion->img_blur->pixels[pixel].r, portion->img_blur->pixels[pixel].g, portion->img_blur->pixels[pixel].b);
-	portion->img_blur->pixels[pixel].r = r_avg;
-	portion->img_blur->pixels[pixel].g = g_avg;
-	portion->img_blur->pixels[pixel].b = b_avg;
-	printf("after\nblur_r: %i\nblur_g: %i\nblur_b: %i\n", portion->img_blur->pixels[pixel].r, portion->img_blur->pixels[pixel].g, portion->img_blur->pixels[pixel].b);
-	exit(1);
 }
 
-/* 0 indexed */
-/* x-pos: y-pos + x */
-/* y-pos: y * img_w */
-/* start_blur: x-pos */
-/* stop_blur: (absolute position + w) + img_w * (w - 1) */
-/* kernel start: (absolute position - kernel size / 2) - kernel size / 2 * img_w */
-/* img_w: 20 */
-/* img_h  20 */
-/* w: 10 */
-/* h: 10 */
-/* x:  5 */
-/* y:  5 */
-
-/* OG */
-/*   0 xxxxxxxxxxxxxxxxxxxx  19 */
-/*  20 xxxxxxxxxxxxxxxxxxxx  39 */
-/*  40 xxxxxxxxxxxxxxxxxxxx  59 */
-/*  60 xxxxxxxxxxxxxxxxxxxx  79 */
-/*  80 xxxxxxxxxxxxxxxxxxxx  99 */
-/* 100 xxxxxxxxxxxxxxxxxxxx 119 start 105-112*/
-/* 120 xxxxxxxxxxxxxxxxxxxx 139 next  125-132 */
-/* 140 xxxxxxxxxxxxxxxxxxxx 159 */
-/* 160 xxxxxxxxxxxxxxxxxxxx 179 */
-/* 180 xxxxxxxxxxxxxxxxxxxx 199 */
-/* 200 xxxxxxxxxxxxxxxxxxxx 219 */
-/* 220 xxxxxxxxxxxxxxxxxxxx 239 */
-/* 240 xxxxxxxxxxxxxxxxxxxx 259 */
-/* 260 xxxxxxxxxxxxxxxxxxxx 279 */
-/* 280 xxxxxxxxxxxxxxxxxxxx 299 stop 295 */
-/* 300 xxxxxxxxxxxxxxxxxxxx 319 */
-/* 320 xxxxxxxxxxxxxxxxxxxx 339 */
-/* 340 xxxxxxxxxxxxxxxxxxxx 359 */
-/* 360 xxxxxxxxxxxxxxxxxxxx 379 */
-/* 380 xxxxxxxxxxxxxxxxxxxx 399 */
-
-/* cpy */
-/*   0 xxxxxxxxxxxxxxxxxxxx  19 */
-/*  20 xxxxxxxxxxxxxxxxxxxx  39 */
-/*  40 xxxxxxxxxxxxxxxxxxxx  59 */
-/*  60 xxx11111xxxxxxxxxxxx  79 */
-/*  80 xxx11111xxxxxxxxxxxx  99 */
-/* 100 xxx11O11ooooOooxxxxx 119 start 105-112*/
-/* 120 xxx11111oooooooxxxxx 139 next  125-132 */
-/* 140 xxx11111oooooooxxxxx 159 */
-/* 160 xxxxxooooooooooxxxxx 179 */
-/* 180 xxxxxooooooooooxxxxx 199 */
-/* 200 xxxxxooooooooooxxxxx 219 */
-/* 220 xxxxxooooooooooxxxxx 239 */
-/* 240 xxxxxooooooooooxxxxx 259 */
-/* 260 xxxxxooooooooooxxxxx 279 */
-/* 280 xxxxxooooooooooSxxxx 299 stop 295 */
-/* 300 xxxxxxxxxxxxxxxxxxxx 319 */
-/* 320 xxxxxxxxxxxxxxxxxxxx 339 */
-/* 340 xxxxxxxxxxxxxxxxxxxx 359 */
-/* 360 xxxxxxxxxxxxxxxxxxxx 379 */
-/* 380 xxxxxxxxxxxxxxxxxxxx 399 */
-/* 11111 */
-/* 11111 */
-/* 11111 */
-/* 11111 */
-/* 11111 */
+/**
+ * thread_start - entry point for thread
+ * @arg: pointer to struct containing thread and image blur information
+ *
+ * Return: NULL
+ */
 void *thread_start(void *arg)
 {
 	tinfo_t *tinfo = arg;
-	size_t i, start_pixel, stop_pixel_y, stop_pixel_x;
+	size_t i;
 
-	/* if (tinfo->tnum != 0) */
-	/* 	pthread_exit(NULL); */
-	/* printf("tnum: %i\n", tinfo->tnum); */
-	/* printf("w: %lu\n", tinfo->portion->w); */
-	/* printf("h: %lu\n", tinfo->portion->h); */
-	/* printf("x: %lu\n", tinfo->portion->x); */
-	/* printf("y: %lu\n", tinfo->portion->y); */
-	/* printf("img_w: %lu\n", tinfo->portion->img->w); */
-	/* printf("img_h: %lu\n", tinfo->portion->img->h); */
-	i = start_pixel = tinfo->portion->y * tinfo->portion->img->w + tinfo->portion->x + tinfo->tnum;
-	stop_pixel_x = start_pixel - tinfo->tnum + tinfo->portion->w;
-	stop_pixel_y = stop_pixel_x + tinfo->portion->img->w * (tinfo->portion->h - 1);
-	/* printf("start_pixel: %lu\n", start_pixel); */
-	/* printf("stop_pixel_x: %lu\n", stop_pixel_x); */
-	/* printf("stop_pixel_y: %lu\n", stop_pixel_y); */
-	while (i < stop_pixel_y)
+	for (i = tinfo->tnum; i < tinfo->portion->img->w; i += NUM_THREADS)
 	{
-		/* printf("pixel: %lu\n", i); */
-		blur_pixel(tinfo->portion, i);
-		i += tinfo->portion->img->w;
-		if (i > stop_pixel_y)
-		{
-			i = start_pixel += NUM_THREADS;
-			if (i >= stop_pixel_x)
-				pthread_exit(NULL);
-		}
+		tinfo->portion->x = i, tinfo->portion->y = 0;
+		tinfo->portion->w = 1;
+		tinfo->portion->h = tinfo->portion->img->h;
+		blur_portion_thread(tinfo);
 	}
 	pthread_exit(NULL);
 }
 
 /**
- * blur_portion - blur portion of an image using Gaussian blur
- * @portion: pointer to structure with information needed to blur
+ * init - initialise dynamic memory
+ * @tinfo:	double pointer to argument for thread_start()
+ * @portion:	double pointer to structure with information needed to blur
+ * @pixels:	pointer to 2-D array representation of image pixels
+ * @img:	pointer to source image
+ * @img_blur:	pointer to destination image
+ * @kernel:	pointer to convolution kernel
+ *
+ * Return: 0 on success or 1 on malloc fail
  */
-/* img.w: 960 */
-/* img.h: 540 */
-/* w: 480 */
-/* h: 270 */
-/* x: 240 */
-/* y: 135 */
+int init(tinfo_t **tinfo, blur_portion_t **portion, pixel_t ***pixels,
+		img_t const *img, img_t *img_blur, kernel_t const *kernel)
+{
+	*tinfo = calloc(NUM_THREADS, sizeof(**tinfo));
+	if (!*tinfo)
+		return (1);
+	*portion = malloc(sizeof(**portion));
+	if (!*portion)
+		return (1);
+	(*portion)->img = img, (*portion)->img_blur = img_blur;
+	(*portion)->kernel = kernel;
+	*pixels = convert_array(img);
+	if (!*pixels)
+		return (1);
+	return (0);
+}
+
+/**
+ * blur_image - blur entire image using Gaussian blur
+ * @img_blur:	pointer to destination image
+ * @img:	pointer to source image
+ * @kernel:	pointer to convolution kernel
+ */
 void blur_image(img_t *img_blur, img_t const *img, kernel_t const *kernel)
 {
-	int i;
-	int s;
 	tinfo_t *tinfo;
+	blur_portion_t *portion;
+	pixel_t **pixels;
+	int i, s;
 
-	if (!portion)
+	if (!img_blur || !img || !kernel)
 		return;
-	printf("NUM_THREADS: %i\n", NUM_THREADS);
-	tinfo = calloc(NUM_THREADS, sizeof(*tinfo));
+	if (init(&tinfo, &portion, &pixels, img, img_blur, kernel))
+		return;
 	for (i = 0; i < NUM_THREADS; ++i)
 	{
 		tinfo[i].tnum = i;
 		tinfo[i].portion = portion;
+		tinfo[i].pixels = pixels;
 		s = pthread_create(&tinfo[i].tid, NULL, &thread_start, tinfo + i);
 		if (s != 0)
-			goto out;
+			return;
 	}
 	for (i = 0; i < NUM_THREADS; ++i)
 	{
 		s = pthread_join(tinfo[i].tid, NULL);
 		if (s != 0)
-		{
-out:
-			perror(NULL);
 			return;
-		}
 	}
+	for (i = 0; (size_t) i < img->h; ++i)
+		free(pixels[i]);
+	free(pixels);
+	free(portion);
 	free(tinfo);
 }
