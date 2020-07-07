@@ -9,7 +9,6 @@
 #include <sys/sysinfo.h>
 
 #define NUM_THREADS get_nprocs()
-/* #define NUM_THREADS 1 */
 
 /**
  * struct pixel_s - RGB pixel
