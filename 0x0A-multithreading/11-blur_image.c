@@ -1,28 +1,29 @@
 #include "multithreading.h"
 
-/*              1111111111 */
+/*               1111111111 */
 /*     01234567890123456789 x */
-/*  0  01234567012345670123 */
-/*  1  01234567012345670123 */
-/*  2  01234567012345670123 */
-/*  3  01234567012345670123 */
-/*  4  01234567012345670123 */
-/*  5  01234567012345670123 */
-/*  6  01234567012345670123 */
-/*  7  01234567012345670123 */
-/*  8  01234567012345670123 */
-/*  9  01234567012345670123 */
-/* 10  01234567012345670123 */
-/* 11  01234567012345670123 */
-/* 12  01234567012345670123 */
-/* 13  01234567012345670123 */
-/* 14  01234567012345670123 */
-/* 15  01234567012345670123 */
-/* 16  01234567012345670123 */
-/* 17  01234567012345670123 */
-/* 18  01234567012345670123 */
-/* 19  01234567012345670123 */
+/*  0  00000111112222233333 */
+/*  1  00000111112222233333 */
+/*  2  00000111112222233333 */
+/*  3  00000111112222233333 */
+/*  4  00000111112222233333 */
+/*  5  00000111112222233333 */
+/*  6  00000111112222233333 */
+/*  7  00000111112222233333 */
+/*  8  00000111112222233333 */
+/*  9  00000111112222233333 */
+/* 10  00000111112222233333 */
+/* 11  00000111112222233333 */
+/* 12  00000111112222233333 */
+/* 13  00000111112222233333 */
+/* 14  00000111112222233333 */
+/* 15  00000111112222233333 */
+/* 16  00000111112222233333 */
+/* 17  00000111112222233333 */
+/* 18  00000111112222233333 */
+/* 19  00000111112222233333 */
 /*  y */
+/* 20 / 4 = 5 */
 
 /* 11111 */
 /* 11111 */
@@ -47,7 +48,7 @@ void blur_portion_thread(tinfo_t *tinfo)
 	for (i = portion->x; i < portion->w + portion->x; ++i)
 		for (j = portion->y; j < portion->h + portion->y; ++j)
 		{
-			blur_pixel(portion, tinfo->pixels, i, j, px);
+			blur_pixel(portion, (const pixel_t **)tinfo->pixels, i, j, px);
 			px += portion->img->w;
 			if (px >= stop_y)
 			{
@@ -67,15 +68,25 @@ void blur_portion_thread(tinfo_t *tinfo)
 void *thread_start(void *arg)
 {
 	tinfo_t *tinfo = arg;
-	size_t i;
+	size_t offset;
 
-	for (i = tinfo->tnum; i < tinfo->portion->img->w; i += NUM_THREADS)
+	if (tinfo->portion->img->w <= (size_t) NUM_THREADS &&
+			(size_t) tinfo->tnum < tinfo->portion->img->w)
 	{
-		tinfo->portion->x = i, tinfo->portion->y = 0;
+		tinfo->portion->x = tinfo->tnum;
+		tinfo->portion->y = 0;
 		tinfo->portion->w = 1;
 		tinfo->portion->h = tinfo->portion->img->h;
-		blur_portion_thread(tinfo);
 	}
+	else
+	{
+		offset = tinfo->portion->img->w / NUM_THREADS;
+		tinfo->portion->x = offset * tinfo->tnum;
+		tinfo->portion->y = 0;
+		tinfo->portion->w = offset;
+		tinfo->portion->h = tinfo->portion->img->h;
+	}
+	blur_portion_thread(tinfo);
 	pthread_exit(NULL);
 }
 
@@ -93,7 +104,7 @@ void *thread_start(void *arg)
 int init(tinfo_t **tinfo, blur_portion_t **portion, pixel_t ***pixels,
 		img_t const *img, img_t *img_blur, kernel_t const *kernel)
 {
-	*tinfo = calloc(NUM_THREADS, sizeof(**tinfo));
+	*tinfo = malloc(NUM_THREADS * sizeof(**tinfo));
 	if (!*tinfo)
 		return (1);
 	*portion = malloc(sizeof(**portion));
