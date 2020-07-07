@@ -95,15 +95,14 @@ pixel_t **convert_array(img_t const *img)
 	pixels = malloc(img->h * sizeof(*pixels));
 	if (!pixels)
 		return (NULL);
-	for (i = 0; i < img->w; ++i)
+	for (i = k = 0; i < img->h; ++i)
 	{
 		pixels[i] = malloc(img->w * sizeof(**pixels));
 		if (!pixels[i])
 			return (NULL);
-	}
-	for (i = k = 0; i < img->h; ++i)
 		for (j = 0; j < img->w; ++j, ++k)
 			pixels[i][j] = img->pixels[k];
+	}
 	return (pixels);
 }
 
@@ -137,7 +136,7 @@ void blur_portion(blur_portion_t const *portion)
 					break;
 			}
 		}
-	for (i = 0; i < portion->img->w; ++i)
+	for (i = 0; i < portion->img->h; ++i)
 		free(pixels[i]);
 	free(pixels);
 }

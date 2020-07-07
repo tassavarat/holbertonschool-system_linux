@@ -111,14 +111,14 @@ int main(int ac, char **av)
 	portion.img = &img;
 	portion.img_blur = &img_blur;
 	portion.kernel = &kernel;
-	portion.w = img.w / 2;
-	portion.h = img.h / 2;
-	portion.x = img.w / 4;
-	portion.y = img.h / 4;
-	/* portion.w = img.w; */
-	/* portion.h = img.h; */
-	/* portion.x = 0; */
-	/* portion.y = 0; */
+	/* portion.w = img.w / 2; */
+	/* portion.h = img.h / 2; */
+	/* portion.x = img.w / 4; */
+	/* portion.y = img.h / 4; */
+	portion.w = img.w;
+	portion.h = img.h;
+	portion.x = 0;
+	portion.y = 0;
 	blur_portion(&portion);
 
 	write_image(&img_blur, "output.pbm");
