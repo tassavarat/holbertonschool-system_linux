@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <sys/sysinfo.h>
 
-#define NUM_THREADS get_nprocs()
+#define NUM_THREADS get_nprocs() / 2
 
 /**
  * struct pixel_s - RGB pixel
