@@ -3,110 +3,88 @@
 /**
  * blur_pixel - blur individual pixel
  * @portion: pointer to structure with information needed to blur
- * @pixel: index of pixel to blur
+ * @pixels: double array of pixels
+ * @x: x position for pixels array of pixel to blur
+ * @y: y position for pixels array of pixel to blur
+ * @px: index of pixel to blur for output array
+ *
+ * Using pixels double array for simplified 1 to 1 traversal of image with
+ * kernel
  */
-void blur_pixel(blur_portion_t const *portion, size_t pixel)
+void blur_pixel(blur_portion_t const *portion, pixel_t **pixels, size_t x,
+		size_t y, size_t px)
 {
-	ssize_t grid_start, grid_idx, grid_stop_x, grid_stop_y;
-	size_t k_x, k_y, half_kernel;
+	ssize_t grid_x, grid_y, grid_stop_x, grid_stop_y;
+	size_t half_kernel, k_x, k_y;
 	float r_avg, g_avg, b_avg, k_sum;
-	int offset;
 
 	half_kernel = portion->kernel->size / 2;
-	grid_idx = grid_start = (pixel - half_kernel) - half_kernel * portion->img->w;
-	grid_stop_x = grid_start + portion->kernel->size;
-	grid_stop_y = grid_stop_x + portion->img->w * (portion->kernel->size - 1);
-	offset = k_sum = k_x = k_y = r_avg = g_avg = b_avg = 0;
-	printf("pixel: %lu\n", pixel);
-	printf("grid_start: %li\n", grid_start);
-	printf("grid_stop_x: %li\n", grid_stop_x);
-	printf("grid_stop_y: %li\n", grid_stop_y);
-	while (grid_idx < grid_stop_y)
+	grid_x = x - half_kernel, grid_y = y - half_kernel;
+	grid_stop_y = grid_y + portion->kernel->size;
+	grid_stop_x = grid_x + portion->kernel->size;
+	for (grid_y = y - half_kernel, k_y = r_avg = g_avg = b_avg = k_sum = 0;
+			grid_y < grid_stop_y; ++grid_y, ++k_y)
 	{
-		printf("grid_idx: %li\n", grid_idx);
-		printf("grid_stop_x: %li\n", grid_stop_x);
-		if (grid_idx > -1 && grid_idx < grid_stop_x && grid_idx >= grid_start + offset)
+		for (grid_x = x - half_kernel, k_x = 0; grid_x < grid_stop_x;
+				++grid_x, ++k_x)
 		{
-			/* printf("grid_start: %li\n", grid_start); */
-			/* printf("grid_stop_x: %li\n", grid_stop_x); */
-			/* printf("prev_start: %i\n", abs(prev_start)); */
-			printf("grid_idx: %li", grid_idx);
-			/* prev_start = grid_start; */
-			r_avg +=
-				portion->kernel->matrix[k_y][k_x] * portion->img->pixels[grid_idx].r;
-			g_avg +=
-				portion->kernel->matrix[k_y][k_x] * portion->img->pixels[grid_idx].g;
-			b_avg +=
-				portion->kernel->matrix[k_y][k_x] * portion->img->pixels[grid_idx].b;
-			printf("\t%f\n", portion->kernel->matrix[k_y][k_x]);
-			k_sum += portion->kernel->matrix[k_y][k_x];
-		}
-		++grid_idx, ++k_x;
-		if (grid_idx >= grid_stop_x)
-		{
-			/* puts("entered"); */
-			grid_stop_x += portion->img->w;
-			if (grid_start < 0 && grid_start + (ssize_t) portion->img->w > -1)
+			if (grid_x > -1 && grid_y > -1 &&
+					grid_x < (ssize_t) portion->img->w &&
+					grid_y < (ssize_t) portion->img->h)
 			{
-				offset = -grid_start;
-				/* printf("offset: %i\n", offset); */
+				r_avg += portion->kernel->matrix[k_y][k_x] *
+					pixels[grid_y][grid_x].r;
+				g_avg += portion->kernel->matrix[k_y][k_x] *
+					pixels[grid_y][grid_x].g;
+				b_avg += portion->kernel->matrix[k_y][k_x] *
+					pixels[grid_y][grid_x].b;
+				k_sum += portion->kernel->matrix[k_y][k_x];
 			}
-			grid_idx = grid_start += portion->img->w;
-			k_x = 0;
-			++k_y;
-			/* putchar('\n'); */
 		}
 	}
-	/* printf("k_sum: %f\n", k_sum); */
-	/* putchar('\n'); */
-	/* for (k_y = 0, k_sum = 0; k_y < portion->kernel->size; ++k_y) */
-	/* 	for (k_x = 0; k_x < portion->kernel->size; ++k_x) */
-	/* 		k_sum += portion->kernel->matrix[k_y][k_x]; */
 	r_avg /= k_sum;
 	g_avg /= k_sum;
 	b_avg /= k_sum;
-	portion->img_blur->pixels[pixel].r = r_avg;
-	portion->img_blur->pixels[pixel].g = g_avg;
-	portion->img_blur->pixels[pixel].b = b_avg;
+	portion->img_blur->pixels[px].r = r_avg;
+	portion->img_blur->pixels[px].g = g_avg;
+	portion->img_blur->pixels[px].b = b_avg;
 }
 
-/* cpy */
-/* xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx */
-/* xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx */
-/* xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx */
-/*   0 xxxxxxxxxxxxxxxxxxxx  19 */
-/*  20 xxxxxxxxxxxxxxxxxxxx  39 */
-/*  40 xxxxxxxxxxxxxxxxxxxx  59 */
-/*  60 xxx11111xxxxxxxxxxxx  79 */
-/*  80 xxx11111xxxxxxxxxxxx  99 */
-/* 100 xxx11O11ooooOooxxxxx 119 start 105-112*/
-/* 120 xxx11111oooooooxxxxx 139 next  125-132 */
-/* 140 xxx11111oooooooxxxxx 159 */
-/* 160 xxxxxooooooooooxxxxx 179 */
-/* 180 xxxxxooooooooooxxxxx 199 */
-/* 200 xxxxxooooooooooxxxxx 219 */
-/* 220 xxxxxooooooooooxxxxx 239 */
-/* 240 xxxxxooooooooooxxxxx 259 */
-/* 260 xxxxxooooooooooxxxxx 279 */
-/* 280 xxxxxooooooooooSxxxx 299 stop 295 */
-/* 300 xxxxxxxxxxxxxxxxxxxx 319 */
-/* 320 xxxxxxxxxxxxxxxxxxxx 339 */
-/* 340 xxxxxxxxxxxxxxxxxxxx 359 */
-/* 360 xxxxxxxxxxxxxxxxxxxx 379 */
-/* 380 xxxxxxxxxxxxxxxxxxxx 399 */
+/*              1111111111 */
+/*    01234567890123456789 x */
+/*  0 xxxxxxxxxxxxxxxxxxxx */
+/*  1 xxxxxxxxxxxxxxxxxxxx */
+/*  2 xxxxxxxxxxxxxxxxxxxx */
+/*  3 xxx11111xxxxxxxxxxxx */
+/*  4 xxx11111xxxxxxxxxxxx */
+/*  5 xxx11O11ooooOooxxxxx */
+/*  6 xxx11111oooooooxxxxx */
+/*  7 xxx11111oooooooxxxxx */
+/*  8 xxxxxooooooooooxxxxx */
+/*  9 xxxxxooooooooooxxxxx */
+/* 10 xxxxxooooooooooxxxxx */
+/* 11 xxxxxooooooooooxxxxx */
+/* 12 xxxxxooooooooooxxxxx */
+/* 13 xxxxxooooooooooxxxxx */
+/* 14 xxxxxooooooooooSxxxx */
+/* 15 xxxxxxxxxxxxxxxxxxxx */
+/* 16 xxxxxxxxxxxxxxxxxxxx */
+/* 17 xxxxxxxxxxxxxxxxxxxx */
+/* 18 xxxxxxxxxxxxxxxxxxxx */
+/* 19 xxxxxxxxxxxxxxxxxxxx */
+/*  y */
 /* 11111 */
 /* 11111 */
 /* 11111 */
 /* 11111 */
 /* 11111 */
 
-	/* kernel->matrix = malloc(kernel->size * sizeof(float *)); */
-	/* for (i = 0; i < kernel->size; i++) */
-	/* { */
-	/* 	kernel->matrix[i] = malloc(kernel->size * sizeof(float)); */
-	/* 	for (j = 0; j < kernel->size; j++) */
-	/* 		fscanf(f, "%f", &kernel->matrix[i][j]); */
-	/* } */
+/**
+ * convert_array - create 2-D pixel_t array from 1-D array
+ * @img: pointer to img struct containing 1-D pixel_t array
+ *
+ * Return: created array or NULL on malloc fail
+ */
 pixel_t **convert_array(img_t const *img)
 {
 	pixel_t **pixels;
@@ -117,14 +95,15 @@ pixel_t **convert_array(img_t const *img)
 	pixels = malloc(img->h * sizeof(*pixels));
 	if (!pixels)
 		return (NULL);
-	for (i = k = 0; i < img->w; ++i)
+	for (i = 0; i < img->w; ++i)
 	{
 		pixels[i] = malloc(img->w * sizeof(**pixels));
 		if (!pixels[i])
 			return (NULL);
+	}
+	for (i = k = 0; i < img->h; ++i)
 		for (j = 0; j < img->w; ++j, ++k)
 			pixels[i][j] = img->pixels[k];
-	}
 	return (pixels);
 }
 
@@ -134,7 +113,7 @@ pixel_t **convert_array(img_t const *img)
  */
 void blur_portion(blur_portion_t const *portion)
 {
-	size_t i, start_pixel, stop_pixel_y, stop_pixel_x;
+	size_t i, j, px, start, stop_x, stop_y;
 	pixel_t **pixels;
 
 	if (!portion)
@@ -142,24 +121,23 @@ void blur_portion(blur_portion_t const *portion)
 	pixels = convert_array(portion->img);
 	if (!pixels)
 		return;
-	exit(1);
-	i = start_pixel = portion->y * portion->img->w + portion->x;
-	stop_pixel_x = start_pixel + portion->w;
-	stop_pixel_y = stop_pixel_x + portion->img->w * (portion->h - 1);
-	/* printf("start_pixel: %lu\n", start_pixel); */
-	/* printf("stop_pixel_x: %lu\n", stop_pixel_x); */
-	/* printf("stop_pixel_y: %lu\n", stop_pixel_y); */
-	/* exit(1); */
-	while (i < stop_pixel_y)
-	{
-		/* printf("pixel: %lu\n", i); */
-		blur_pixel(portion, i);
-		i += portion->img->w;
-		if (i >= stop_pixel_y)
+	start = px = portion->x + portion->y * portion->img->w;
+	stop_x = start + portion->w;
+	stop_y = stop_x + portion->img->w * (portion->h - 1);
+	for (i = portion->x; i < portion->w + portion->x; ++i)
+		for (j = portion->y; j < portion->h + portion->y; ++j)
 		{
-			i = start_pixel += 1;
-			if (i >= stop_pixel_x)
-				break;
+			/* printf("px: %lu\n", px); */
+			blur_pixel(portion, pixels, i, j, px);
+			px += portion->img->w;
+			if (px >= stop_y)
+			{
+				px = start += 1;
+				if (px >= stop_x)
+					break;
+			}
 		}
-	}
+	for (i = 0; i < portion->img->w; ++i)
+		free(pixels[i]);
+	free(pixels);
 }
