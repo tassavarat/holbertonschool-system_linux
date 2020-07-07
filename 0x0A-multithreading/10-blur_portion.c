@@ -7,7 +7,8 @@
  */
 void blur_pixel(blur_portion_t const *portion, size_t pixel)
 {
-	size_t grid_start, grid_stop_x, grid_stop_y, half_kernel, grid_idx, k_x, k_y;
+	ssize_t grid_start, grid_idx;
+	size_t k_x, k_y, grid_stop_x, grid_stop_y, half_kernel;
 	float r_avg, g_avg, b_avg, k_sum;
 
 	half_kernel = portion->kernel->size / 2;
@@ -16,8 +17,14 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 	grid_stop_y = grid_stop_x + portion->img->w * (portion->kernel->size - 1);
 	k_x = k_y = 0;
 	r_avg = g_avg = b_avg = 0;
-	while (grid_idx < grid_stop_y)
+	/* printf("pixel: %lu\n", pixel); */
+	/* printf("grid_start: %li\n", grid_start); */
+	/* printf("grid_stop_x: %li\n", grid_stop_x); */
+	/* printf("grid_stop_y: %li\n", grid_stop_y); */
+	while (grid_idx < (ssize_t) grid_stop_y)
 	{
+		/* if (grid_idx < 0 || grid_idx > ) */
+		/* printf("grid_idx: %li\n", grid_idx); */
 		r_avg +=
 			portion->kernel->matrix[k_y][k_x] * portion->img->pixels[grid_idx].r;
 		g_avg +=
@@ -25,7 +32,7 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 		b_avg +=
 			portion->kernel->matrix[k_y][k_x] * portion->img->pixels[grid_idx].b;
 		++grid_idx, ++k_x;
-		if (grid_idx >= grid_stop_x)
+		if (grid_idx >= (ssize_t) grid_stop_x)
 		{
 			grid_stop_x += portion->img->w;
 			grid_idx = grid_start += portion->img->w;
@@ -43,6 +50,36 @@ void blur_pixel(blur_portion_t const *portion, size_t pixel)
 	portion->img_blur->pixels[pixel].g = g_avg;
 	portion->img_blur->pixels[pixel].b = b_avg;
 }
+
+/* cpy */
+/* xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx */
+/* xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx */
+/* xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx */
+/*   0 xxxxxxxxxxxxxxxxxxxx  19 */
+/*  20 xxxxxxxxxxxxxxxxxxxx  39 */
+/*  40 xxxxxxxxxxxxxxxxxxxx  59 */
+/*  60 xxx11111xxxxxxxxxxxx  79 */
+/*  80 xxx11111xxxxxxxxxxxx  99 */
+/* 100 xxx11O11ooooOooxxxxx 119 start 105-112*/
+/* 120 xxx11111oooooooxxxxx 139 next  125-132 */
+/* 140 xxx11111oooooooxxxxx 159 */
+/* 160 xxxxxooooooooooxxxxx 179 */
+/* 180 xxxxxooooooooooxxxxx 199 */
+/* 200 xxxxxooooooooooxxxxx 219 */
+/* 220 xxxxxooooooooooxxxxx 239 */
+/* 240 xxxxxooooooooooxxxxx 259 */
+/* 260 xxxxxooooooooooxxxxx 279 */
+/* 280 xxxxxooooooooooSxxxx 299 stop 295 */
+/* 300 xxxxxxxxxxxxxxxxxxxx 319 */
+/* 320 xxxxxxxxxxxxxxxxxxxx 339 */
+/* 340 xxxxxxxxxxxxxxxxxxxx 359 */
+/* 360 xxxxxxxxxxxxxxxxxxxx 379 */
+/* 380 xxxxxxxxxxxxxxxxxxxx 399 */
+/* 11111 */
+/* 11111 */
+/* 11111 */
+/* 11111 */
+/* 11111 */
 
 /**
  * blur_portion - blur portion of an image using Gaussian blur
