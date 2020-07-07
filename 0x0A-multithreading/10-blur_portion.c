@@ -161,15 +161,15 @@ void blur_portion(blur_portion_t const *portion)
 	start = px = portion->x + portion->y * portion->img->w;
 	stop_x = start + portion->w;
 	stop_y = stop_x + portion->img->w * (portion->h - 1);
-	for (i = portion->x; i < portion->w + portion->x; ++i)
-		for (j = portion->y; j < portion->h + portion->y; ++j)
+	for (i = portion->x; i < portion->h + portion->y; ++i)
+		for (j = portion->y; j < portion->w + portion->x; ++j)
 		{
-			blur_pixel(portion, pixels, i, j, px);
-			px += portion->img->w;
-			if (px >= stop_y)
+			blur_pixel(portion, pixels, j, i, px);
+			if (++px == stop_x)
 			{
-				px = start += 1;
-				if (px >= stop_x)
+				stop_x += portion->img->w;
+				px = start += portion->img->w;
+				if (px == stop_y)
 					break;
 			}
 		}
