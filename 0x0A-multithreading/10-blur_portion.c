@@ -63,7 +63,8 @@
  * @y:		y position for pixels array of pixel to blur
  */
 void get_sums(float *r_sum, float *g_sum, float *b_sum, float *k_sum,
-		blur_portion_t const *portion, pixel_t **pixels, size_t x, size_t y)
+		const blur_portion_t *portion, const pixel_t **pixels,
+		const size_t x, const size_t y)
 {
 	ssize_t grid_x, grid_y, grid_stop_x, grid_stop_y;
 	size_t half_kernel, k_x, k_y;
@@ -105,8 +106,8 @@ void get_sums(float *r_sum, float *g_sum, float *b_sum, float *k_sum,
  * Using pixels double array for simplified 1 to 1 traversal of image with
  * kernel
  */
-void blur_pixel(blur_portion_t const *portion, pixel_t **pixels, size_t x,
-		size_t y, size_t px)
+void blur_pixel(const blur_portion_t *portion, const pixel_t **pixels,
+		const size_t x, const size_t y, const size_t px)
 {
 	float r_avg, g_avg, b_avg, k_sum;
 
@@ -123,7 +124,7 @@ void blur_pixel(blur_portion_t const *portion, pixel_t **pixels, size_t x,
  *
  * Return: created array or NULL on malloc fail
  */
-pixel_t **convert_array(img_t const *img)
+pixel_t **convert_array(const img_t *img)
 {
 	pixel_t **pixels;
 	size_t i, j, k;
@@ -164,7 +165,7 @@ void blur_portion(blur_portion_t const *portion)
 	for (i = portion->x; i < portion->w + portion->x; ++i)
 		for (j = portion->y; j < portion->h + portion->y; ++j)
 		{
-			blur_pixel(portion, pixels, i, j, px);
+			blur_pixel(portion, (const pixel_t **)pixels, i, j, px);
 			px += portion->img->w;
 			if (px >= stop_y)
 			{
