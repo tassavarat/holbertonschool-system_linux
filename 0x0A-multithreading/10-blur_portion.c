@@ -53,14 +53,14 @@
 
 /**
  * get_sums - initialise sums for rgb and kernel
- * @r_sum: pointer to sum of red values
- * @g_sum: pointer to sum of green values
- * @b_sum: pointer to sum of blue values
- * @k_sum: pointer to sum of kernel values
- * @portion: pointer to structure with information needed to blur
- * @pixels: double array of pixels
- * @x: x position for pixels array of pixel to blur
- * @y: y position for pixels array of pixel to blur
+ * @r_sum:	pointer to sum of red values
+ * @g_sum:	pointer to sum of green values
+ * @b_sum:	pointer to sum of blue values
+ * @k_sum:	pointer to sum of kernel values
+ * @portion:	pointer to structure with information needed to blur
+ * @pixels:	double array of pixels
+ * @x:		x position for pixels array of pixel to blur
+ * @y:		y position for pixels array of pixel to blur
  */
 void get_sums(float *r_sum, float *g_sum, float *b_sum, float *k_sum,
 		blur_portion_t const *portion, pixel_t **pixels, size_t x, size_t y)
@@ -96,11 +96,11 @@ void get_sums(float *r_sum, float *g_sum, float *b_sum, float *k_sum,
 
 /**
  * blur_pixel - blur individual pixel
- * @portion: pointer to structure with information needed to blur
- * @pixels: double array of pixels
- * @x: x position for pixels array of pixel to blur
- * @y: y position for pixels array of pixel to blur
- * @px: index of pixel to blur for output array
+ * @portion:	pointer to structure with information needed to blur
+ * @pixels:	double array of pixels
+ * @x:		x position for pixels array of pixel to blur
+ * @y:		y position for pixels array of pixel to blur
+ * @px:		index of pixel to blur for output array
  *
  * Using pixels double array for simplified 1 to 1 traversal of image with
  * kernel
