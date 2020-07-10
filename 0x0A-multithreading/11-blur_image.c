@@ -66,26 +66,7 @@ void blur_portion_thread(tinfo_t *tinfo)
  */
 void *thread_start(void *arg)
 {
-	tinfo_t *tinfo = arg;
-	size_t offset;
-
-	if (tinfo->portion->img->w <= (size_t) NUM_THREADS &&
-			(size_t) tinfo->tnum < tinfo->portion->img->w)
-	{
-		tinfo->portion->x = tinfo->tnum;
-		tinfo->portion->y = 0;
-		tinfo->portion->w = 1;
-		tinfo->portion->h = tinfo->portion->img->h;
-	}
-	else
-	{
-		offset = tinfo->portion->img->w / NUM_THREADS;
-		tinfo->portion->x = offset * tinfo->tnum;
-		tinfo->portion->y = 0;
-		tinfo->portion->w = offset;
-		tinfo->portion->h = tinfo->portion->img->h;
-	}
-	blur_portion_thread(tinfo);
+	blur_portion_thread((tinfo_t *)arg);
 	pthread_exit(NULL);
 }
 
@@ -103,14 +84,36 @@ void *thread_start(void *arg)
 int init(tinfo_t **tinfo, blur_portion_t **portion, pixel_t ***pixels,
 		img_t const *img, img_t *img_blur, kernel_t const *kernel)
 {
+	int i;
+	size_t offset;
+
 	*tinfo = malloc(NUM_THREADS * sizeof(**tinfo));
 	if (!*tinfo)
 		return (1);
-	*portion = malloc(sizeof(**portion));
+	*portion = malloc(NUM_THREADS * sizeof(**portion));
 	if (!*portion)
 		return (1);
-	(*portion)->img = img, (*portion)->img_blur = img_blur;
-	(*portion)->kernel = kernel;
+	for (i = 0; i < NUM_THREADS; ++i)
+	{
+		(*portion)[i].img = img, (*portion)[i].img_blur = img_blur;
+		(*portion)[i].kernel = kernel;
+		if ((*portion)[i].img->w <= (size_t) NUM_THREADS &&
+				(size_t) i < (*portion)[i].img->w)
+		{
+			(*portion)[i].x = i;
+			(*portion)[i].y = 0;
+			(*portion)[i].w = 1;
+			(*portion)[i].h = (*portion)[i].img->h;
+		}
+		else
+		{
+			offset = (*portion)[i].img->w / (NUM_THREADS);
+			(*portion)[i].x = offset * i;
+			(*portion)[i].y = 0;
+			(*portion)[i].w = offset;
+			(*portion)[i].h = (*portion)[i].img->h;
+		}
+	}
 	*pixels = convert_array(img);
 	if (!*pixels)
 		return (1);
@@ -137,7 +140,7 @@ void blur_image(img_t *img_blur, img_t const *img, kernel_t const *kernel)
 	for (i = 0; i < NUM_THREADS; ++i)
 	{
 		tinfo[i].tnum = i;
-		tinfo[i].portion = portion;
+		tinfo[i].portion = &portion[i];
 		tinfo[i].pixels = pixels;
 		s = pthread_create(&tinfo[i].tid, NULL, &thread_start, tinfo + i);
 		if (s != 0)
