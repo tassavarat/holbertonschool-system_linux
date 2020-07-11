@@ -8,5 +8,12 @@
  */
 int tprintf(char const *format, ...)
 {
-	return (printf("[%lu] %s", pthread_self(), format));
+	va_list ap;
+	int c;
+
+	va_start(ap, format);
+	c = printf("[%lu] ", pthread_self());
+	c += vprintf(format, ap);
+	va_end(ap);
+	return (c);
 }
