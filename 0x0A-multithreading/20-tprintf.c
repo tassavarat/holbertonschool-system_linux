@@ -1,6 +1,6 @@
 #include "multithreading.h"
 
-pthread_mutex_t mutex;
+static pthread_mutex_t mutex;
 
 /**
  * mutex_destroy - destroy mutex
