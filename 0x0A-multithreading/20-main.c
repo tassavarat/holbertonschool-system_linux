@@ -1,9 +1,9 @@
+/* Description: Use tprintf many times from multiple threads and main thread */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include "multithreading.h"
-
-#define NB_THREADS  10
 
 /**
  * _thread_entry - Thread entry point. Prints out a string
@@ -14,7 +14,9 @@
  */
 void *_thread_entry(__attribute__((unused))void *arg)
 {
-	tprintf("Hello from thread\n");
+	tprintf("C\n");
+	tprintf("is\n");
+	tprintf("fun\n");
 	return (NULL);
 }
 
@@ -25,15 +27,20 @@ void *_thread_entry(__attribute__((unused))void *arg)
  */
 int main(void)
 {
-	pthread_t tid[NB_THREADS];
+	pthread_t tid[10];
 	int i;
 
-	for (i = 0; i < NB_THREADS; i++)
+	tprintf("Creating threads\n");
+	for (i = 0; i < 10; i++)
+	{
 		pthread_create(&tid[i], NULL, &_thread_entry, NULL);
+		tprintf("Created thread number %d\n", i);
+	}
 
-	tprintf("Hello from main thread\n");
+	tprintf("Holberton School\n");
+	tprintf("From main thread\n");
 
-	for (i = 0; i < NB_THREADS; i++)
+	for (i = 0; i < 10; i++)
 		pthread_join(tid[i], NULL);
 
 	return (EXIT_SUCCESS);

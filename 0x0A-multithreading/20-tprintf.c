@@ -28,11 +28,15 @@ __attribute__((constructor))void mutex_init(void)
  */
 int tprintf(char const *format, ...)
 {
+	va_list ap;
 	int c;
 
 	if (pthread_mutex_lock(&mutex) != 0)
 		perror(NULL);
-	c = printf("[%lu] %s", pthread_self(), format);
+	va_start(ap, format);
+	c = printf("[%lu] ", pthread_self());
+	c += vprintf(format, ap);
+	va_end(ap);
 	if (pthread_mutex_unlock(&mutex) != 0)
 		perror(NULL);
 	return (c);
