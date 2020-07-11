@@ -1,6 +1,7 @@
 #ifndef MULTITHREADING_H
 #define MULTITHREADING_H
 
+#include "list.h"
 #include <pthread.h>
 #include <stdarg.h>
 #include <stddef.h>
@@ -10,6 +11,42 @@
 #include <sys/sysinfo.h>
 
 #define NUM_THREADS get_nprocs()
+
+typedef void *(*task_entry_t)(void *);
+
+/**
+ * enum task_status_e - Task statuses
+ *
+ * @PENDING: Task is pending
+ * @STARTED: Task has been started
+ * @SUCCESS: Task has completed successfully
+ * @FAILURE: Task has completed with issues
+ */
+typedef enum task_status_e
+{
+    PENDING = 0,
+    STARTED,
+    SUCCESS,
+    FAILURE
+} task_status_t;
+
+/**
+ * struct task_s - Executable task structure
+ *
+ * @entry:  Pointer to a function to serve as the task entry
+ * @param:  Address to a custom content to be passed to the entry function
+ * @status: Task status, default to PENDING
+ * @result: Stores the return value of the entry function
+ * @lock:   Task mutex
+ */
+typedef struct task_s
+{
+    task_entry_t    entry;
+    void        *param;
+    task_status_t   status;
+    void        *result;
+    pthread_mutex_t lock;
+} task_t;
 
 /**
  * struct pixel_s - RGB pixel
@@ -96,5 +133,7 @@ void blur_pixel(const blur_portion_t *portion, const pixel_t **pixels,
 		const size_t x, const size_t y, const size_t px);
 void blur_image(img_t *img_blur, img_t const *img, kernel_t const *kernel);
 int tprintf(char const *format, ...);
+list_t *prime_factors(char const *s);
+task_t *create_task(task_entry_t entry, void *param);
 
 #endif /* MULTITHREADING_H */
