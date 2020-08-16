@@ -5,12 +5,21 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+/**
+ * error - close file descriptor and exit program
+ * @fd: file descriptor to close
+ */
 void error(int fd)
 {
 	close(fd);
 	exit(1);
 }
 
+/**
+ * main - open IPv4 socket and listens to traffic on part 12345
+ *
+ * Return: 0 on success, 1 on failure
+ */
 int main(void)
 {
 	int sfd, port = 12345;
@@ -28,5 +37,6 @@ int main(void)
 	if (listen(sfd, 10) == -1)
 		error(sfd);
 	printf("Server listening on port %i\n", port);
-	return (pause());
+	pause();
+	return (0);
 }
