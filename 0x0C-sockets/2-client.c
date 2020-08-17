@@ -7,6 +7,7 @@
 /**
  * error - close file descriptor and exit program
  * @fd: file descriptor to close
+ * @res: addrinfo to free
  */
 void error(int fd, struct addrinfo *res)
 {
@@ -24,10 +25,7 @@ void error(int fd, struct addrinfo *res)
  */
 int main(int argc, char *argv[])
 {
-	char host[254];
-	/* unsigned short port; */
 	struct addrinfo hints, *res;
-	/* struct sockaddr_in serv_addr; */
 	int sfd;
 
 	if (argc  != 3)
@@ -35,25 +33,11 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Usage: %s <host> <port>\n", *argv);
 		return (EXIT_FAILURE);
 	}
-	if (gethostname(host, 254) == -1)
-		return (EXIT_FAILURE);
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	/* hints.ai_flags = AI_CANONNAME; */
-	if (getaddrinfo(host, argv[2], &hints, &res) != 0)
+	if (getaddrinfo(argv[1], argv[2], &hints, &res) != 0)
 		return (EXIT_FAILURE);
-	/* port = atoi(argv[2]); */
-	/* printf("host: %s\n", res->ai_canonname); */
-	/* printf("port: %hu\n", port); */
-	/* sfd = socket(AF_INET, SOCK_STREAM, 0); */
-	/* if (sfd == -1) */
-	/* 	error(sfd, res); */
-	/* memset(&serv_addr, 0, sizeof(serv_addr)); */
-	/* serv_addr.sin_family = AF_INET; */
-	/* serv_addr.sin_port = htons(port); */
-	/* if (connect(sfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1) */
-	/* 	error(sfd, res); */
 	sfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	if (sfd == -1)
 		error(sfd, res);
