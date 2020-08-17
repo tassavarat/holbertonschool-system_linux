@@ -68,9 +68,9 @@ alex@~/0x0C-sockets$
 ### [1. Accept](./1-server.c)
 Write a program that opens an `IPv4/TCP` socket, and listens to traffic on port `12345` (Any address).
 
-    Your program must accept an entering connection, print the IP address of the connected client, and close the connection right after
-    Output: See example below
-    In order to test your server, you can use the program `1-client` available on [this GitHub](https://github.com/holbertonschool/Sockets.c)
+Your program must accept an entering connection, print the IP address of the connected client, and close the connection right after
+Output: See example below
+In order to test your server, you can use the program `1-client` available on [this GitHub](https://github.com/holbertonschool/Sockets.c)
 
 In a terminal:
 ```
@@ -90,11 +90,24 @@ alex@~/0x0C-sockets$
 ### [2. Client](./2-client.c)
 Write a program that connects to a listening server
 
-    Usage: `2-client <host> <port>`
-    Where `port` is an unsigned short
-    If the number of command-line arguments is not sufficient, yout program must display: `Usage: %s <host> <port>` (where `%s` must be replaced by the name of the program), followed by a new line and exit with `EXIT_FAILURE`
-    You can assume that `<port>` will be a positive integer
-    Once your client established a connection with the server, it must print a message, and exit successfully
-    In order to test your server, you can use the program `2-server` available on [this GitHub](https://github.com/holbertonschool/Sockets.c)
+Usage: `2-client <host> <port>`
+Where `port` is an unsigned short
+If the number of command-line arguments is not sufficient, yout program must display: `Usage: %s <host> <port>` (where `%s` must be replaced by the name of the program), followed by a new line and exit with `EXIT_FAILURE`
+You can assume that `<port>` will be a positive integer
+Once your client established a connection with the server, it must print a message, and exit successfully
+In order to test your server, you can use the program `2-server` available on [this GitHub](https://github.com/holbertonschool/Sockets.c)
 
 In a terminal:
+```
+alex@~/0x0C-sockets$ ./2-server 
+Server listening on port 12345
+Client connected: 127.0.0.1
+```
+
+In a second terminal:
+```
+alex@~/0x0C-sockets$ gcc -Wall -Wextra -Werror -pedantic -o 2-client 2-client.c 
+alex@~/0x0C-sockets$ ./2-client localhost 12345
+Connected to localhost:12345
+alex@~/0x0C-sockets$
+```
