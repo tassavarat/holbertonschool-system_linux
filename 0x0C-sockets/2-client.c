@@ -25,6 +25,7 @@ void error(int fd, struct addrinfo *res)
  */
 int main(int argc, char *argv[])
 {
+	char host[254];
 	struct addrinfo hints, *res;
 	int sfd;
 
@@ -33,10 +34,12 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Usage: %s <host> <port>\n", *argv);
 		return (EXIT_FAILURE);
 	}
+	if (gethostname(host, 254) == -1)
+		return (EXIT_FAILURE);
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	if (getaddrinfo(argv[1], argv[2], &hints, &res) != 0)
+	if (getaddrinfo(host, argv[2], &hints, &res) != 0)
 		return (EXIT_FAILURE);
 	sfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	if (sfd == -1)
