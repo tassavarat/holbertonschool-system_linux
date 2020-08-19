@@ -48,7 +48,7 @@ int init_socket(void)
 	if (bind(serv_fd, (struct sockaddr *)&server_addr,
 				sizeof(server_addr)) == -1)
 		goto out_close_fd;
-	if (listen(serv_fd, 10) == -1)
+	if (listen(serv_fd, BACKLOG) == -1)
 		goto out_close_fd;
 	printf("Server listening on port %i\n", PORT);
 	return (serv_fd);
