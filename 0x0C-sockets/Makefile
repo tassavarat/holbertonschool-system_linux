@@ -1,6 +1,5 @@
 CC = gcc
-# CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89 -g3
-CFLAGS = -Wall -Werror -Wextra -pedantic -g3
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89 -g3
 
 SRC = $(wildcard *.c)
 OBJS = $(patsubst %.c, %.o, $(SRC))
