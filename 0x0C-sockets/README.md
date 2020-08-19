@@ -245,3 +245,225 @@ HTTP/1.1 200 OK^M$
 ^M$
 alex@~/0x0C-sockets$
 ```
+
+### [6. REST API - Headers](./Makefile)
+Write a program that opens an `IPv4/TCP` socket, and listens to traffic on port `8080` (Any address).
+
+* Your program must:
+	* Accept an entering connection
+	* Print the IP address of the connected client
+	* Wait for an incoming message from the connected client
+	* Print the full received HTTP request
+	* Print the the headers key/value pairs of the received HTTP request (See example)
+	* Send back a response to the connected client (HTTP 200 OK)
+	* Close the connection with the client
+	* Wait for the next connection
+* The client will send an HTTP/1.1 request. You can find the `RFC` describing the HTTP protocol version `1.1` [here](https://intranet.hbtn.io/rltoken/lKmhLE_RqNgR9Ejw54mLVA).
+ * RFC’s are long and dense documents, but they are organized in a way that you can easily find what you are looking for :) (Tip: Sections 4, 5, 6 and 10)
+ * You can assume that the requests sent to your server will always be valid HTTP/1.1 requests, no trick.
+
+Your `Makefile` must define the rule `todo_api_2`, which compiles and links your sources to form an executable with the same name.
+
+In a terminal:
+```
+alex@~/0x0C-sockets$ make todo_api_2
+[...]
+alex@~/0x0C-sockets$ ./todo_api_2
+Server listening on port 8080
+Client connected: 127.0.0.1
+Raw request: "GET /test HTTP/1.1
+User-Agent: curl/7.35.0
+Host: localhost:8080
+Accept: */*
+
+"
+Header: "User-Agent" -> "curl/7.35.0"
+Header: "Host" -> "localhost:8080"
+Header: "Accept" -> "*/*"
+^C
+alex@~/0x0C-sockets$
+```
+In a second terminal:
+```
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/test' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+^M$
+alex@~/0x0C-sockets$
+```
+
+### [7. REST API - Body parameters](./Makefile)
+Write a program that opens an `IPv4/TCP` socket, and listens to traffic on port `8080` (Any address).
+
+* Your program must:
+	* Accept an entering connection
+	* Print the IP address of the connected client
+	* Wait for an incoming message from the connected client
+	* Print the full received HTTP request
+	* Print the request path and all body parameters key/value pairs of the received HTTP request (See example)
+	* Send back a response to the connected client (HTTP 200 OK)
+	* Close the connection with the client
+	* Wait for the next connection
+* The client will send an HTTP/1.1 request. You can find the `RFC` describing the HTTP protocol version `1.1` [here](https://intranet.hbtn.io/rltoken/lKmhLE_RqNgR9Ejw54mLVA).
+* RFC’s are long and dense documents, but they are organized in a way that you can easily find what you are looking for :) (Tip: Sections 4, 5, 6 and 10)
+* You can assume that the requests sent to your server will always be valid HTTP/1.1 requests, no trick.
+
+Your `Makefile` must define the rule `todo_api_3`, which compiles and links your sources to form an executable with the same name.
+
+In a terminal:
+```
+alex@~/0x0C-sockets$ make todo_api_3
+[...]
+alex@~/0x0C-sockets$ ./todo_api_3 
+Server listening on port 8080
+Client connected: 127.0.0.1
+Raw request: "POST /test HTTP/1.1
+User-Agent: curl/7.35.0
+Host: localhost:8080
+Accept: */*
+Content-Length: 30
+Content-Type: application/x-www-form-urlencoded
+
+value1=holberton&value2=school"
+Path: /test
+Body param: "value1" -> "holberton"
+Body param: "value2" -> "school"
+^C
+alex@~/0x0C-sockets$
+```
+In a second terminal:
+```
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/test' -d 'value1=holberton&value2=school' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+^M$
+alex@~/0x0C-sockets$
+```
+
+### [8. REST API - Create TODO](./Makefile)
+Now that you can parse an HTTP request, it’s time to implement our REST API. Start by handling the `POST` method for the path `/todos`
+
+* Method: `POST`
+* Path: `/todos`
+* Required queries: `None`
+* Required headers:
+        `Content-Length`
+* Required body parameters:
+	* `title` -> String
+	* `description:` -> String
+	* NOTE: since the format is URL encoded, you don’t have to handle special characters (spaces, quotes, …). We will only pass non-encoded characters :)
+* Creates a todo and adds it to the list
+* Response:
+	* `201 Created` -> Todo has been created.
+		* Response must include the header `Content-Type: application/json`
+		* Response must include the json representation of the created `todo` in its body
+	* `411 Length Required` -> Missing the `Content-Length` header
+	* `422 Unprocessable Entity` -> Missing either the `title` or `description` body parameter
+* You are free to print any information you like on stdout/stderr on the server side. Your output will be discarded during correction
+* You are free to use any syscall/standard library call
+* You are free to define and use any data structure. Try to keep it clean, efficient and readable :)
+
+Also, starting from this task, your server must return a `404 Not Found` for any path that is not recognized, or for a method that is not implemented (see example)
+
+Your `Makefile` must define the rule `todo_api_4`, which compiles and links your sources to form an executable with the same name.
+
+In a first terminal: (again, the following output is just an example, you are free to output the information of your choice)
+```
+alex@~/0x0C-sockets$ make todo_api_4
+[...]
+alex@~/0x0C-sockets$ ./todo_api_4
+Server listening on port 8080
+127.0.0.1 POST /todos -> 201 Created
+127.0.0.1 POST /todos -> 422 Unprocessable Entity
+127.0.0.1 POST /holberton -> 404 Not Found
+127.0.0.1 GET /todos -> 404 Not Found
+^C
+alex@~/0x0C-sockets$
+```
+In a second terminal:
+
+```
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Dishes&description=Not_really_urgent' 2> /dev/null | cat -e
+HTTP/1.1 201 Created^M$
+Content-Length: 59^M$
+Content-Type: application/json^M$
+^M$
+{"id":0,"title":"Dishes","description":"Not_really_urgent"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Homework' 2> /dev/null | cat -e
+HTTP/1.1 422 Unprocessable Entity^M$
+^M$
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/holberton' -d 'title=Dishes&description=Not_really_urgent' 2> /dev/null | cat -e
+HTTP/1.1 404 Not Found^M$
+^M$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos' 2> /dev/null | cat -e
+HTTP/1.1 404 Not Found^M$
+^M$
+alex@~/0x0C-sockets$
+```
+
+### [9. REST API - Retrieve all TODOs](./Makefile)
+Handle the `GET` method for the path `/todos`
+
+* Method: `GET`
+* Path: `/todos`
+* Required queries: `None`
+* Required headers: `None`
+* Required body parameters: `None`
+* Retrieves the list of all the todos
+* Response:
+	* `200 OK` -> Todos retrieved
+		* Response must include the header `Content-Type: application/json`
+		* Response must include the json representation of the list of `todos` in its body
+		* NOTE: If there is no todo in the list, your server must return an `empty list`
+* You are free to print any information you like on stdout/stderr on the server side. Your output will be discarded during correction
+* You are free to use any syscall/standard library call
+* You are free to define and use any data structure. Try to keep it clean, efficient and readable :)
+
+Your `Makefile` must define the rule `todo_api_5`, which compiles and links your sources to form an executable with the same name.
+
+In a first terminal: (again, the following output is just an example, you are free to output the information of your choice)
+```
+alex@~/0x0C-sockets$ make todo_api_5
+[...]
+alex@~/0x0C-sockets$ ./todo_api_5
+Server listening on port 8080
+127.0.0.1 GET /todos -> 200 OK
+127.0.0.1 POST /todos -> 201 Created
+127.0.0.1 GET /todos -> 200 OK
+127.0.0.1 POST /todos -> 201 Created
+127.0.0.1 GET /todos -> 200 OK
+^C
+alex@~/0x0C-sockets$
+```
+In a second terminal:
+```
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 2^M$
+Content-Type: application/json^M$
+^M$
+[]alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Dishes&description=Not_really_urgent' 2> /dev/null | cat -e
+HTTP/1.1 201 Created^M$
+Content-Length: 59^M$
+Content-Type: application/json^M$
+^M$
+{"id":0,"title":"Dishes","description":"Not_really_urgent"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 61^M$
+Content-Type: application/json^M$
+^M$
+[{"id":0,"title":"Dishes","description":"Not_really_urgent"}]alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Laundry&description=To_be_done_by_yesterday' 2> /dev/null | cat -e
+HTTP/1.1 201 Created^M$
+Content-Length: 66^M$
+Content-Type: application/json^M$
+^M$
+{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 128^M$
+Content-Type: application/json^M$
+^M$
+[{"id":0,"title":"Dishes","description":"Not_really_urgent"},{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}]alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$
+```
