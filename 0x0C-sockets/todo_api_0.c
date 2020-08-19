@@ -6,11 +6,11 @@
  */
 void print_brkdwn(char *buffer)
 {
-	char *method, *path, *version;
+	char *saveptr, *method, *path, *version;
 
-	method = strtok(buffer, " ");
-	path = strtok(NULL, " ");
-	version = strtok(NULL, "\n");
+	method = strtok_r(buffer, " ", &saveptr);
+	path = strtok_r(NULL, " ", &saveptr);
+	version = strtok_r(NULL, "\n", &saveptr);
 	printf("Method: %s\nPath: %s\nVersion: %s\n", method, path, version);
 }
 
