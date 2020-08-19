@@ -7,10 +7,12 @@
 void print_brkdwn(char *buffer)
 {
 	char *saveptr;
+	char *method, *path, *version;
 
-	printf("Method: %s\n", strtok_r(buffer, " ", &saveptr));
-	printf("Path: %s\n", strtok_r(NULL, " ", &saveptr));
-	printf("Version: %s\n", strtok_r(NULL, "\n", &saveptr));
+	method = strtok_r(buffer, " ", &saveptr);
+	path = strtok_r(NULL, " ", &saveptr);
+	version = strtok_r(NULL, "\n", &saveptr);
+	printf("Method: %s\nPath: %s\nVersion: %s\n", method, path, version);
 }
 
 /**
@@ -26,6 +28,7 @@ int accept_connection(int serv_fd)
 
 	while (1)
 	{
+		memset(&buffer, 0, BUFSIZ);
 		client_fd = accept_recv(serv_fd, buffer);
 		if (client_fd == -1)
 			return (1);

@@ -18,7 +18,7 @@ int accept_recv(int serv_fd, char *buffer)
 	if (client_fd == -1)
 		goto out;
 	printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
-	memset(&*buffer, 0, BUFSIZ);
+	/* memset(&*buffer, 0, BUFSIZ); */
 	if (recv(client_fd, buffer, BUFSIZ, 0) == -1)
 	{
 		close(client_fd);
