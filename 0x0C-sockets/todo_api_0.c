@@ -6,8 +6,7 @@
  */
 void print_brkdwn(char *buffer)
 {
-	char *saveptr;
-	char *method, *path, *version;
+	char *saveptr, *method, *path, *version;
 
 	method = strtok_r(buffer, " ", &saveptr);
 	path = strtok_r(NULL, " ", &saveptr);
