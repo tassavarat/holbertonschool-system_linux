@@ -3,7 +3,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -std=gnu89 -g3
 
 SRC = $(wildcard *.c)
 OBJS = $(patsubst %.c, %.o, $(SRC))
-0 = $(patsubst %.c, %.o, $(wildcard todo_api_0.c))
+0 = $(patsubst %.c, %.o, $(wildcard todo_api_0.c)) sockets.c
 
 .PHONY: todo_api_0 clean
 
