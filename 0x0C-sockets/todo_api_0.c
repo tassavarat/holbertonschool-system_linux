@@ -46,6 +46,7 @@ int main(void)
 {
 	int serv_fd, ret;
 
+	setbuf(stdout, NULL);
 	serv_fd = init_socket();
 	if (serv_fd == -1)
 		return (1);
