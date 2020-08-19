@@ -22,8 +22,7 @@ void print_brkdwn(char *buffer)
 int accept_connection(int serv_fd)
 {
 	int client_fd;
-	char buffer[BUFSIZ], *resp = "HTTP/1.1 200 OK\r\n\r\n";
-	size_t resp_len = strlen(resp);
+	char buffer[BUFSIZ];
 
 	while (1)
 	{
@@ -31,7 +30,7 @@ int accept_connection(int serv_fd)
 		if (client_fd == -1)
 			return (1);
 		print_brkdwn(buffer);
-		send(client_fd, resp, resp_len, 0);
+		send(client_fd, RESP_OK, RESP_OK_LEN, 0);
 		close(client_fd);
 	}
 	return (0);

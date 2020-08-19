@@ -8,7 +8,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define PORT 8080
+#define PORT		8080
+#define RESP_OK		"HTTP/1.1 200 OK\r\n\r\n"
+#define RESP_OK_LEN	strlen(RESP_OK)
 
 /* sockets.c */
 int init_socket(void);
