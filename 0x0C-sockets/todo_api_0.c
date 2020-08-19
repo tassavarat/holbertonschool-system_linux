@@ -28,7 +28,6 @@ int accept_connection(int serv_fd)
 
 	while (1)
 	{
-		memset(&buffer, 0, BUFSIZ);
 		client_fd = accept_recv(serv_fd, buffer);
 		if (client_fd == -1)
 			return (1);
