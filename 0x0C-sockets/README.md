@@ -200,3 +200,48 @@ HTTP/1.1 200 OK^M$
 ^M$
 alex@~/0x0C-sockets$
 ```
+
+### [5. REST API - Queries]
+Write a program that opens an `IPv4/TCP` socket, and listens to traffic on port `8080` (Any address).
+
+* Your program must:
+	* Accept an entering connection
+	* Print the IP address of the connected client
+	* Wait for an incoming message from the connected client
+	* Print the full received HTTP request
+	* Print the the request path and all queries key/value pairs of the received HTTP request (See example)
+	* Send back a response to the connected client (HTTP 200 OK)
+	* Close the connection with the client
+	* Wait for the next connection
+* The client will send an HTTP/1.1 request. You can find the `RFC` describing the HTTP protocol version `1.1` [here](https://intranet.hbtn.io/rltoken/lKmhLE_RqNgR9Ejw54mLVA).
+* RFC’s are long and dense documents, but they are organized in a way that you can easily find what you are looking for :) (Tip: Sections 4, 5, 6 and 10)
+* You can assume that the requests sent to your server will always be valid HTTP/1.1 requests, no trick.
+
+Your `Makefile` must define the rule `todo_api_1`, which compiles and links your sources to form an executable with the same name.
+
+In a terminal:
+```
+alex@~/0x0C-sockets$ make todo_api_1
+[...]
+alex@~/0x0C-sockets$ ./todo_api_1
+Server listening on port 8080
+Client connected: 127.0.0.1
+Raw request: "GET /test?value1=holberton&value2=school HTTP/1.1
+User-Agent: curl/7.35.0
+Host: localhost:8080
+Accept: */*
+
+"
+Path: /test
+Query: "value1" -> "holberton"
+Query: "value2" -> "school"
+^C
+alex@~/0x0C-sockets$
+```
+In a second terminal:
+```
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/test?value1=holberton&value2=school' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+^M$
+alex@~/0x0C-sockets$
+```
