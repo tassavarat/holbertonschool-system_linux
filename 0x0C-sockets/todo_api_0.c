@@ -51,7 +51,5 @@ int main(void)
 		return (1);
 	ret = accept_connection(serv_fd);
 	close(serv_fd);
-	if (ret == 1)
-		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+	return (ret);
 }

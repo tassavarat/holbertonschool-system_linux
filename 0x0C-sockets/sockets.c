@@ -16,16 +16,19 @@ int accept_recv(int serv_fd, char *buffer)
 	client_fd = accept(serv_fd, (struct sockaddr *) &client_addr,
 			&client_addrlen);
 	if (client_fd == -1)
-		return (-1);
+		goto out;
 	printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
 	memset(&*buffer, 0, BUFSIZ);
 	if (recv(client_fd, buffer, BUFSIZ, 0) == -1)
 	{
 		close(client_fd);
-		return (-1);
+		goto out;
 	}
 	printf("Raw request: \"%s\"\n", buffer);
 	return (client_fd);
+out:
+	perror(NULL);
+	return (-1);
 }
 
 /**
@@ -40,7 +43,7 @@ int init_socket(void)
 
 	serv_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (serv_fd == -1)
-		return (-1);
+		goto out;
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
@@ -54,5 +57,7 @@ int init_socket(void)
 	return (serv_fd);
 out_close_fd:
 	close(serv_fd);
+out:
+	perror(NULL);
 	return (-1);
 }
