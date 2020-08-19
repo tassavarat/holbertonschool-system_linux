@@ -16,19 +16,20 @@ int accept_recv(int serv_fd, char *buffer)
 	client_fd = accept(serv_fd, (struct sockaddr *) &client_addr,
 			&client_addrlen);
 	if (client_fd == -1)
-		goto out;
+	{
+		perror("accept failed");
+		return (-1);
+	}
 	printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
 	memset(&*buffer, 0, BUFSIZ);
 	if (recv(client_fd, buffer, BUFSIZ, 0) == -1)
 	{
 		close(client_fd);
-		goto out;
+		perror("recv failed");
+		return (-1);
 	}
 	printf("Raw request: \"%s\"\n", buffer);
 	return (client_fd);
-out:
-	perror(NULL);
-	return (-1);
 }
 
 /**
@@ -43,21 +44,28 @@ int init_socket(void)
 
 	serv_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (serv_fd == -1)
-		goto out;
+	{
+		perror("socket failed");
+		return (-1);
+	}
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	if (bind(serv_fd, (struct sockaddr *)&server_addr,
 				sizeof(server_addr)) == -1)
+	{
+		perror("bind failed");
 		goto out_close_fd;
+	}
 	if (listen(serv_fd, BACKLOG) == -1)
+	{
+		perror("listen failed");
 		goto out_close_fd;
+	}
 	printf("Server listening on port %i\n", PORT);
 	return (serv_fd);
 out_close_fd:
 	close(serv_fd);
-out:
-	perror(NULL);
 	return (-1);
 }
