@@ -22,18 +22,26 @@ void print_brkdwn(char *buffer)
  */
 int accept_connection(int serv_fd)
 {
-	int client_fd;
+	struct client_info *client;
 	char buffer[BUFSIZ];
 
+	client = malloc(sizeof(*client));
+	if (client == NULL)
+		return (1);
 	while (1)
 	{
-		client_fd = accept_recv(serv_fd, buffer);
-		if (client_fd == -1)
+		client = accept_recv(serv_fd, buffer, client);
+		if (client == NULL)
+		{
+			free(client);
 			return (1);
+		}
+		printf("Raw request: \"%s\"\n", buffer);
 		print_brkdwn(buffer);
-		send(client_fd, RESP_OK, RESP_OK_LEN, 0);
-		close(client_fd);
+		send(client->fd, RESP_OK, RESP_OK_LEN, 0);
+		close(client->fd);
 	}
+	free(client);
 	return (0);
 }
 
