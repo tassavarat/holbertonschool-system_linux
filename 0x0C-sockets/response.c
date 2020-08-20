@@ -10,16 +10,16 @@
 /* Content-Type: application/json^M$ */
 /* ^M$ */
 /* []alex@~/0x0C-sockets$ */
-/* void get_resp(int client_fd, todo_info_t *td_info) */
-/* { */
-/* 	char str[BUFSIZ]; */
-/* 	size_t resp_len = 2; */
+void get_resp(int client_fd, todo_info_t *td_info)
+{
+	char str[BUFSIZ];
+	size_t resp_len = 2;
 
-/* 	if (td_info->head == NULL) */
-/* 	{ */
-/* 		sprintf(str, "%s%s%lu\r\n%s", RESP_GETOK, "Content-Length: ", resp_len); */
-/* 	} */
-/* } */
+	if (td_info->head == NULL)
+		sprintf(str, "%s%s%lu\r\n%s[]", RESP_GETOK, "Content-Length: ",
+				resp_len, CONTYPE);
+	send(client_fd, str, RESP_OK_LEN, 0);
+}
 /* send(client_fd, RESP_OK, RESP_OK_LEN, 0); */
 
 /**
@@ -30,19 +30,16 @@
 void post_resp(int client_fd, todo_info_t *td_info)
 {
 	char str[BUFSIZ];
-	size_t len = CONSTLEN, resp_len;
+	size_t len = CONSTLEN;
 
 	sprintf(str, "%lu", td_info->tail->id);
-	len += strlen(str);
-	len += strlen(td_info->tail->title);
-	len += strlen(td_info->tail->desc);
+	len += strlen(str) + strlen(td_info->tail->title) +
+		strlen(td_info->tail->desc);
 	printf("POST /todos -> 201 Created\n");
-	sprintf(str, "%s%s%lu\r\n%s%s%lu%s%s%s%s\"}",
-			RESP_CREATED, "Content-Length: ", len,
-			CONTYPE, "{\"id\":",
+	sprintf(str, "%s%s%lu\r\n%s%s%lu%s%s%s%s\"}", RESP_CREATED,
+			"Content-Length: ", len, CONTYPE, "{\"id\":",
 			td_info->tail->id, ",\"title\":\"",
 			td_info->tail->title, "\",\"description\":\"",
 			td_info->tail->desc);
-	resp_len = strlen(str);
-	send(client_fd, str, resp_len, 0);
+	send(client_fd, str, strlen(str), 0);
 }
