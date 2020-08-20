@@ -54,11 +54,11 @@ todo_list_t *post(char *buffer, todo_info_t *td_info)
  *
  * Return: 0 on success, 1 on error
  */
-int parse_error(char *buffer, int client_fd)
+int parse_error(char *buffer, int client_fd, char *resp_type)
 {
 	char *saveptr;
 
-	if (strstr(buffer, PATH) == NULL)
+	if (*resp_type == *GET && strstr(buffer, PATH) == NULL)
 	{
 		strtok_r(buffer, " ", &saveptr);
 		printf("%s %s -> 404 Not Found\n", POST,
@@ -66,7 +66,7 @@ int parse_error(char *buffer, int client_fd)
 		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
 		return (1);
 	}
-	if (strstr(buffer, "Content-Length") == NULL)
+	if (*resp_type == *POST && strstr(buffer, "Content-Length") == NULL)
 	{
 		strtok_r(buffer, " ", &saveptr);
 		printf("%s %s -> 411 Length Required\n", POST,
@@ -87,16 +87,16 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 {
 	char *saveptr;
 
+	if (parse_error(buffer, client_fd, GET) == 1)
+		return;
 	if (strncmp(buffer, GET, GET_LEN) == 0)
 	{
 		get_resp(client_fd, td_info);
 	}
-	else if (parse_error(buffer, client_fd) == 1)
-	{
-		return;
-	}
 	else if (strncmp(buffer, POST, POST_LEN) == 0)
 	{
+		if (parse_error(buffer, client_fd, POST) == 1)
+			return;
 		if (post(buffer, td_info) == NULL)
 		{
 			strtok_r(buffer, " ", &saveptr);
