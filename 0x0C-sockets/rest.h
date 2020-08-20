@@ -67,6 +67,6 @@ int accept_recv(int serv_fd, char *buffer, int mode);
 
 /* response.c */
 void post_resp(int client_fd, todo_info_t *td_info);
-void get_resp(int client_fd, todo_info_t *td_info);
+void getall_resp(int client_fd, todo_info_t *td_info);
 
 #endif /* REST_H */
