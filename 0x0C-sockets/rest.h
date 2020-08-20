@@ -59,5 +59,6 @@ typedef struct todo_info_s
 int init_socket(void);
 int accept_recv(int serv_fd, char *buffer);
 int parse_error(char *buffer, int client_fd);
+todo_list_t *post(char *buffer, todo_info_t *td_info);
 
 #endif /* REST_H */

@@ -1,6 +1,52 @@
 #include "rest.h"
 
 /**
+ * post - create given todo
+ * @buffer: raw HTTP request
+ * @td_info: info for todo linked list
+ *
+ * Return: created todo node, NULL on error
+ */
+todo_list_t *post(char *buffer, todo_info_t *td_info)
+{
+	char *saveptr, *token, *title, *desc;
+	int i;
+	todo_list_t *new;
+
+	for (i = 0, strtok_r(buffer, "\n", &saveptr); i < 7; ++i)
+		token = strtok_r(NULL, "\n", &saveptr);
+	title = strstr(token, "title");
+	if (!title)
+		return (NULL);
+	desc = strstr(token, "description");
+	if (!desc)
+		return (NULL);
+	new = malloc(sizeof(*new));
+	if (!new)
+	{
+		perror("malloc failed");
+		exit(1);
+	}
+	strtok_r(title, "=", &saveptr);
+	new->title = strdup(strtok_r(NULL, "&\0", &saveptr));
+	strtok_r(desc, "=", &saveptr);
+	new->desc = strdup(strtok_r(NULL, "&\0", &saveptr));
+	if (td_info->head == NULL)
+	{
+		new->id = 0;
+		td_info->head = td_info->tail = new;
+	}
+	else
+	{
+		new->id = td_info->tail->id + 1;
+		td_info->tail->next = new;
+		td_info->tail = new;
+	}
+	new->next = NULL;
+	return (new);
+}
+
+/**
  * parse_error - parse request errors
  * @buffer: HTTP request to print
  * @client_fd: client file descriptor
