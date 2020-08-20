@@ -43,17 +43,6 @@ todo_list_t *post(char *buffer, todo_queue_t *queue)
 		perror("malloc failed");
 		exit(1);
 	}
-	if (queue->head == NULL)
-	{
-		new->id = 0;
-		queue->head = queue->tail = new;
-	}
-	else
-	{
-		new->id = queue->tail->id + 1;
-		queue->tail->next = new;
-		queue->tail = new;
-	}
 	for (i = 0, strtok_r(buffer, "\n", &saveptr); i < 6; ++i)
 		token = strtok_r(NULL, "\n", &saveptr);
 	for (i = 0; i < 2; ++i)
@@ -68,6 +57,17 @@ todo_list_t *post(char *buffer, todo_queue_t *queue)
 			new->title = strdup(token);
 		else
 			new->desc = strdup(token);
+	}
+	if (queue->head == NULL)
+	{
+		new->id = 0;
+		queue->head = queue->tail = new;
+	}
+	else
+	{
+		new->id = queue->tail->id + 1;
+		queue->tail->next = new;
+		queue->tail = new;
 	}
 	new->next = NULL;
 	return (new);
