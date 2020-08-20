@@ -34,7 +34,8 @@ todo_list_t *post(char *buffer, todo_info_t *td_info)
 	if (td_info->head == NULL)
 	{
 		new->id = 0;
-		td_info->head = td_info->tail = new;
+		td_info->head = new;
+		td_info->tail = new;
 	}
 	else
 	{

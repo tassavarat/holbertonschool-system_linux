@@ -10,10 +10,11 @@
 
 #define PORT			8080
 #define BACKLOG			10
-#define CONSTLEN		35
+#define POST_CONSTLEN		35
+#define GET_CONSTLEN		2
 
-#define GET			"GET"
 #define POST			"POST"
+#define GET			"GET"
 #define PATH			"/todos "
 #define CONTYPE			"Content-Type: application/json\r\n\r\n"
 #define RESP_OK			"HTTP/1.1 200 OK\r\n\r\n"
@@ -23,8 +24,8 @@
 #define RESP_LENREQ		"HTTP/1.1 Length Required\r\n\r\n"
 #define RESP_UNPROCESSENT	"HTTP/1.1 422 Unprocessable Entity\r\n\r\n"
 
-#define GET_LEN			strlen(GET)
 #define POST_LEN		strlen(POST)
+#define GET_LEN			strlen(GET)
 #define RESP_OK_LEN		strlen(RESP_OK)
 #define RESP_NOTFOUND_LEN	strlen(RESP_NOTFOUND)
 #define RESP_LENREQ_LEN		strlen(RESP_LENREQ)
@@ -35,6 +36,7 @@
  * @id: member id
  * @title: title string
  * @desc: description string
+ * @len: length of json format
  * @next: pointer to next todo node
  */
 typedef struct todo_list_s
@@ -42,6 +44,7 @@ typedef struct todo_list_s
 	size_t id;
 	char *title;
 	char *desc;
+	size_t len;
 	struct todo_list_s *next;
 } todo_list_t;
 
@@ -52,8 +55,8 @@ typedef struct todo_list_s
  */
 typedef struct todo_info_s
 {
-	struct todo_list_s *head;
-	struct todo_list_s *tail;
+	todo_list_t *head;
+	todo_list_t *tail;
 } todo_info_t;
 
 /* sockets.c */

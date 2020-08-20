@@ -34,7 +34,8 @@ todo_list_t *post(char *buffer, todo_info_t *td_info)
 	if (td_info->head == NULL)
 	{
 		new->id = 0;
-		td_info->head = td_info->tail = new;
+		td_info->head = new;
+		td_info->tail = new;
 	}
 	else
 	{
@@ -86,9 +87,15 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 {
 	char *saveptr;
 
-	if (parse_error(buffer, client_fd) == 1)
+	if (strncmp(buffer, GET, GET_LEN) == 0)
+	{
+		get_resp(client_fd, td_info);
+	}
+	else if (parse_error(buffer, client_fd) == 1)
+	{
 		return;
-	if (strncmp(buffer, POST, POST_LEN) == 0)
+	}
+	else if (strncmp(buffer, POST, POST_LEN) == 0)
 	{
 		if (post(buffer, td_info) == NULL)
 		{
@@ -100,10 +107,6 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 			return;
 		}
 		post_resp(client_fd, td_info);
-	}
-	else if (strncmp(buffer, GET, GET_LEN) == 0)
-	{
-		get_resp(client_fd, td_info);
 	}
 	else
 	{
