@@ -15,7 +15,7 @@
 #define GET			"GET"
 #define POST			"POST"
 #define PATH			"/todos "
-#define CONTLEN			"Content-Length: %lu\r\n"
+#define CONTYPE			"Content-Type: application/json"
 #define RESP_OK			"HTTP/1.1 200 OK\r\n\r\n"
 #define RESP_CREATED		"HTTP/1.1 201 Created\r\n"
 #define RESP_NOTFOUND		"HTTP/1.1 404 Not Found\r\n\r\n"
@@ -61,5 +61,6 @@ int accept_recv(int serv_fd, char *buffer);
 
 /* response.c */
 void post_resp(int client_fd, todo_info_t *td_info);
+void get_resp(int client_fd, todo_info_t *td_info);
 
 #endif /* REST_H */
