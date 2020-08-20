@@ -32,7 +32,7 @@ void get_resp(int client_fd, todo_info_t *td_info)
 				strcat(str2, str1);
 			}
 		}
-		sprintf(str1, "%s%s%lu\r\n%s[%s%lu%s%s%s%s\"}]%s",
+		sprintf(str1, "%s%s%lu\r\n%s[%s%lu%s%s%s%s\"}%s]",
 				RESP_GETOK, "Content-Length: ",
 				len, CONTYPE, "{\"id\":", td_info->head->id,
 				",\"title\":\"", td_info->head->title,
