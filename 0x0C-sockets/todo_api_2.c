@@ -1,23 +1,21 @@
 #include "rest.h"
 
 /**
- * print_query - print request path and all query key/value pairs
+ * print_header - print header key/value pairs of received HTTP request
  * @buffer: HTTP request to print
  */
-void print_query(char *buffer)
+void print_header(char *buffer)
 {
 	char *saveptr, *token, *val;
 
-	strtok_r(buffer, " ", &saveptr);
-	token = strtok_r(NULL, "?", &saveptr);
-	printf("Path: %s\n", token);
+	token = strtok_r(buffer, "\r", &saveptr);
 	while (1)
 	{
-		token = strtok_r(NULL, "=", &saveptr);
-		val = strtok_r(NULL, "& ", &saveptr);
+		token = strtok_r(NULL, ":", &saveptr) + 1;
+		val = strtok_r(NULL, "\r", &saveptr) + 1;
 		if (val == NULL)
 			break;
-		printf("Query: \"%s\" -> \"%s\"\n", token, val);
+		printf("Header: \"%s\" -> \"%s\"\n", token, val);
 	}
 }
 
@@ -37,7 +35,7 @@ int accept_connection(int serv_fd)
 		client_fd = accept_recv(serv_fd, buffer);
 		if (client_fd == -1)
 			return (1);
-		print_query(buffer);
+		print_header(buffer);
 		send(client_fd, RESP_OK, RESP_OK_LEN, 0);
 		close(client_fd);
 	}
