@@ -5,7 +5,7 @@
  * @client_fd: client file descriptor
  * @td_info: info for todo linked list
  */
-void get_resp(int client_fd, todo_info_t *td_info)
+void getall_resp(int client_fd, todo_info_t *td_info)
 {
 	char str1[BUFSIZ * 2], str2[BUFSIZ] = {'\0'};
 	todo_list_t *cur;
