@@ -7,29 +7,29 @@
  *
  * Return: client file descriptor on success, -1 on error
  */
-struct client_info *accept_recv(int serv_fd, char *buffer,
-		struct client_info *client)
+int accept_recv(int serv_fd, char *buffer)
 {
+	int client_fd;
 	struct sockaddr_in client_addr;
 	socklen_t client_addrlen = sizeof(client_addr);
 
-	client->fd = accept(serv_fd, (struct sockaddr *) &client_addr,
+	client_fd = accept(serv_fd, (struct sockaddr *) &client_addr,
 			&client_addrlen);
-	if (client->fd == -1)
+	if (client_fd == -1)
 	{
 		perror("accept failed");
-		return (NULL);
+		return (-1);
 	}
-	client->addr = inet_ntoa(client_addr.sin_addr);
-	printf("Client connected: %s\n", client->addr);
+	printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
 	memset(&*buffer, 0, BUFSIZ);
-	if (recv(client->fd, buffer, BUFSIZ, 0) == -1)
+	if (recv(client_fd, buffer, BUFSIZ, 0) == -1)
 	{
-		close(client->fd);
+		close(client_fd);
 		perror("recv failed");
-		return (NULL);
+		return (-1);
 	}
-	return (client);
+	printf("Raw request: \"%s\"\n", buffer);
+	return (client_fd);
 }
 
 /**

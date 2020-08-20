@@ -43,21 +43,8 @@ struct todo
 	struct todo *next;
 };
 
-/**
- * struct client_info - client information
- * @fd: client file descriptor
- * @addr: client address
- */
-struct client_info
-{
-	int fd;
-	char *addr;
-};
-
 /* sockets.c */
 int init_socket(void);
-/* int accept_recv(int serv_fd, char *buffer); */
-struct client_info *accept_recv(int serv_fd, char *buffer,
-		struct client_info *client);
+int accept_recv(int serv_fd, char *buffer);
 
 #endif /* REST_H */
