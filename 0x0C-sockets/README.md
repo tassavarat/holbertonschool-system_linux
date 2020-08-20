@@ -467,3 +467,151 @@ Content-Type: application/json^M$
 [{"id":0,"title":"Dishes","description":"Not_really_urgent"},{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}]alex@~/0x0C-sockets$
 alex@~/0x0C-sockets$
 ```
+
+### [10. REST API - Retrieve a single TODO](./Makefile)
+Handle the `GET` method for the path `/todos?id={id}`
+
+* Method: `GET`
+* Path: `/todos`
+* Required queries:
+	* `id` -> Positive integer
+* Required headers: `None`
+* Required body parameters: `None`
+* Retrieves a single todo, identified by its id
+* Response:
+	* `200 OK` -> Todo retrieved
+		* Response must include the header `Content-Type: application/json`
+		* Response must include the json representation of the list of `todos` in its body
+	* `404 Not Found` -> No todo with this `id`
+* You are free to print any information you like on stdout/stderr on the server side. Your output will be discarded during correction
+* You are free to use any syscall/standard library call
+* You are free to define and use any data structure. Try to keep it clean, efficient and readable :)
+
+Your `Makefile` must define the rule `todo_api_6`, which compiles and links your sources to form an executable with the same name.
+
+In a first terminal: (again, the following output is just an example, you are free to output the information of your choice)
+```
+alex@~/0x0C-sockets$ make todo_api_6
+[...]
+alex@~/0x0C-sockets$ ./todo_api_6
+Server listening on port 8080
+127.0.0.1 POST /todos -> 201 Created
+127.0.0.1 POST /todos -> 201 Created
+127.0.0.1 GET /todos -> 200 OK
+127.0.0.1 GET /todos -> 200 OK
+127.0.0.1 GET /todos -> 404 Not Found
+127.0.0.1 GET /todos -> 200 OK
+^C
+alex@~/0x0C-sockets$
+```
+In a second terminal:
+```
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Dishes&description=Not_really_urgent' 2> /dev/null | cat -e
+HTTP/1.1 201 Created^M$
+Content-Length: 59^M$
+Content-Type: application/json^M$
+^M$
+{"id":0,"title":"Dishes","description":"Not_really_urgent"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Laundry&description=To_be_done_by_yesterday' 2> /dev/null | cat -e
+HTTP/1.1 201 Created^M$
+Content-Length: 66^M$
+Content-Type: application/json^M$
+^M$
+{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos?id=0' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 59^M$
+Content-Type: application/json^M$
+^M$
+{"id":0,"title":"Dishes","description":"Not_really_urgent"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos?id=1' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 66^M$
+Content-Type: application/json^M$
+^M$
+{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos?id=2' 2> /dev/null | cat -e
+HTTP/1.1 404 Not Found^M$
+^M$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 128^M$
+Content-Type: application/json^M$
+^M$
+[{"id":0,"title":"Dishes","description":"Not_really_urgent"},{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}]alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$
+```
+
+### [10. REST API - Retrieve a single TODO](./Makefile)
+Handle the `GET` method for the path `/todos?id={id}`
+
+* Method: `GET`
+* Path: `/todos`
+* Required queries:
+	* `id` -> Positive integer
+* Required headers: `None`
+* Required body parameters: `None`
+* Retrieves a single todo, identified by its id
+* Response:
+	* `200 OK` -> Todo retrieved
+		* Response must include the header `Content-Type: application/json`
+		* Response must include the json representation of the list of `todos` in its body
+	* `404 Not Found` -> No todo with this `id`
+* You are free to print any information you like on stdout/stderr on the server side. Your output will be discarded during correction
+* You are free to use any syscall/standard library call
+* You are free to define and use any data structure. Try to keep it clean, efficient and readable :)
+
+Your `Makefile` must define the rule `todo_api_6`, which compiles and links your sources to form an executable with the same name.
+
+In a first terminal: (again, the following output is just an example, you are free to output the information of your choice)
+```
+alex@~/0x0C-sockets$ make todo_api_6
+[...]
+alex@~/0x0C-sockets$ ./todo_api_6
+Server listening on port 8080
+127.0.0.1 POST /todos -> 201 Created
+127.0.0.1 POST /todos -> 201 Created
+127.0.0.1 GET /todos -> 200 OK
+127.0.0.1 GET /todos -> 200 OK
+127.0.0.1 GET /todos -> 404 Not Found
+127.0.0.1 GET /todos -> 200 OK
+^C
+alex@~/0x0C-sockets$
+```
+In a second terminal:
+```
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Dishes&description=Not_really_urgent' 2> /dev/null | cat -e
+HTTP/1.1 201 Created^M$
+Content-Length: 59^M$
+Content-Type: application/json^M$
+^M$
+{"id":0,"title":"Dishes","description":"Not_really_urgent"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - -X POST 'http://localhost:8080/todos' -d 'title=Laundry&description=To_be_done_by_yesterday' 2> /dev/null | cat -e
+HTTP/1.1 201 Created^M$
+Content-Length: 66^M$
+Content-Type: application/json^M$
+^M$
+{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos?id=0' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 59^M$
+Content-Type: application/json^M$
+^M$
+{"id":0,"title":"Dishes","description":"Not_really_urgent"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos?id=1' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 66^M$
+Content-Type: application/json^M$
+^M$
+{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos?id=2' 2> /dev/null | cat -e
+HTTP/1.1 404 Not Found^M$
+^M$
+alex@~/0x0C-sockets$ curl -D - 'http://localhost:8080/todos' 2> /dev/null | cat -e
+HTTP/1.1 200 OK^M$
+Content-Length: 128^M$
+Content-Type: application/json^M$
+^M$
+[{"id":0,"title":"Dishes","description":"Not_really_urgent"},{"id":1,"title":"Laundry","description":"To_be_done_by_yesterday"}]alex@~/0x0C-sockets$
+alex@~/0x0C-sockets$
+```
