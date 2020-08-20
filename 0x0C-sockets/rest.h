@@ -13,6 +13,7 @@
 #define CONSTLEN		35
 
 #define POST			"POST"
+#define PATH			"/todos "
 #define CONTLEN			"Content-Length: %lu\r\n"
 #define RESP_OK			"HTTP/1.1 200 OK\r\n\r\n"
 #define RESP_CREATED		"HTTP/1.1 201 Created\r\n"
@@ -42,17 +43,15 @@ typedef struct todo_list_s
 } todo_list_t;
 
 /**
- * struct todo_queue_s - queue for todo linked list
+ * struct todo_info_s - queue for todo linked list
  * @head: pointer to head todo node
  * @tail: pointer to tail todo node
- * @next: pointer to next queue node
  */
-typedef struct todo_queue_s
+typedef struct todo_info_s
 {
 	struct todo_list_s *head;
 	struct todo_list_s *tail;
-	struct queue *next;
-} todo_queue_t;
+} todo_info_t;
 
 /* sockets.c */
 int init_socket(void);
