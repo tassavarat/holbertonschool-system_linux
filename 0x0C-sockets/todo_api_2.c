@@ -12,9 +12,10 @@ void print_header(char *buffer)
 	while (1)
 	{
 		token = strtok_r(NULL, ":", &saveptr) + 1;
-		val = strtok_r(NULL, "\r", &saveptr) + 1;
+		val = strtok_r(NULL, "\r", &saveptr);
 		if (val == NULL)
 			break;
+		++val;
 		printf("Header: \"%s\" -> \"%s\"\n", token, val);
 	}
 }
