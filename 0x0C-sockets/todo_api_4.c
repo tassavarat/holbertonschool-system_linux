@@ -81,7 +81,7 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 {
 	char *saveptr;
 
-	if (parse_req2(buffer, client_fd) == 1)
+	if (parse_error(buffer, client_fd) == 1)
 		return;
 	if (strncmp(buffer, POST, POST_LEN) == 0)
 	{

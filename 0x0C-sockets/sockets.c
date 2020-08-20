@@ -1,13 +1,13 @@
 #include "rest.h"
 
 /**
- * parse_req2 - parse given request
+ * parse_error - parse request errors
  * @buffer: HTTP request to print
  * @client_fd: client file descriptor
  *
  * Return: 0 on success, 1 on error
  */
-int parse_req2(char *buffer, int client_fd)
+int parse_error(char *buffer, int client_fd)
 {
 	char *saveptr;
 

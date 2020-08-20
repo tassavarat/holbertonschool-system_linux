@@ -58,6 +58,6 @@ typedef struct todo_info_s
 /* sockets.c */
 int init_socket(void);
 int accept_recv(int serv_fd, char *buffer);
-int parse_req2(char *buffer, int client_fd);
+int parse_error(char *buffer, int client_fd);
 
 #endif /* REST_H */
