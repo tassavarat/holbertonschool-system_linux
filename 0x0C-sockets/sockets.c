@@ -52,6 +52,7 @@ int init_socket(void)
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	optval = 1;
 	setsockopt(serv_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 	if (bind(serv_fd, (struct sockaddr *)&server_addr,
 				sizeof(server_addr)) == -1)
