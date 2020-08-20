@@ -81,39 +81,29 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 {
 	char *saveptr;
 
-	if (strncmp(buffer, POST, POST_LEN) != 0)
+	if (strncmp(buffer, POST, POST_LEN) == 0)
+	{
+		if (post(buffer, td_info) == NULL)
+		{
+			strtok_r(buffer, " ", &saveptr);
+			printf("%s %s -> 422 Unprocessable Entity\n", POST,
+					strtok_r(NULL, " ", &saveptr));
+			send(client_fd, RESP_UNPROCESSENT,
+					RESP_UNPROCESSENT_LEN, 0);
+			return;
+		}
+		resp_post(client_fd, td_info);
+	}
+	else
 	{
 		strtok_r(buffer, " ", &saveptr);
-		printf("GET %s -> 504 Not Found\n",
+		printf("method %s -> 404 Not Found\n",
 				strtok_r(NULL, " ", &saveptr));
 		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
 		return;
 	}
-	if (strstr(buffer, PATH) == NULL)
-	{
-		strtok_r(buffer, " ", &saveptr);
-		printf("%s %s -> 404 Not Found\n", POST,
-				strtok_r(NULL, " ", &saveptr));
-		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
+	if (parse_req2(buffer, client_fd) == 1)
 		return;
-	}
-	if (strstr(buffer, "Content-Length") == NULL)
-	{
-		strtok_r(buffer, " ", &saveptr);
-		printf("%s %s -> 411 Length Required\n", POST,
-				strtok_r(NULL, " ", &saveptr));
-		send(client_fd, RESP_LENREQ, RESP_LENREQ_LEN, 0);
-		return;
-	}
-	if (post(buffer, td_info) == NULL)
-	{
-		strtok_r(buffer, " ", &saveptr);
-		printf("%s %s -> 422 Unprocessable Entity\n", POST,
-				strtok_r(NULL, " ", &saveptr));
-		send(client_fd, RESP_UNPROCESSENT, RESP_UNPROCESSENT_LEN, 0);
-		return;
-	}
-	resp_post(client_fd, td_info);
 }
 
 /**

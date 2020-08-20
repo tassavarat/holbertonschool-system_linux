@@ -1,6 +1,36 @@
 #include "rest.h"
 
 /**
+ * parse_req2 - parse given request
+ * @buffer: HTTP request to print
+ * @client_fd: client file descriptor
+ *
+ * Return: 0 on success, 1 on error
+ */
+int parse_req2(char *buffer, int client_fd)
+{
+	char *saveptr;
+
+	if (strstr(buffer, PATH) == NULL)
+	{
+		strtok_r(buffer, " ", &saveptr);
+		printf("%s %s -> 404 Not Found\n", POST,
+				strtok_r(NULL, " ", &saveptr));
+		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
+		return (1);
+	}
+	if (strstr(buffer, "Content-Length") == NULL)
+	{
+		strtok_r(buffer, " ", &saveptr);
+		printf("%s %s -> 411 Length Required\n", POST,
+				strtok_r(NULL, " ", &saveptr));
+		send(client_fd, RESP_LENREQ, RESP_LENREQ_LEN, 0);
+		return (1);
+	}
+	return (0);
+}
+
+/**
  * accept_recv - accept connection and receive message from socket
  * @serv_fd: server file descriptor
  * @buffer: array to hold message from socket

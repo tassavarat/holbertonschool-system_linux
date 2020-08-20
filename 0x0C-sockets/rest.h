@@ -12,6 +12,7 @@
 #define BACKLOG			10
 #define CONSTLEN		35
 
+#define GET			"GET"
 #define POST			"POST"
 #define PATH			"/todos "
 #define CONTLEN			"Content-Length: %lu\r\n"
@@ -21,6 +22,7 @@
 #define RESP_LENREQ		"HTTP/1.1 Length Required\r\n\r\n"
 #define RESP_UNPROCESSENT	"HTTP/1.1 422 Unprocessable Entity\r\n\r\n"
 
+#define GET_LEN			strlen(GET)
 #define POST_LEN		strlen(POST)
 #define RESP_OK_LEN		strlen(RESP_OK)
 #define RESP_NOTFOUND_LEN	strlen(RESP_NOTFOUND)
@@ -56,5 +58,6 @@ typedef struct todo_info_s
 /* sockets.c */
 int init_socket(void);
 int accept_recv(int serv_fd, char *buffer);
+int parse_req2(char *buffer, int client_fd);
 
 #endif /* REST_H */
