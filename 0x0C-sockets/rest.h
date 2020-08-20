@@ -10,38 +10,49 @@
 
 #define PORT			8080
 #define BACKLOG			10
+#define CONSTLEN		35
 
-#define PATH			"/todos"
 #define POST			"POST"
-
-#define	CODE_201		"201 Created"
-#define CODE_404		"404 Not Found"
-#define CODE_422		"422 Unprocessable Entity"
-
+#define CONTLEN			"Content-Length: %lu\r\n"
 #define RESP_OK			"HTTP/1.1 200 OK\r\n\r\n"
 #define RESP_CREATED		"HTTP/1.1 201 Created\r\n"
 #define RESP_NOTFOUND		"HTTP/1.1 404 Not Found\r\n\r\n"
+#define RESP_LENREQ		"HTTP/1.1 Length Required\r\n\r\n"
 #define RESP_UNPROCESSENT	"HTTP/1.1 422 Unprocessable Entity\r\n\r\n"
 
 #define POST_LEN		strlen(POST)
 #define RESP_OK_LEN		strlen(RESP_OK)
 #define RESP_NOTFOUND_LEN	strlen(RESP_NOTFOUND)
+#define RESP_LENREQ_LEN		strlen(RESP_LENREQ)
 #define RESP_UNPROCESSENT_LEN	strlen(RESP_UNPROCESSENT)
 
 /**
- * struct todo - todo linked list
+ * struct todo_list_s - todo linked list
  * @id: member id
  * @title: title string
  * @desc: description string
  * @next: pointer to next todo node
  */
-struct todo
+typedef struct todo_list_s
 {
 	size_t id;
 	char *title;
 	char *desc;
-	struct todo *next;
-};
+	struct todo_list_s *next;
+} todo_list_t;
+
+/**
+ * struct todo_queue_s - queue for todo linked list
+ * @head: pointer to head todo node
+ * @tail: pointer to tail todo node
+ * @next: pointer to next queue node
+ */
+typedef struct todo_queue_s
+{
+	struct todo_list_s *head;
+	struct todo_list_s *tail;
+	struct queue *next;
+} todo_queue_t;
 
 /* sockets.c */
 int init_socket(void);
