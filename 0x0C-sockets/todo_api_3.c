@@ -9,7 +9,7 @@ void print_body(char *buffer)
 	char *saveptr, *token, *val;
 	int i;
 
-	strtok_r(buffer, "/", &saveptr);
+	strtok_r(buffer, " ", &saveptr);
 	token = strtok_r(NULL, " ", &saveptr);
 	printf("Path: %s\n", token);
 	for (i = 0; i < 7; ++i)
@@ -22,7 +22,6 @@ void print_body(char *buffer)
 			break;
 		printf("Body param: \"%s\" -> \"%s\"\n", token, val);
 	}
-	/* (void) val; */
 }
 
 /**
