@@ -104,7 +104,6 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 	else if (strncmp(buffer, GET, GET_LEN) == 0)
 	{
 		get_resp(client_fd, td_info);
-		/* send(client_fd, RESP_OK, RESP_OK_LEN, 0); */
 	}
 	else
 	{

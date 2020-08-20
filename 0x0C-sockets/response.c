@@ -13,12 +13,14 @@
 /* void get_resp(int client_fd, todo_info_t *td_info) */
 /* { */
 /* 	char str[BUFSIZ]; */
+/* 	size_t resp_len = 2; */
 
 /* 	if (td_info->head == NULL) */
 /* 	{ */
-		
+/* 		sprintf(str, "%s%s%lu\r\n%s", RESP_GETOK, "Content-Length: ", resp_len); */
 /* 	} */
 /* } */
+/* send(client_fd, RESP_OK, RESP_OK_LEN, 0); */
 
 /**
  * post_resp - formats str for POST response
@@ -35,7 +37,7 @@ void post_resp(int client_fd, todo_info_t *td_info)
 	len += strlen(td_info->tail->title);
 	len += strlen(td_info->tail->desc);
 	printf("POST /todos -> 201 Created\n");
-	sprintf(str, "%s%s%lu\r\n%s\r\n\r\n%s%lu%s%s%s%s\"}",
+	sprintf(str, "%s%s%lu\r\n%s%s%lu%s%s%s%s\"}",
 			RESP_CREATED, "Content-Length: ", len,
 			CONTYPE, "{\"id\":",
 			td_info->tail->id, ",\"title\":\"",
