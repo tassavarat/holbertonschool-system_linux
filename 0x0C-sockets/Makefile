@@ -7,8 +7,8 @@ OBJS = $(patsubst %.c, %.o, $(SRC))
 1 = $(patsubst %.c, %.o, $(wildcard todo_api_1.c)) sockets.c
 2 = $(patsubst %.c, %.o, $(wildcard todo_api_2.c)) sockets.c
 3 = $(patsubst %.c, %.o, $(wildcard todo_api_3.c)) sockets.c
-4 = $(patsubst %.c, %.o, $(wildcard todo_api_4.c)) sockets.c
-5 = $(patsubst %.c, %.o, $(wildcard todo_api_5.c)) sockets.c
+4 = $(patsubst %.c, %.o, $(wildcard todo_api_4.c)) sockets.c response.c
+5 = $(patsubst %.c, %.o, $(wildcard todo_api_5.c)) sockets.c response.c
 
 .PHONY: todo_api_0 todo_api_1 todo_api_2 todo_api_3 todo_api_4 todo_api_5 clean
 

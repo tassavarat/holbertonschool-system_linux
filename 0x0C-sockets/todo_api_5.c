@@ -1,79 +1,38 @@
 #include "rest.h"
 
 /**
- * post - create given todo
- * @buffer: raw HTTP request
+ * get_resp - formats str for GET response
+ * @client_fd: client file descriptor
  * @td_info: info for todo linked list
- *
- * Return: created todo node, NULL on error
  */
-todo_list_t *post(char *buffer, todo_info_t *td_info)
+void get_resp(int client_fd, todo_info_t *td_info)
 {
-	char *saveptr, *token, *title, *desc;
-	int i;
-	todo_list_t *new;
 
-	for (i = 0, strtok_r(buffer, "\n", &saveptr); i < 7; ++i)
-		token = strtok_r(NULL, "\n", &saveptr);
-	title = strstr(token, "title");
-	if (!title)
-		return (NULL);
-	desc = strstr(token, "description");
-	if (!desc)
-		return (NULL);
-	new = malloc(sizeof(*new));
-	if (!new)
-	{
-		perror("malloc failed");
-		exit(1);
-	}
-	strtok_r(title, "=", &saveptr);
-	new->title = strdup(strtok_r(NULL, "&\0", &saveptr));
-	strtok_r(desc, "=", &saveptr);
-	new->desc = strdup(strtok_r(NULL, "&\0", &saveptr));
-	if (td_info->head == NULL)
-	{
-		new->id = 0;
-		td_info->head = td_info->tail = new;
-	}
-	else
-	{
-		new->id = td_info->tail->id + 1;
-		td_info->tail->next = new;
-		td_info->tail = new;
-	}
-	new->next = NULL;
-	return (new);
 }
 
 /**
- * parse_error - parse request errors
- * @buffer: HTTP request to print
+ * post_resp - formats str for POST response
  * @client_fd: client file descriptor
- *
- * Return: 0 on success, 1 on error
+ * @td_info: info for todo linked list
  */
-int parse_error(char *buffer, int client_fd)
+void post_resp(int client_fd, todo_info_t *td_info)
 {
-	char *saveptr;
+	char str[BUFSIZ];
+	size_t len = CONSTLEN, resp_len;
 
-	if (strstr(buffer, PATH) == NULL)
-	{
-		strtok_r(buffer, " ", &saveptr);
-		printf("%s %s -> 404 Not Found\n", POST,
-				strtok_r(NULL, " ", &saveptr));
-		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
-		return (1);
-	}
-	if (strstr(buffer, "Content-Length") == NULL)
-	{
-		strtok_r(buffer, " ", &saveptr);
-		printf("%s %s -> 411 Length Required\n", POST,
-				strtok_r(NULL, " ", &saveptr));
-		send(client_fd, RESP_LENREQ, RESP_LENREQ_LEN, 0);
-		return (1);
-	}
-	return (0);
+	sprintf(str, "%lu", td_info->tail->id);
+	len += strlen(str);
+	len += strlen(td_info->tail->title);
+	len += strlen(td_info->tail->desc);
+	printf("POST /todos -> 201 Created\n");
+	sprintf(str, "%s%s%lu\r\n%s\r\n\r\n%s%lu%s%s%s%s\"}",
+			RESP_CREATED, "Content-Length: ", len,
+			"Content-Type: application/json", "{\"id\":",
+			td_info->tail->id, ",\"title\":\"",
+			td_info->tail->title, "\",\"description\":\"",
+			td_info->tail->desc);
+	resp_len = strlen(str);
+	send(client_fd, str, resp_len, 0);
 }
 
 /**
