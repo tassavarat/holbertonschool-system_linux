@@ -81,6 +81,8 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 {
 	char *saveptr;
 
+	if (parse_req2(buffer, client_fd) == 1)
+		return;
 	if (strncmp(buffer, POST, POST_LEN) == 0)
 	{
 		if (post(buffer, td_info) == NULL)
@@ -102,8 +104,6 @@ void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
 		return;
 	}
-	if (parse_req2(buffer, client_fd) == 1)
-		return;
 }
 
 /**
