@@ -4,10 +4,11 @@
  * accept_recv - accept connection and receive message from socket
  * @serv_fd: server file descriptor
  * @buffer: array to hold message from socket
+ * @mode: specifies whether to print additional information
  *
  * Return: client file descriptor on success, -1 on error
  */
-int accept_recv(int serv_fd, char *buffer)
+int accept_recv(int serv_fd, char *buffer, int mode)
 {
 	int client_fd;
 	struct sockaddr_in client_addr;
@@ -20,7 +21,6 @@ int accept_recv(int serv_fd, char *buffer)
 		perror("accept failed");
 		return (-1);
 	}
-	printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
 	memset(&*buffer, 0, BUFSIZ);
 	if (recv(client_fd, buffer, BUFSIZ, 0) == -1)
 	{
@@ -28,7 +28,12 @@ int accept_recv(int serv_fd, char *buffer)
 		perror("recv failed");
 		return (-1);
 	}
-	printf("Raw request: \"%s\"\n", buffer);
+	if (mode == VERBOSE_ON)
+	{
+		printf("Client connected: %s\n",
+				inet_ntoa(client_addr.sin_addr));
+		printf("Raw request: \"%s\"\n", buffer);
+	}
 	return (client_fd);
 }
 

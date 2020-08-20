@@ -33,7 +33,7 @@ int accept_connection(int serv_fd)
 
 	while (1)
 	{
-		client_fd = accept_recv(serv_fd, buffer);
+		client_fd = accept_recv(serv_fd, buffer, VERBOSE_ON);
 		if (client_fd == -1)
 			return (1);
 		print_header(buffer);

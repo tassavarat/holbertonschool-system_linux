@@ -8,6 +8,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define VERBOSE_OFF		0
+#define VERBOSE_ON		1
 #define PORT			8080
 #define BACKLOG			10
 #define POST_CONSTLEN		35
@@ -61,7 +63,7 @@ typedef struct todo_info_s
 
 /* sockets.c */
 int init_socket(void);
-int accept_recv(int serv_fd, char *buffer);
+int accept_recv(int serv_fd, char *buffer, int mode);
 
 /* response.c */
 void post_resp(int client_fd, todo_info_t *td_info);

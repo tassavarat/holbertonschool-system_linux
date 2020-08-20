@@ -132,7 +132,7 @@ int accept_connection(int serv_fd, todo_info_t *td_info)
 
 	while (1)
 	{
-		client_fd = accept_recv(serv_fd, buffer);
+		client_fd = accept_recv(serv_fd, buffer, VERBOSE_OFF);
 		if (client_fd == -1)
 			return (1);
 		parse_req(buffer, client_fd, td_info);
