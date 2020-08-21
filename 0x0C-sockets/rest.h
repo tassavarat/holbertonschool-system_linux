@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define GETALL			-2
 #define VERBOSE_OFF		0
 #define VERBOSE_ON		1
 #define PORT			8080
@@ -18,6 +19,7 @@
 #define POST			"POST"
 #define GET			"GET"
 #define PATH			"/todos "
+#define PATHID			"/todos?id="
 #define CONTYPE			"Content-Type: application/json\r\n\r\n"
 #define RESP_OK			"HTTP/1.1 200 OK\r\n\r\n"
 #define RESP_GETOK		"HTTP/1.1 200 OK\r\n"
@@ -68,5 +70,6 @@ int accept_recv(int serv_fd, char *buffer, int mode);
 /* response.c */
 void post_resp(int client_fd, todo_info_t *td_info);
 void getall_resp(int client_fd, todo_info_t *td_info);
+void get_resp(int client_fd, todo_info_t *td_info, size_t id);
 
 #endif /* REST_H */

@@ -4,6 +4,34 @@
  * get_resp - formats str for GET response
  * @client_fd: client file descriptor
  * @td_info: info for todo linked list
+ * @id: id to get
+ */
+void get_resp(int client_fd, todo_info_t *td_info, size_t id)
+{
+	todo_list_t *cur;
+	char str[BUFSIZ];
+
+	for (cur = td_info->head; cur && cur->id != id; cur = cur->next)
+		;
+	if (!cur)
+	{
+		printf("%s -> 404 Not Found\n", GET);
+		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
+		return;
+	}
+	sprintf(str, "%s%s%lu\r\n%s%s%lu%s%s%s%s\"}", RESP_GETOK,
+			"Content-Length: ", cur->len, CONTYPE,
+			"{\"id\":", cur->id, ",\"title\":\"",
+			cur->title, "\",\"description\":\"",
+			cur->desc);
+	printf("GET /todos -> 200 OK\n");
+	send(client_fd, str, strlen(str), 0);
+}
+
+/**
+ * getall_resp - formats str for GET all response
+ * @client_fd: client file descriptor
+ * @td_info: info for todo linked list
  */
 void getall_resp(int client_fd, todo_info_t *td_info)
 {

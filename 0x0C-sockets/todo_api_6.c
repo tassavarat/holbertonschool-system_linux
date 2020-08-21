@@ -48,24 +48,34 @@ todo_list_t *post(char *buffer, todo_info_t *td_info)
 }
 
 /**
- * parse_error - parse request errors
+ * parse_req2 - parse request
  * @buffer: HTTP request to print
  * @client_fd: client file descriptor
- * @resp_type: errors to check for
+ * @resp_type: determines what to check
  *
- * Return: 0 on success, 1 on error
+ * Return: non-negative value potentially specifying get type on success,
+ * -1 on error
  */
-int parse_error(char *buffer, int client_fd, char *resp_type)
+int parse_req2(char *buffer, int client_fd, char *resp_type)
 {
-	char *saveptr;
+	char *saveptr, *token;
 
-	if (*resp_type == *GET && strstr(buffer, PATH) == NULL)
+	if (*resp_type == *GET)
 	{
+		if (strstr(buffer, PATH) != NULL)
+			return (GETALL);
+		if (strstr(buffer, PATHID) != NULL)
+		{
+			strtok_r(buffer, "=", &saveptr);
+			token = strtok_r(NULL, " ", &saveptr);
+			if (*token >= '0' && *token <= '9')
+				return (atoi(token));
+		}
 		strtok_r(buffer, " ", &saveptr);
 		printf("%s %s -> 404 Not Found\n", POST,
 				strtok_r(NULL, " ", &saveptr));
 		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
-		return (1);
+		return (-1);
 	}
 	if (*resp_type == *POST && strstr(buffer, "Content-Length") == NULL)
 	{
@@ -73,7 +83,7 @@ int parse_error(char *buffer, int client_fd, char *resp_type)
 		printf("%s %s -> 411 Length Required\n", POST,
 				strtok_r(NULL, " ", &saveptr));
 		send(client_fd, RESP_LENREQ, RESP_LENREQ_LEN, 0);
-		return (1);
+		return (-1);
 	}
 	return (0);
 }
@@ -87,16 +97,21 @@ int parse_error(char *buffer, int client_fd, char *resp_type)
 void parse_req(char *buffer, int client_fd, todo_info_t *td_info)
 {
 	char *saveptr;
+	int req_ret;
 
-	if (parse_error(buffer, client_fd, GET) == 1)
+	req_ret = parse_req2(buffer, client_fd, GET);
+	if (req_ret == -1)
 		return;
 	if (strncmp(buffer, GET, GET_LEN) == 0)
 	{
-		getall_resp(client_fd, td_info);
+		if (req_ret == GETALL)
+			getall_resp(client_fd, td_info);
+		if (req_ret > -1)
+			get_resp(client_fd, td_info, req_ret);
 	}
 	else if (strncmp(buffer, POST, POST_LEN) == 0)
 	{
-		if (parse_error(buffer, client_fd, POST) == 1)
+		if (parse_req2(buffer, client_fd, POST) == 1)
 			return;
 		if (post(buffer, td_info) == NULL)
 		{
@@ -133,7 +148,7 @@ int accept_connection(int serv_fd, todo_info_t *td_info)
 
 	while (1)
 	{
-		client_fd = accept_recv(serv_fd, buffer, VERBOSE_OFF);
+		client_fd = accept_recv(serv_fd, buffer, VERBOSE_ON);
 		if (client_fd == -1)
 			return (1);
 		parse_req(buffer, client_fd, td_info);
