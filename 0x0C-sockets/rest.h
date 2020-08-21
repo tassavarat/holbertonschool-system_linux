@@ -11,18 +11,23 @@
 #define GETALL			-2
 #define VERBOSE_OFF		0
 #define VERBOSE_ON		1
+
 #define PORT			8080
 #define BACKLOG			10
+
 #define POST_CONSTLEN		35
 #define GET_CONSTLEN		2
 
 #define POST			"POST"
 #define GET			"GET"
+#define DELETE			"DELETE"
 #define PATH			"/todos "
 #define PATHID			"/todos?id="
+
 #define CONTYPE			"Content-Type: application/json\r\n\r\n"
 #define RESP_OK			"HTTP/1.1 200 OK\r\n\r\n"
 #define RESP_GETOK		"HTTP/1.1 200 OK\r\n"
+#define RESP_DEL		"HTTP/1.1 204 No Content\r\n\r\n"
 #define RESP_CREATED		"HTTP/1.1 201 Created\r\n"
 #define RESP_NOTFOUND		"HTTP/1.1 404 Not Found\r\n\r\n"
 #define RESP_LENREQ		"HTTP/1.1 Length Required\r\n\r\n"
@@ -30,7 +35,10 @@
 
 #define POST_LEN		strlen(POST)
 #define GET_LEN			strlen(GET)
+#define DELETE_LEN		strlen(DELETE)
+
 #define RESP_OK_LEN		strlen(RESP_OK)
+#define RESP_DEL_LEN		strlen(RESP_DEL)
 #define RESP_NOTFOUND_LEN	strlen(RESP_NOTFOUND)
 #define RESP_LENREQ_LEN		strlen(RESP_LENREQ)
 #define RESP_UNPROCESSENT_LEN	strlen(RESP_UNPROCESSENT)
@@ -71,5 +79,6 @@ int accept_recv(int serv_fd, char *buffer, int mode);
 void post_resp(int client_fd, todo_info_t *td_info);
 void getall_resp(int client_fd, todo_info_t *td_info);
 void get_resp(int client_fd, todo_info_t *td_info, size_t id);
+void del_resp(int client_fd, todo_info_t *td_info, size_t id);
 
 #endif /* REST_H */

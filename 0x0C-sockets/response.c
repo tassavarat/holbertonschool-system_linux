@@ -1,6 +1,49 @@
 #include "rest.h"
 
 /**
+ * del_resp - delete specified member and responds to client
+ * @client_fd: client file descriptor
+ * @td_info: info for todo linked list
+ * @id: id to get
+ */
+void del_resp(int client_fd, todo_info_t *td_info, size_t id)
+{
+	todo_list_t *cur, *tmp;
+
+	for (cur = td_info->head; cur && cur->id != id; cur = cur->next)
+	{
+		if (cur->next && id == cur->next->id)
+			break;
+	}
+	if (!cur)
+	{
+		printf("%s /todos -> 404 Not Found\n", DELETE);
+		send(client_fd, RESP_NOTFOUND, RESP_NOTFOUND_LEN, 0);
+		return;
+	}
+	if (cur == td_info->head)
+	{
+		cur = cur->next;
+		free(td_info->head);
+		td_info->head = cur;
+	}
+	else if (cur->next == td_info->tail)
+	{
+		cur->next = NULL;
+		free(td_info->tail);
+		td_info->tail = cur;
+	}
+	else
+	{
+		tmp = cur->next;
+		cur->next = tmp->next;
+		free(tmp);
+	}
+	printf("%s /todos -> 204 No content\n", DELETE);
+	send(client_fd, RESP_DEL, RESP_DEL_LEN, 0);
+}
+
+/**
  * get_resp - formats str for GET response
  * @client_fd: client file descriptor
  * @td_info: info for todo linked list
