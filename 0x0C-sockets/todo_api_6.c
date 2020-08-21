@@ -12,6 +12,7 @@ todo_list_t *post(char *buffer, todo_info_t *td_info)
 	char *saveptr, *token, *title, *desc;
 	int i;
 	todo_list_t *new;
+	static size_t id;
 
 	for (i = 0, strtok_r(buffer, "\n", &saveptr); i < 7; ++i)
 		token = strtok_r(NULL, "\n", &saveptr);
@@ -31,19 +32,14 @@ todo_list_t *post(char *buffer, todo_info_t *td_info)
 	new->title = strdup(strtok_r(NULL, "&\0", &saveptr));
 	strtok_r(desc, "=", &saveptr);
 	new->desc = strdup(strtok_r(NULL, "&\0", &saveptr));
+	new->id = id;
 	if (td_info->head == NULL)
-	{
-		new->id = 0;
 		td_info->head = new;
-		td_info->tail = new;
-	}
 	else
-	{
-		new->id = td_info->tail->id + 1;
 		td_info->tail->next = new;
-		td_info->tail = new;
-	}
+	td_info->tail = new;
 	new->next = NULL;
+	++id;
 	return (new);
 }
 
